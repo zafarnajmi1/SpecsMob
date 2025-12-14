@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class DeviceType extends Model
+{
+    protected $fillable = [
+        'name',
+        'slug',
+        'status'
+    ];
+
+    protected $casts = [
+        'status' => 'boolean',
+    ];
+    
+    // public function devices()
+    // {
+    //     return $this->hasMany(Device::class);
+    // }
+}

@@ -1,0 +1,96 @@
+<?php
+
+use App\Http\Controllers\DeviceOpinionController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\WebController;
+use Illuminate\Support\Facades\Route;
+
+require __DIR__ . '/admin.php';
+
+
+
+Auth::routes();
+
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::controller(WebController::class)
+    ->group(function () {
+
+        Route::get('', 'home')->name('home');
+        Route::get('news', 'news')->name('news');
+        Route::get('/reviews', 'reviews')->name('reviews');
+        Route::get('/videos', 'videos')->name('videos');
+        Route::get('/featured', 'featured')->name('featured');
+        Route::get('/phone-finder', 'phoneFinder')->name('phone-finder');
+        Route::get('/deals', 'deals')->name('deals');
+        Route::get('/merch', 'merch')->name('merch');
+        Route::get('/coverage', 'coverage')->name('coverage');
+        Route::get('/contact', 'contact')->name('contact');
+        Route::get('/contact-submit', 'contact')->name('contact.submit');
+        // Route::get('/reviews', 'review_detail')->name('reviews'); //dummy
+    
+        Route::get('/reviews/show/{slug}', 'review_detail')->name('review-detail');
+        Route::get('/articles/show/{slug}/{type}', 'article_detail')->name('article-detail');
+
+        Route::get('/brands', 'brands')->name('brands.all');
+        Route::get('/brands/{slug}', 'brand_devices')->name('brand.devices');
+
+        Route::get('/devices/show/{slug}', 'device_detail')->name('device-detail');
+        Route::get('/{slug}-pictures-{id}', 'device_pictures')->where([
+            'slug' => '[a-z0-9\-]+',
+            'id' => '[0-9]+'
+        ])->name('device.pictures');
+        Route::get('/{slug}-reviews-{id}', 'device_opinions')->where([
+            'slug' => '[a-z0-9\-]+',
+            'id' => '[0-9]+'
+        ])->name('device.opinions');
+        Route::get('/article', 'contact')->name('articles.show'); //dummy
+    });
+
+Route::get('/{slug}-{id}', [DeviceOpinionController::class, 'device_opinion_post'])->where([
+    'slug' => '[a-z0-9\-]+',
+    'id' => '[0-9]+'
+])->name('device.opinions.post');
+Route::post('/{slug}-{id}/opinion', [DeviceOpinionController::class, 'store'])
+   ->where([
+    'slug' => '[a-z0-9\-]+',
+    'id' => '[0-9]+'
+])
+    ->name('device.opinions.store');
+
+
+// User dashboard (frontend)
+Route::prefix('user')
+    ->name('user.')
+    ->middleware(['auth', 'role:user'])
+    ->group(function () {
+
+        Route::get('/account', [UserController::class, 'account'])
+            ->name('account');
+        Route::get('/{username}-posts', [UserController::class, 'posts'])
+            ->where('username', '[A-Za-z0-9\-]+')
+            ->name('posts');
+            Route::get('/{username}-manage', [UserController::class, 'account_manage'])
+            ->where('username', '[A-Za-z0-9\-]+')
+            ->name('account.manage');
+            Route::post('/{username}-avatar', [UserController::class, 'updateAvatar'])
+            ->where('username', '[A-Za-z0-9\-]+')
+            ->name('avatar.update');
+            Route::post('/{username}-nickname', [UserController::class, 'updateNickname'])
+            ->where('username', '[A-Za-z0-9\-]+')
+            ->name('nickname.update');
+            Route::post('/{username}-freeze', [UserController::class, 'freeze'])
+            ->where('username', '[A-Za-z0-9\-]+')
+            ->name('freeze');
+            Route::delete('/{username}-delete', [UserController::class, 'destroy'])
+            ->where('username', '[A-Za-z0-9\-]+')
+            ->name('delete');
+            Route::post('/{username}-download', [UserController::class, 'downloadData'])
+            ->where('username', '[A-Za-z0-9\-]+')
+    ->name('data.download');
+
+
+
+        Route::get('/profile', [UserController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [UserController::class, 'update'])->name('profile.update');
+    });

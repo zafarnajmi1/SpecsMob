@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GSMArena.com - mobile phone reviews, news, specifications and more...</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            background-color: #f0f0f0;
+        }
+
+        /* Header */
+        .top-header {
+            background: linear-gradient(to bottom, #5a5a5a 0%, #464646 100%);
+            padding: 0;
+            position: relative;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 15px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-toggle {
+            background: #666;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            font-family: 'Arial Black', sans-serif;
+        }
+
+        .search-section {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 20px;
+        }
+
+        .search-box {
+            display: flex;
+            background: white;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            padding: 8px 12px;
+            outline: none;
+        }
+
+        .search-box button {
+            background: #ddd;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .header-icon {
+            text-align: center;
+            color: white;
+            text-decoration: none;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .header-icon i {
+            font-size: 20px;
+        }
+
+        .header-icon.tip-us i {
+            font-size: 24px;
+        }
+
+        /* Main Navigation */
+        .main-nav {
+            background: #bbb;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .main-nav ul {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-nav li {
+            flex: 1;
+            text-align: center;
+            border-right: 1px solid #999;
+        }
+
+        .main-nav li:last-child {
+            border-right: none;
+        }
+
+        .main-nav a {
+            display: block;
+            padding: 12px 10px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+            position: relative;
+        }
+
+        .main-nav a:hover {
+            background: #999;
+        }
+
+        .new-badge {
+            position: absolute;
+            top: 2px;
+            right: 5px;
+            background: #ff6b6b;
+            color: white;
+            font-size: 8px;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        /* Main Content Area */
+        .main-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            display: flex;
+            gap: 20px;
+            padding: 0 15px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            flex-shrink: 0;
+        }
+
+        .phone-finder-widget {
+            background: white;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        .widget-header {
+            background: linear-gradient(to bottom, #e0e0e0 0%, #c0c0c0 100%);
+            padding: 10px 15px;
+            border-bottom: 1px solid #999;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+
+        .widget-header i {
+            color: #666;
+        }
+
+        .brand-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: #ccc;
+            padding: 0;
+        }
+
+        .brand-btn {
+            background: #f5f5f5;
+            border: none;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            color: #333;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+
+        .brand-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .widget-footer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: #ccc;
+        }
+
+        .widget-footer-btn {
+            background: #d0d0d0;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .widget-footer-btn:hover {
+            background: #bbb;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+        }
+
+        .ad-banner {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 1px solid #90caf9;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .ad-banner h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .ad-controls {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 5px;
+        }
+
+        .ad-controls button {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            border: 1px solid #999;
+            background: white;
+            cursor: pointer;
+        }
+
+        .ad-controls button.active {
+            background: #666;
+        }
+
+        /* Review Cards */
+        .review-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .main-review {
+            position: relative;
+            overflow: hidden;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .main-review img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .review-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+            padding: 30px 20px 20px;
+            color: white;
+        }
+
+        .review-meta {
+            font-size: 11px;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .review-meta i {
+            margin-right: 5px;
+        }
+
+        .review-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .side-reviews {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .side-review {
+            position: relative;
+            overflow: hidden;
+            border-radius: 5px;
+            cursor: pointer;
+            height: 192px;
+        }
+
+        .side-review img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .side-review .review-overlay {
+            padding: 15px;
+        }
+
+        .side-review .review-title {
+            font-size: 18px;
+        }
+
+        .nav-arrows {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.9);
+            border: none;
+            width: 30px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .nav-arrows.prev {
+            left: 0;
+        }
+
+        .nav-arrows.next {
+            right: 0;
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-wrap: wrap;
+            }
+            
+            .search-section {
+                order: 3;
+                flex: 1 1 100%;
+                max-width: 100%;
+                margin-top: 10px;
+            }
+
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .review-section {
+                grid-template-columns: 1fr;
+            }
+
+            .main-nav ul {
+                flex-wrap: wrap;
+            }
+
+            .main-nav li {
+                flex: 1 1 25%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="top-header">
+        <div class="header-container">
+            <div class="logo-section">
+                <button class="menu-toggle">☰</button>
+                <a href="#" class="logo">GSMArena</a>
+            </div>
+
+            <div class="search-section">
+                <div class="search-box">
+                    <input type="text" placeholder="Search">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+
+            <div class="header-icons">
+                <a href="#" class="header-icon tip-us">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>TIP US</span>
+                </a>
+                <a href="#" class="header-icon">
+                    <i class="fab fa-youtube"></i>
+                    <span>2.0M</span>
+                </a>
+                <a href="#" class="header-icon">
+                    <i class="fab fa-instagram"></i>
+                    <span>150K</span>
+                </a>
+                <a href="#" class="header-icon">
+                    <i class="fas fa-rss"></i>
+                    <span>RSS</span>
+                </a>
+                <a href="#" class="header-icon">
+                    <i class="fas fa-car"></i>
+                    <span>EV</span>
+                </a>
+                <a href="#" class="header-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>MERCH</span>
+                </a>
+                <a href="#" class="header-icon">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>LOG IN</span>
+                </a>
+                <a href="#" class="header-icon">
+                    <i class="fas fa-user-plus"></i>
+                    <span>SIGN UP</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <nav class="main-nav">
+        <ul>
+            <li><a href="#">HOME</a></li>
+            <li><a href="#">NEWS</a></li>
+            <li><a href="#">REVIEWS</a></li>
+            <li><a href="#">VIDEOS</a></li>
+            <li><a href="#">FEATURED</a></li>
+            <li><a href="#">PHONE FINDER</a></li>
+            <li><a href="#">DEALS</a></li>
+            <li><a href="#">MERCH<span class="new-badge">NEW</span></a></li>
+            <li><a href="#">COVERAGE</a></li>
+            <li><a href="#">CONTACT</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="phone-finder-widget">
+                <div class="widget-header">
+                    <i class="fas fa-search"></i>
+                    PHONE FINDER
+                </div>
+                <div class="brand-grid">
+                    <button class="brand-btn">SAMSUNG</button>
+                    <button class="brand-btn">XIAOMI</button>
+                    <button class="brand-btn">ASUS</button>
+                    <button class="brand-btn">INFINIX</button>
+                    <button class="brand-btn">APPLE</button>
+                    <button class="brand-btn">GOOGLE</button>
+                    <button class="brand-btn">ALCATEL</button>
+                    <button class="brand-btn">ULEFONE</button>
+                    <button class="brand-btn">HUAWEI</button>
+                    <button class="brand-btn">HONOR</button>
+                    <button class="brand-btn">ZTE</button>
+                    <button class="brand-btn">TECNO</button>
+                    <button class="brand-btn">NOKIA</button>
+                    <button class="brand-btn">OPPO</button>
+                    <button class="brand-btn">MICROSOFT</button>
+                    <button class="brand-btn">DOOGEE</button>
+                    <button class="brand-btn">SONY</button>
+                    <button class="brand-btn">REALME</button>
+                    <button class="brand-btn">UMIDIGI</button>
+                    <button class="brand-btn">BLACKVIEW</button>
+                    <button class="brand-btn">LG</button>
+                    <button class="brand-btn">ONEPLUS</button>
+                    <button class="brand-btn">COOLPAD</button>
+                    <button class="brand-btn">CUBOT</button>
+                    <button class="brand-btn">HTC</button>
+                    <button class="brand-btn">NOTHING</button>
+                    <button class="brand-btn">OSCAL</button>
+                    <button class="brand-btn">OUKITEL</button>
+                    <button class="brand-btn">MOTOROLA</button>
+                    <button class="brand-btn">VIVO</button>
+                    <button class="brand-btn">SHARP</button>
+                    <button class="brand-btn">ITEL</button>
+                    <button class="brand-btn">LENOVO</button>
+                    <button class="brand-btn">MEIZU</button>
+                    <button class="brand-btn">MICROMAX</button>
+                    <button class="brand-btn">TCL</button>
+                </div>
+                <div class="widget-footer">
+                    <button class="widget-footer-btn">
+                        <i class="fas fa-list"></i> ALL BRANDS
+                    </button>
+                    <button class="widget-footer-btn">
+                        <i class="fas fa-volume-up"></i> RUMOR MILL
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content-area">
+            <!-- Advertisement Banner -->
+            <div class="ad-banner">
+                <h3>Beelink SER9 Pro</h3>
+                <p>AMD Ryzen™ AI 9 365/HX 370</p>
+                <button style="background: #0066cc; color: white; border: none; padding: 10px 30px; font-weight: bold; cursor: pointer; margin-top: 10px;">SHOP NOW</button>
+                <div class="ad-controls">
+                    <button></button>
+                    <button class="active"></button>
+                    <button></button>
+                </div>
+            </div>
+
+            <!-- Review Cards -->
+            <div class="review-section">
+                <div class="main-review">
+                    <button class="nav-arrows prev">‹</button>
+                    <button class="nav-arrows next">›</button>
+                    <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800" alt="Motorola Edge 70">
+                    <div class="review-overlay">
+                        <div class="review-meta">
+                            <span><i class="far fa-clock"></i> 8 HOURS AGO</span>
+                            <span><i class="far fa-comment"></i> 10</span>
+                        </div>
+                        <h2 class="review-title">Motorola Edge 70 review</h2>
+                    </div>
+                </div>
+
+                <div class="side-reviews">
+                    <div class="side-review">
+                        <img src="https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400" alt="Realme GT 8 Pro">
+                        <div class="review-overlay">
+                            <div class="review-meta">
+                                <span><i class="far fa-comment"></i> 21</span>
+                            </div>
+                            <h3 class="review-title">Realme GT 8 Pro review</h3>
+                        </div>
+                    </div>
+                    <div class="side-review">
+                        <img src="https://images.unsplash.com/photo-1592286927505-b0c2e10fa3c3?w=400" alt="RedMagic 11 Pro">
+                        <div class="review-overlay">
+                            <div class="review-meta">
+                                <span><i class="far fa-comment"></i> 128</span>
+                            </div>
+                            <h3 class="review-title">RedMagic 11 Pro review</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Search functionality
+            $('.search-box button').click(function() {
+                const query = $('.search-box input').val();
+                if(query) {
+                    alert('Searching for: ' + query);
+                }
+            });
+
+            $('.search-box input').keypress(function(e) {
+                if(e.which === 13) {
+                    const query = $(this).val();
+                    if(query) {
+                        alert('Searching for: ' + query);
+                    }
+                }
+            });
+
+            // Brand buttons
+            $('.brand-btn').click(function() {
+                const brand = $(this).text();
+                alert('Showing ' + brand + ' phones');
+            });
+
+            // Widget footer buttons
+            $('.widget-footer-btn').click(function() {
+                const text = $(this).text().trim();
+                alert(text + ' clicked');
+            });
+
+            // Review cards
+            $('.main-review, .side-review').click(function(e) {
+                if(!$(e.target).hasClass('nav-arrows')) {
+                    const title = $(this).find('.review-title').text();
+                    alert('Opening: ' + title);
+                }
+            });
+
+            // Navigation arrows
+            $('.nav-arrows').click(function(e) {
+                e.stopPropagation();
+                const direction = $(this).hasClass('prev') ? 'Previous' : 'Next';
+                alert(direction + ' review');
+            });
+
+            // Menu toggle
+            $('.menu-toggle').click(function() {
+                alert('Mobile menu opened');
+            });
+
+            // Ad banner controls
+            $('.ad-controls button').click(function() {
+                $('.ad-controls button').removeClass('active');
+                $(this).addClass('active');
+            });
+        });
+    </script>
+</body>
+</html>
