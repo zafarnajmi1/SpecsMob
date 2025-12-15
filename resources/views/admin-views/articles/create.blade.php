@@ -45,17 +45,6 @@
                                     @enderror
                                 </div>
 
-                                <!-- Slug -->
-                                <div class="mb-3">
-                                    <label for="slug" class="form-label">Slug *</label>
-                                    <input type="text" class="form-control @error('slug') is-invalid @enderror" 
-                                           id="slug" name="slug" value="{{ old('slug') }}" required>
-                                    @error('slug')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                    <div class="form-text">URL-friendly version of the title</div>
-                                </div>
-
                                 <!-- Body Content -->
                                 <div class="mb-3">
                                     <label for="body" class="form-label">Content *</label>
@@ -277,18 +266,6 @@
             allowClear: true
         });
 
-        // Auto-generate slug from title
-        $('#title').on('blur', function() {
-            if (!$('#slug').val()) {
-                const slug = generateSlug($(this).val());
-                $('#slug').val(slug);
-            }
-            // Auto-generate meta title if empty
-            if (!$('#meta_title').val()) {
-                $('#meta_title').val($(this).val());
-                updateCharacterCount('#meta_title', '#metaTitleCount');
-            }
-        });
 
         // Character counters
         $('#meta_title').on('input', function() {
@@ -312,13 +289,6 @@
             }
         });
 
-        function generateSlug(text) {
-            return text
-                .toLowerCase()
-                .replace(/[^\w\s-]+/g, '')
-                .replace(/[\s_-]+/g, '-')
-                .replace(/^-+|-+$/g, '');
-        }
 
         function updateCharacterCount(inputSelector, countSelector) {
             const text = $(inputSelector).val();

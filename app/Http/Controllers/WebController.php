@@ -664,5 +664,113 @@ class WebController extends Controller
         return view('user-views.pages.device-opinions', compact('device', 'popularReviews', 'comments'));
     }
 
+    public function review_comments(string $slug, int $id)
+    {
+        $review = Review::where('id', $id)->where('slug', $slug)
+            ->where('is_published', true)
+            ->firstOrFail();
+
+        if ($slug !== $review->slug) {
+            return redirect()
+                ->route('review.comments', [
+                    'slug' => $review->slug,
+                    'id' => $review->id
+                ], 301);
+        }
+
+        $comments = collect([
+            [
+                'username' => 'Ahmad',
+                'location' => 'Pakistan',
+                'avatar_color' => '#8ca6c6',
+                'created_at' => now()->subDays(1),
+                'content' => 'The Nothing Phone (3a) Lite is actually amazing for the price. The battery life is much better than expected.',
+            ],
+            [
+                'username' => 'TechGuru',
+                'location' => 'India',
+                'avatar_color' => '#cc8899',
+                'created_at' => now()->subDays(2),
+                'content' => 'Camera performance is average in low light. But for daylight shots, it performs great!',
+            ],
+        ])->map(function ($item) {
+            return (object) $item;  // convert to object
+        });
+
+        $popularReviews = [
+            [
+                'title' => 'OnePlus 15 review',
+                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oneplus-15/-347x151/gsmarena_000.jpg',
+                'url' => '/review/oneplus-15',
+            ],
+            [
+                'title' => 'Realme GT 8 Pro review',
+                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/realme-gt-8-pro/-347x151/gsmarena_001.jpg',
+                'url' => '/review/realme-gt-8-pro',
+            ],
+            [
+                'title' => 'Oppo Find X9 Pro review',
+                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oppo-find-x9-pro/-347x151/gsmarena_001.jpg',
+                'url' => '/review/oppo-find-x9-pro',
+            ],
+        ];
+
+        return view('user-views.pages.review-comment', compact('review', 'popularReviews', 'comments'));
+    }
+
+    public function article_comments(string $slug, int $id)
+    {
+        $article = Article::where('id', $id)->where('slug', $slug)
+            ->where('is_published', true)
+            ->firstOrFail();
+
+        if ($slug !== $article->slug) {
+            return redirect()
+                ->route('article.comments', [
+                    'slug' => $article->slug,
+                    'id' => $article->id
+                ], 301);
+        }
+
+        $comments = collect([
+            [
+                'username' => 'Ahmad',
+                'location' => 'Pakistan',
+                'avatar_color' => '#8ca6c6',
+                'created_at' => now()->subDays(1),
+                'content' => 'The Nothing Phone (3a) Lite is actually amazing for the price. The battery life is much better than expected.',
+            ],
+            [
+                'username' => 'TechGuru',
+                'location' => 'India',
+                'avatar_color' => '#cc8899',
+                'created_at' => now()->subDays(2),
+                'content' => 'Camera performance is average in low light. But for daylight shots, it performs great!',
+            ],
+        ])->map(function ($item) {
+            return (object) $item;  // convert to object
+        });
+
+        $popularReviews = [
+            [
+                'title' => 'OnePlus 15 review',
+                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oneplus-15/-347x151/gsmarena_000.jpg',
+                'url' => '/review/oneplus-15',
+            ],
+            [
+                'title' => 'Realme GT 8 Pro review',
+                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/realme-gt-8-pro/-347x151/gsmarena_001.jpg',
+                'url' => '/review/realme-gt-8-pro',
+            ],
+            [
+                'title' => 'Oppo Find X9 Pro review',
+                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oppo-find-x9-pro/-347x151/gsmarena_001.jpg',
+                'url' => '/review/oppo-find-x9-pro',
+            ],
+        ];
+
+        return view('user-views.pages.article-comment', compact('article', 'popularReviews', 'comments'));
+    }
+
 
 }

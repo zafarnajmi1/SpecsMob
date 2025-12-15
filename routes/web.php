@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DeviceOpinionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebController;
@@ -44,19 +45,41 @@ Route::controller(WebController::class)
             'slug' => '[a-z0-9\-]+',
             'id' => '[0-9]+'
         ])->name('device.opinions');
+        Route::get('/{slug}-review-{id}', 'review_comments')->where([
+            'slug' => '[A-Za-z0-9\-]+',
+            'id' => '[0-9]+'
+        ])->name('review.comments');
+        Route::get('/{slug}-comment-{id}', 'article_comments')->where([
+            'slug' => '[A-Za-z0-9\-]+',
+            'id' => '[0-9]+'
+        ])->name('article.comments');
         Route::get('/article', 'contact')->name('articles.show'); //dummy
     });
 
+    //Device opinions
 Route::get('/{slug}-{id}', [DeviceOpinionController::class, 'device_opinion_post'])->where([
     'slug' => '[a-z0-9\-]+',
     'id' => '[0-9]+'
 ])->name('device.opinions.post');
 Route::post('/{slug}-{id}/opinion', [DeviceOpinionController::class, 'store'])
-   ->where([
+->where([
     'slug' => '[a-z0-9\-]+',
     'id' => '[0-9]+'
-])
+    ])
+    ->middleware('auth')
     ->name('device.opinions.store');
+
+
+// Comments (both articles and reviews)
+Route::get('/{slug}-{id}/{type}-comments', [CommentController::class, 'comment_post'])
+    ->where(['slug' => '[A-Za-z0-9\-]+', 'id' => '[0-9]+'])
+    ->name('comment.post');
+
+// Store comment (both articles and reviews)
+Route::post('/{slug}-{id}/{type}-comments', [CommentController::class, 'store'])
+    ->where(['slug' => '[A-Za-z0-9\-]+', 'id' => '[0-9]+'])
+    ->middleware('auth')
+    ->name('comment.store');
 
 
 // User dashboard (frontend)
@@ -88,8 +111,6 @@ Route::prefix('user')
             Route::post('/{username}-download', [UserController::class, 'downloadData'])
             ->where('username', '[A-Za-z0-9\-]+')
     ->name('data.download');
-
-
 
         Route::get('/profile', [UserController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [UserController::class, 'update'])->name('profile.update');

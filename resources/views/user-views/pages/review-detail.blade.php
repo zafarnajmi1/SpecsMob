@@ -52,10 +52,10 @@
                 <a href="#" class="flex items-center gap-1 h-full hover:bg-[#d50000] transition-colors px-2 transition">
                     <i class="fa-solid fa-mobile-screen"></i> {{ $review->device->name }}
                 </a>
-                <a href="#" class="flex items-center gap-1 h-full hover:bg-[#d50000] transition-colors px-2 transition">
+                <a href="" class="flex items-center gap-1 h-full hover:bg-[#d50000] transition-colors px-2 transition">
                     <i class="fa-regular fa-user"></i> User Reviews
                 </a>
-                <a href="#" class="flex items-center gap-1 h-full hover:bg-[#d50000] transition-colors px-2 transition">
+                <a href="{{ route('review.comments', ['slug' => $review->slug, 'id' => $review->id]) }}" class="flex items-center gap-1 h-full hover:bg-[#d50000] transition-colors px-2 transition">
                     <i class="fa-regular fa-comment"></i> Comments ({{ $review->comments_count }})
                 </a>
             </div>
@@ -95,7 +95,7 @@
     <a href="#" class="flex items-center text-[#555] text-[14px] font-bold gap-1 h-full hover:bg-[#d50000] transition-colors px-2 transition hover:text-white">
         <i class="fa-regular fa-user text-[21px] text-white"></i> User Reviews
     </a>
-    <a href="#" class="flex items-center text-[#555] text-[14px] font-bold gap-1 h-full hover:bg-[#d50000] transition-colors px-2 transition hover:text-white">
+    <a href="{{ route('review.comments', ['slug' => $review->slug, 'id' => $review->id]) }}" class="flex items-center text-[#555] text-[14px] font-bold gap-1 h-full hover:bg-[#d50000] transition-colors px-2 transition hover:text-white">
         <i class="fa-regular fa-comment text-[21px] text-white"></i> Comments ({{ $review->comments_count }})
     </a>
 </div>
@@ -104,7 +104,7 @@
 <!-- Comments Section -->
     <div class="bg-[#f0f0f0]">
      <h2 class="bg-white pl-[10px] pt-[10px] pr-[5px] mt-2 text-[#555] border-b border-[#ddd]">
-            <a href="#" class="hover:text-[#d50000] font-bold text-lg transition hover:underline">{{ $review->device->name }} REVIEW - READER COMMENTS</a>
+            <a href="#" class="hover:text-[#d50000] font-bold text-lg transition hover:underline">READER COMMENTS</a>
         </h2>
         <div class="space-y-5">
             @foreach ($comments as $comment)
@@ -177,7 +177,7 @@
         <div class="flex items-center gap-3">
             <a href="#"
             class="flex justify-center items-center px-2 font-bold text-[14px] bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#d50000] hover:text-white transition uppercase"><span>READ ALL COMMENTSS</span></a>
-        <a href=""
+        <a href="{{ route('comment.post', ['slug' => $review->slug, 'id' => $review->id, 'type' => 'review']) }}"
             class="flex justify-center items-center px-2 font-bold text-[14px] bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#d50000] hover:text-white transition uppercase"><span>POST
                 YOUR COMMENTS</span></a>
         </div>

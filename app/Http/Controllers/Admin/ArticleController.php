@@ -56,7 +56,6 @@ class ArticleController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:articles,slug',
             'body' => 'required|string',
             'type' => 'required|in:news,article,featured',
             'brand_id' => 'nullable|exists:brands,id',
@@ -91,7 +90,7 @@ class ArticleController extends Controller
             }
 
             $data['title'] = $request->title;
-            $data['slug'] = $request->slug;
+            $data['slug'] = Str::slug($request->title);
             $data['body'] = $request->body;
             $data['type'] = $request->type;
             $data['brand_id'] = $request->brand_id;
@@ -141,7 +140,6 @@ class ArticleController extends Controller
 {
     $validator = Validator::make($request->all(), [
         'title'         => 'required|string|max:255',
-        'slug'          => 'required|string|max:255|unique:articles,slug,' . $article->id,
         'body'          => 'required|string',
         'type'          => 'required|in:news,article,featured',
         'brand_id'      => 'nullable|exists:brands,id',
@@ -183,7 +181,7 @@ class ArticleController extends Controller
 
         // Fill updated fields
         $data['title']        = $request->title;
-        $data['slug']         = $request->slug;
+        $data['slug']         = Str::slug($request->title);
         $data['body']         = $request->body;
         $data['type']         = $request->type;
         $data['brand_id']     = $request->brand_id;

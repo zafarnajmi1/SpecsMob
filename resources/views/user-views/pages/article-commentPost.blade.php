@@ -1,6 +1,6 @@
 @extends('layouts.app')
+@section('title', $article->title)
 
-@section('title', "$device->name")
 
 @section('sidebar')
     @include('partials.aside')
@@ -8,42 +8,64 @@
 
 @section('content')
 
-    <!-- Device Header -->
-    <div class="relative w-full h-72 md:h-[314px] bg-cover bg-center"
-        style='background-image: url("{{ $device->thumbnail_url }}");'>
+    <!-- Review Header -->
+<div class="relative w-full max-w-full h-72 md:h-[314px] bg-cover bg-center box-border" style="background-image: url('{{ asset($article->thumbnail_url) }}');">
+    <!-- Overlay -->
+    <!-- <div class="absolute inset-0 bg-black/25 backdrop-blur-sm"></div> -->
 
-        <div
-            class="absolute top-0 left-0 border-b border-gray-400 shadow flex justify-between items-center w-full px-4 py-3 md:px-6 z-10">
-            <h1>{{ $device->name }}</h1>
+    <!-- Top Bar -->
+    <div class="absolute top-0 left-0 w-full flex justify-between items-center md:px-4 py-2 z-10 text-white text-xs md:text-sm opacity-90">
+        <div>
+            <i class="far fa-clock mr-1"></i> {{ $article->published_at->diffForHumans() }}
         </div>
+        <div>
+            <i class="fa-regular fa-message mr-1"></i> {{ $article->comments_count }}
+        </div>
+    </div>
 
-        <div class="absolute bottom-0 left-0 w-full z-10">
-            <div
-                class="flex flex-wrap justify-end items-center border-t border-gray-400 shadow text-sm text-white px-4 md:px-6 h-[2.5rem] bg-[rgba(0,0,0,0.2)] backdrop-blur-sm">
-                <div class="flex gap-4 h-full">
-                    <a href="{{ route('device-detail', $device->slug) }}"
-                        class="flex items-center gap-1 hover:bg-[#d50000] transition-colors px-3">
-                        <i class="fa-solid fa-mobile"></i> Specifications
-                    </a>
+    <!-- Bottom Title & Info -->
+    <div class="absolute bottom-0 left-0 w-full z-10">
+        <h1 class="text-white px-4 text-3xl md:text-4xl font-bold drop-shadow-xl mb-2">{{ $article->title }}</h1>
 
-                    <a href="{{ route('device.pictures', ['slug' => $device->slug, 'id' => $device->id])}}"
-                        class="flex items-center gap-1 hover:bg-[#d50000] transition-colors px-3">
-                        <i class="fa-solid fa-newspaper"></i> PICTURES
-                    </a>
-
-                    <button class="compare-btn flex items-center gap-1 hover:bg-[#d50000] transition px-3">
-                        <i class="fa-solid fa-code-compare"></i> COMPARE
-                    </button>
+        <div class="flex flex-col md:flex-row flex-wrap justify-between items-center gap-2 px-4 bg-black/40 backdrop-blur-sm border-t uppercase text-shadow-[1px 1px 1px rgba(0, 0, 0, .8)] border-gray-400 text-white text-sm h-[35px]">
+            <!-- Rating -->
+            <div class="flex items-center gap-2 h-full">
+                <div class="flex">
+                    @php
+                        $fullStars = floor($article->rating);
+                        $halfStar = $article->rating - $fullStars >= 0.5;
+                    @endphp
+                    @for ($i = 1; $i <= 5; $i++)
+                        @if($i <= $fullStars)
+                            <i class="fa fa-star text-yellow-400"></i>
+                        @elseif($i == $fullStars + 1 && $halfStar)
+                            <i class="fa fa-star-half-alt text-yellow-400"></i>
+                        @else
+                            <i class="fa fa-star text-gray-400"></i>
+                        @endif
+                    @endfor
                 </div>
+                <span class="font-semibold">{{ $article->rating ?? 0 }}</span>
+            </div>
+
+            <!-- Nav Links -->
+            <div class="flex gap-4 h-full">
+                <a href="#" class="flex items-center gap-1 h-full hover:bg-[#d50000] transition-colors px-2 transition">
+                    <i class="fa-solid fa-newspaper"></i> {{ $article->title }}
+                </a>
+                <a href="#" class="flex items-center gap-1 h-full hover:bg-[#d50000] transition-colors px-2 transition">
+                    <i class="fa-regular fa-comment"></i> Comments ({{ $article->comments_count }})
+                </a>
             </div>
         </div>
     </div>
+</div>
 
     <div
         class="flex justify-between items-center border-t border-gray-400 shadow text-white px-4 md:px-6 mt-3 py-2 bg-[#f0f0f0] backdrop-blur-sm">
         <a href="#"
-            class="flex justify-center items-center font-bold px-3 py-2 text-[14px] bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#d50000] hover:text-white transition uppercase">
-            <span>POST YOUR OPINION</span>
+            class="flex justify-center items-center px-3 py-2 text-[14px] font-bold bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#d50000] hover:text-white transition uppercase">
+            <span>POST YOUR COMMENT</span>
         </a>
 
         <div>
@@ -58,11 +80,11 @@
             <div class="p-5 mt-4 normal-text user-submit">
 
                 <h3 class="text-[21px] font-bold mb-4 text-[#555]">
-                    Post your opinion about {{ $device->name }}
+                    Post your comment
                 </h3>
 
                 <form method="POST"
-                    action="{{ route('device.opinions.store', ['slug' => $device->slug, 'id' => $device->id]) }}">
+                    action="{{ route('comment.store', ['slug' => $article->slug, 'id' => $article->id, 'type' => 'article']) }}">
                     @csrf
 
                     {{-- USER INFO --}}
@@ -93,8 +115,8 @@
                     {{-- COMMENT --}}
                     <fieldset class="mb-4">
                         <label class="block text-lg mb-1">Your comment</label>
-                        <textarea name="opinion" rows="8" class="w-full border-1 border-[#a9a9a9] px-3 py- bg-white"
-                            required>{{ old('opinion') }}</textarea>
+                        <textarea name="comment" rows="8" class="w-full border-1 border-[#a9a9a9] px-3 py- bg-white"
+                            required>{{ old('comment') }}</textarea>
                     </fieldset>
 
                     {{-- SUBMIT --}}
@@ -144,7 +166,7 @@
 {{-- ================= Moderation Note ================= --}}
 <div class="max-w-[900px] mx-auto mt-4 bg-[#f9f9f9] border border-[#d1d1d1] p-4 text-[14px] text-[#666]">
     <strong class="text-[#555]">Note:</strong>
-    Comments are subject to automated and moderator review.
+    Comments are subject to automated and moderator article.
     We may hide or remove any comment at our discretion.
     Comment authors are solely responsible for their content.
     Do not post unlawful, abusive, or otherwise inappropriate material,

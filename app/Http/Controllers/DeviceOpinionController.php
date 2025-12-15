@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Device;
-use App\Models\DeviceOpinion;
+use App\Models\Comment;
 use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Http\Request;
 use Validator;
@@ -41,23 +41,24 @@ class DeviceOpinionController extends Controller
                 'url' => '/review/oppo-find-x9-pro',
             ],
         ];
+
         return view('user-views.pages.device-opinionPost', compact('device', 'popularReviews'));
     }
 
     public function store(Request $request, $slug, $id)
     {
-        // 1️⃣ Find device (secure + published)
+        // 1️⃣ Find the device
         $device = Device::where('id', $id)
             ->where('slug', $slug)
             ->where('is_published', true)
             ->firstOrFail();
 
-        // 2️⃣ Check if opinions are allowed (GSMArena-like)
+        // 2️⃣ Check if opinions are allowed
         if (!$device->allow_opinions) {
             abort(403, 'Opinions are disabled for this device.');
         }
 
-        // 3️⃣ Block frozen users (important)
+        // 3️⃣ Block frozen users
         if (auth()->user()->is_frozen ?? false) {
             abort(403, 'Your account is frozen.');
         }
@@ -68,27 +69,21 @@ class DeviceOpinionController extends Controller
         ]);
         if ($validator->fails()) {
             ToastMagic::error($validator->errors()->first('opinion'));
-            return redirect()
-                ->back();
+            return redirect()->back();
         }
 
-        // 5️⃣ Create opinion
-        DeviceOpinion::create([
-            'device_id' => $device->id,
+        // 5️⃣ Store the opinion as a comment
+        Comment::create([
             'user_id' => auth()->id(),
-            'parent_id' => null,  // main opinion (not reply)
-            'title' => null,  // GSMArena does not use title
+            'commentable_id' => $device->id, // Device ID
+            'commentable_type' => Device::class, // Device model class
             'body' => $request->opinion,
-            'rating' => null,  // optional (future)
-            'is_approved' => true,  // auto-approved (like GSMArena)
-            'likes_count' => 0,
+            'is_approved' => true, // Auto-approve for simplicity
         ]);
 
-        // 6️⃣ Redirect back to opinion page
         ToastMagic::success('Your opinion posted.');
-        return redirect()
-            ->route('user.posts', [
-                'username' => Auth()->user()->username,
-            ]);
+
+        // 7️⃣ Redirect to user's posts page
+        return redirect()->route('user.posts', ['username' => Auth()->user()->username]);
     }
 }

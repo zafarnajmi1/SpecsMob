@@ -111,9 +111,14 @@ class Device extends Model
         return $this->hasMany(DeviceSpecValue::class);
     }
 
-    public function opinions()
+    // public function opinions()
+    // {
+    //     return $this->hasMany(DeviceOpinion::class);
+    // }
+
+    public function comments()
     {
-        return $this->hasMany(DeviceOpinion::class);
+        return $this->morphMany(Comment::class, 'commentable');
     }
 
     public function reviews()

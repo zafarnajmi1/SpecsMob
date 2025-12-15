@@ -11,6 +11,12 @@ class DeviceOpinion extends Model
         'title', 'body', 'rating', 'is_approved', 'likes_count',
     ];
 
+    // Polymorphic relation to comments
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
     public function device()
     {
         return $this->belongsTo(Device::class);
