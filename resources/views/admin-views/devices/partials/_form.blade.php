@@ -1590,7 +1590,7 @@
                     <div class="col-md-4 col-12">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="is_published" name="is_published"
-                                value="1" {{ old('is_published') ? 'checked' : '' }}>
+                                value="1" {{ old('is_published', $device->is_published ?? 0) ? 'checked' : '' }}>
                             <label class="form-check-label" for="is_published">
                                 Published
                             </label>
@@ -1603,7 +1603,7 @@
                     <div class="col-md-4 col-12">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="allow_opinions" name="allow_opinions"
-                                value="1" {{ old('allow_opinions', 1) ? 'checked' : '' }}>
+                                value="1" {{ old('allow_opinions', $device->allow_opinions ?? 1) ? 'checked' : '' }}>
                             <label class="form-check-label" for="allow_opinions">
                                 Allow Opinions
                             </label>
@@ -1616,7 +1616,7 @@
                     <div class="col-md-4 col-12">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="allow_fans" name="allow_fans" value="1"
-                                {{ old('allow_fans', 1) ? 'checked' : '' }}>
+                                {{ old('allow_fans', $device->allow_fans ?? 1) ? 'checked' : '' }}>
                             <label class="form-check-label" for="allow_fans">
                                 Allow Fans
                             </label>
@@ -1631,6 +1631,7 @@
         </div>
     </div>
 </div>
+
 
 
 

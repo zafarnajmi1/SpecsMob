@@ -56,7 +56,7 @@
                             <!-- Thumbnail -->
                             <td>
                                 @if($device->thumbnail_url)
-                                    <img src="{{ asset('storage/' . $device->thumbnail_url) }}"
+                                    <img src="{{ asset( $device->thumbnail_url) }}"
                                          alt="{{ $device->name }}"
                                          width="60" height="60"
                                          style="object-fit: cover; border-radius:8px;">

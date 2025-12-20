@@ -49,6 +49,10 @@ Route::controller(WebController::class)
             'slug' => '[A-Za-z0-9\-]+',
             'id' => '[0-9]+'
         ])->name('review.comments');
+        Route::get('/{slug}-{id}/prices', 'device_prices')->where([
+            'slug' => '[A-Za-z0-9\-]+',
+            'id' => '[0-9]+'
+        ])->name('device.prices');
         Route::get('/{slug}-comment-{id}', 'article_comments')->where([
             'slug' => '[A-Za-z0-9\-]+',
             'id' => '[0-9]+'
@@ -56,15 +60,15 @@ Route::controller(WebController::class)
         Route::get('/article', 'contact')->name('articles.show'); //dummy
     });
 
-    //Device opinions
+//Device opinions
 Route::get('/{slug}-{id}', [DeviceOpinionController::class, 'device_opinion_post'])->where([
     'slug' => '[a-z0-9\-]+',
     'id' => '[0-9]+'
 ])->name('device.opinions.post');
 Route::post('/{slug}-{id}/opinion', [DeviceOpinionController::class, 'store'])
-->where([
-    'slug' => '[a-z0-9\-]+',
-    'id' => '[0-9]+'
+    ->where([
+        'slug' => '[a-z0-9\-]+',
+        'id' => '[0-9]+'
     ])
     ->middleware('auth')
     ->name('device.opinions.store');
@@ -93,24 +97,24 @@ Route::prefix('user')
         Route::get('/{username}-posts', [UserController::class, 'posts'])
             ->where('username', '[A-Za-z0-9\-]+')
             ->name('posts');
-            Route::get('/{username}-manage', [UserController::class, 'account_manage'])
+        Route::get('/{username}-manage', [UserController::class, 'account_manage'])
             ->where('username', '[A-Za-z0-9\-]+')
             ->name('account.manage');
-            Route::post('/{username}-avatar', [UserController::class, 'updateAvatar'])
+        Route::post('/{username}-avatar', [UserController::class, 'updateAvatar'])
             ->where('username', '[A-Za-z0-9\-]+')
             ->name('avatar.update');
-            Route::post('/{username}-nickname', [UserController::class, 'updateNickname'])
+        Route::post('/{username}-nickname', [UserController::class, 'updateNickname'])
             ->where('username', '[A-Za-z0-9\-]+')
             ->name('nickname.update');
-            Route::post('/{username}-freeze', [UserController::class, 'freeze'])
+        Route::post('/{username}-freeze', [UserController::class, 'freeze'])
             ->where('username', '[A-Za-z0-9\-]+')
             ->name('freeze');
-            Route::delete('/{username}-delete', [UserController::class, 'destroy'])
+        Route::delete('/{username}-delete', [UserController::class, 'destroy'])
             ->where('username', '[A-Za-z0-9\-]+')
             ->name('delete');
-            Route::post('/{username}-download', [UserController::class, 'downloadData'])
+        Route::post('/{username}-download', [UserController::class, 'downloadData'])
             ->where('username', '[A-Za-z0-9\-]+')
-    ->name('data.download');
+            ->name('data.download');
 
         Route::get('/profile', [UserController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [UserController::class, 'update'])->name('profile.update');

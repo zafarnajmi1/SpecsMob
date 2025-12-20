@@ -48,14 +48,43 @@ class Device extends Model
     public const STATUS_DISCONTINUED = 'discontinued';
 
     public function getThumbnailUrlAttribute($value)
-{
-    if ($value) {
-        return asset('storage/' . $value);
+    {
+        if ($value) {
+            return asset('storage/' . $value);
+        }
+
+        return asset('user/images/default-preview.png');
     }
 
-    return asset('user/images/default-preview.png');
-}
+    // Add this relationship - all offers (including inactive/out of stock)
+    public function offers()
+    {
+        return $this->hasManyThrough(
+            DeviceOffer::class,
+            DeviceVariant::class,
+            'device_id', // Foreign key on DeviceVariant table
+            'device_variant_id', // Foreign key on DeviceOffer table
+            'id', // Local key on Device table
+            'id' // Local key on DeviceVariant table
+        )->with(['variant', 'country', 'currency', 'store']);
+    }
 
+    // Active and in-stock offers only
+    public function activeOffers()
+    {
+        return $this->offers()
+            ->where('device_offers.status', true)  // Specify table name
+            ->where('device_offers.in_stock', true);
+    }
+
+    public function offersGroupedByCountry()
+    {
+        return $this->activeOffers()
+            ->get()
+            ->groupBy(function($offer) {
+                return $offer->country->name;
+            });
+    }
 
     public function seo()
     {
@@ -84,6 +113,11 @@ class Device extends Model
 
     public function variants()
     {
+        return $this->hasMany(DeviceVariant::class)->where('status', true);
+    }
+
+    public function allVariants()
+    {
         return $this->hasMany(DeviceVariant::class);
     }
 
@@ -111,11 +145,6 @@ class Device extends Model
         return $this->hasMany(DeviceSpecValue::class);
     }
 
-    // public function opinions()
-    // {
-    //     return $this->hasMany(DeviceOpinion::class);
-    // }
-
     public function comments()
     {
         return $this->morphMany(Comment::class, 'commentable');
@@ -126,7 +155,7 @@ class Device extends Model
         return $this->hasMany(Review::class);
     }
 
-     public function videos()
+    public function videos()
     {
         return $this->belongsToMany(Video::class, 'video_devices')
                     ->withTimestamps()

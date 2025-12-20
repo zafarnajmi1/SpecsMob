@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\Brand;
+use App\Models\Currency;
 use App\Models\Device;
 use App\Models\DeviceImage;
 use App\Models\DeviceImageGroup;
@@ -496,7 +497,7 @@ class WebController extends Controller
             $devices = $devices->latest('released_at');
         }
 
-        $devices = $devices->paginate(3);  // 👈 Pagination added
+        $devices = $devices->paginate(15);  // 👈 Pagination added
 
         $selectedDevices = [];
 
@@ -662,6 +663,48 @@ class WebController extends Controller
         ];
 
         return view('user-views.pages.device-opinions', compact('device', 'popularReviews', 'comments'));
+    }
+
+
+    public function device_prices(string $slug, int $id)
+    {
+        $device = Device::where('id', $id)
+            ->where('slug', $slug)
+            ->where('is_published', true)
+            ->with([
+                'variants' => function ($query) {
+                    $query->where('device_variants.status', true)  // Specify table name
+                        ->orderBy('storage_gb')
+                        ->orderBy('ram_gb');
+                },
+                // Use 'offers' relationship
+                'offers' => function ($query) {
+                    $query->where('device_offers.status', true)  // Specify table name
+                        ->where('device_offers.in_stock', true)
+                        ->with([
+                            'variant',
+                            'country',
+                            'currency',
+                            'store'
+                        ]);
+                }
+            ])
+            ->firstOrFail();
+
+        if ($slug !== $device->slug) {
+            return redirect()
+                ->route('device.prices', [
+                    'slug' => $device->slug,
+                    'id' => $device->id
+                ], 301);
+        }
+
+        // Get all currencies for dropdown
+        $currencies = Currency::whereIn('iso_code', ['USD', 'EUR', 'GBP', 'INR', 'AED', 'JPY', 'CAD'])
+            ->orderBy('iso_code')
+            ->get();
+
+        return view('user-views.pages.device-prices', compact('device', 'currencies'));
     }
 
     public function review_comments(string $slug, int $id)
