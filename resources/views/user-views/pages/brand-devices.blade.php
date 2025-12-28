@@ -29,28 +29,29 @@
                 class="flex flex-wrap justify-between items-center border-t-1 border-gray-400 shadow text-sm text-white px-4 md:px-6 h-[2.5rem] bg-[Rgba(0,0,0,0.2)] backdrop-blur-sm">
                 <div class="flex gap-4 h-full">
                     <button id="compare-tab"
-                        class="compare-btn relative cursor-pointer flex items-center gap-1 transition hover:bg-[#d50000] px-3">
+                        class="compare-btn relative cursor-pointer flex items-center gap-1 transition hover:bg-[#F9A13D] px-3">
                         <i class="fa-solid fa-code-compare"></i>
                         <span class="compare-text">COMPARE</span>
                         <span id="compare-count"
-                            class="ml-1 bg-white text-[#d50000] font-bold text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">
+                            class="ml-1 bg-white text-[#F9A13D] font-bold text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">
                             0
                         </span>
                     </button>
 
-                    <a href="#" class="flex items-center gap-1 hover:bg-[#d50000] transition-colors px-3 transition">
+                    <a href="{{ route('news', ['tag' => $brand->name]) }}"
+                        class="flex items-center gap-1 hover:bg-[#F9A13D] transition-colors px-3 transition">
                         <i class="fa-solid fa-newspaper"></i> {{ strtoupper($brand->name) }} NEWS
                     </a>
                 </div>
                 <div class="flex gap-4 h-full">
-                    <a href="?sort=release"
-                        class="flex items-center gap-1 transition hover:bg-[#d50000] transition-colors px-3 {{ !request()->has('sort') || request()->get('sort') == 'release' ? 'bg-[#d50000]' : '' }}">
-                        <i class="fa-solid fa-calendar-days"></i> TIME OF RELEASE
+                    <a href="?sort=popularity"
+                        class="flex items-center gap-1 transition hover:bg-[#F9A13D] transition-colors px-3 {{ !request()->has('sort') || request()->get('sort') == 'popularity' ? 'bg-[#F9A13D]' : '' }}">
+                        <i class="fa-solid fa-chart-line"></i> POPULARITY
                     </a>
 
-                    <a href="?sort=popularity"
-                        class="flex items-center gap-1 hover:bg-[#d50000] transition-colors px-3 transition {{ request()->get('sort') == 'popularity' ? 'bg-[#d50000]' : '' }}">
-                        <i class="fa-solid fa-chart-line"></i> POPULARITY
+                    <a href="?sort=release"
+                        class="flex items-center gap-1 hover:bg-[#F9A13D] transition-colors px-3 transition {{ request()->get('sort') == 'release' ? 'bg-[#F9A13D]' : '' }}">
+                        <i class="fa-solid fa-calendar-days"></i> TIME OF RELEASE
                     </a>
                 </div>
             </div>
@@ -58,39 +59,70 @@
     </div>
 
     <!-- Filters Bar -->
-    <div class="bg-gray-100 border-b border-gray-300 py-3 px-4">
-        <div class="container mx-auto flex flex-wrap items-center justify-between gap-4">
-            <div class="flex flex-wrap items-center gap-4">
-                <span class="text-gray-700 font-medium text-sm">Filters:</span>
+    <div class="bg-gray-100 border-b border-gray-300 py-3 px-4 sticky top-[60px] z-20 shadow-sm">
+        <div class="container mx-auto">
+            <form action="{{ url()->current() }}" method="GET" id="filter-form"
+                class="flex flex-wrap items-center justify-between gap-4">
+                {{-- Keep sort parameter --}}
+                @if(request()->has('sort'))
+                    <input type="hidden" name="sort" value="{{ request('sort') }}">
+                @endif
 
-                <select
-                    class="border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
-                    <option value="">All Types</option>
-                    <option value="phone">Phones</option>
-                    <option value="tablet">Tablets</option>
-                    <option value="watch">Watches</option>
-                </select>
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="text-gray-700 font-bold text-sm hidden md:block">Filters:</span>
 
-                <select
-                    class="border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
-                    <option value="">All Status</option>
-                    <option value="released">Released</option>
-                    <option value="announced">Announced</option>
-                    <option value="rumored">Rumored</option>
-                </select>
+                    {{-- Search Input --}}
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Search model..."
+                            class="pl-8 pr-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-[#F9A13D] w-full md:w-56 transition-all">
+                    </div>
 
-                <select
-                    class="border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
-                    <option value="">All Years</option>
-                    @for($year = date('Y'); $year >= 2015; $year--)
-                        <option value="{{ $year }}">{{ $year }}</option>
-                    @endfor
-                </select>
-            </div>
+                    {{-- Type Select --}}
+                    <select name="type" onchange="this.form.submit()"
+                        class="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#F9A13D] cursor-pointer bg-white">
+                        <option value="">All Types</option>
+                        @foreach($deviceTypes as $type)
+                            <option value="{{ $type->id }}" {{ request('type') == $type->id ? 'selected' : '' }}>{{ $type->name }}
+                            </option>
+                        @endforeach
+                    </select>
 
-            <div class="text-gray-600 text-sm">
-                <span class="font-semibold">{{ $devices->count() }}</span> devices
-            </div>
+                    {{-- Status Select --}}
+                    <select name="status" onchange="this.form.submit()"
+                        class="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#F9A13D] cursor-pointer bg-white">
+                        <option value="">All Status</option>
+                        <option value="released" {{ request('status') == 'released' ? 'selected' : '' }}>Released</option>
+                        <option value="announced" {{ request('status') == 'announced' ? 'selected' : '' }}>Coming Soon
+                        </option>
+                        <option value="rumored" {{ request('status') == 'rumored' ? 'selected' : '' }}>Rumored</option>
+                        <option value="discontinued" {{ request('status') == 'discontinued' ? 'selected' : '' }}>Discontinued
+                        </option>
+                    </select>
+
+                    {{-- Year Select --}}
+                    <select name="year" onchange="this.form.submit()"
+                        class="border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#F9A13D] cursor-pointer bg-white">
+                        <option value="">All Years</option>
+                        @foreach($years as $year)
+                            <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>{{ $year }}</option>
+                        @endforeach
+                    </select>
+
+                    {{-- Reset Link --}}
+                    @if(request()->anyFilled(['q', 'type', 'status', 'year']))
+                        <a href="{{ url()->current() }}{{ request()->has('sort') ? '?sort=' . request('sort') : '' }}"
+                            class="text-xs text-[#F9A13D] font-bold hover:underline flex items-center gap-1 ml-2 px-2 py-1 rounded hover:bg-[#F9A13D] transition-all">
+                            <i class="fas fa-undo"></i> RESET
+                        </a>
+                    @endif
+                </div>
+
+                <div
+                    class="text-gray-500 text-xs font-semibold whitespace-nowrap bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-sm">
+                    SHOWING <span class="text-[#F9A13D]">{{ $devices->total() }}</span> DEVICES
+                </div>
+            </form>
         </div>
     </div>
 
@@ -100,40 +132,38 @@
             @if($devices->count() > 0)
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     @foreach($devices as $device)
-                       <a href="{{ route('device-detail', $device->slug) }}" 
-   class="relative bg-white overflow-hidden group cursor-pointer transition-all duration-200 text-center h-[180px] block">
-    
-    <!-- Compare Checkbox -->
-    <div class="absolute top-2 right-2 z-10 hidden">
-        <label class="flex items-center cursor-pointer compare-checkbox-label">
-            <input type="checkbox" class="device-checkbox sr-only peer"
-                data-device-id="{{ $device->id }}"
-                data-device-name="{{ $device->name }}"
-                data-device-slug="{{ $device->slug }}"
-                data-device-img="{{ $device->thumbnail_url }}">
-            <span
-                class="w-6 h-6 bg-white flex items-center justify-center peer-checked:bg-[#d50000] peer-checked:border-[#d50000] transition-all duration-200">
-                <i class="fas fa-check text-xs text-white opacity-0 peer-checked:opacity-100 transition-opacity"></i>
-            </span>
-        </label>
-    </div>
+                        <a href="{{ route('device-detail', $device->slug) }}"
+                            class="relative bg-white overflow-hidden group cursor-pointer transition-all duration-200 text-center h-[180px] block">
 
-    <!-- Device Image -->
-    <div class="block h-[120px] flex items-center justify-center p-3">
-        <img src="{{ $device->thumbnail_url }}" alt="{{ $device->name }}"
-            title="{{ $device->name }}. {{ $device->description ?? '' }}"
-            class="max-h-full max-w-full object-contain"
-            onerror="this.src='{{ asset('images/default-device.png') }}'">
-    </div>
+                            <!-- Compare Checkbox -->
+                            <div class="absolute top-2 right-2 z-10 hidden">
+                                <label class="flex items-center cursor-pointer compare-checkbox-label">
+                                    <input type="checkbox" class="device-checkbox sr-only peer" data-device-id="{{ $device->id }}"
+                                        data-device-name="{{ $device->name }}" data-device-slug="{{ $device->slug }}"
+                                        data-device-img="{{ $device->thumbnail_url }}">
+                                    <span class="w-6 h-6 bg-white border-[3px] border-[#F9A13D] transition-all duration-200"></span>
+                                    <i
+                                        class="fa-solid fa-check text-sm text-[#F9A13D] opacity-0 peer-checked:opacity-100 transition-opacity absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></i>
+                                </label>
+                            </div>
 
-    <!-- Device Name -->
-    <div class="h-[45px] flex items-center justify-center px-2 transition-all duration-200 group-hover:bg-[#d50000]">
-        <strong class="text-[#777] font-bold text-[14px] group-hover:text-white">
-            {{ $device->name }}
-        </strong>
-    </div>
+                            <!-- Device Image -->
+                            <div class="block h-[120px] flex items-center justify-center p-3">
+                                <img src="{{ $device->thumbnail_url }}" alt="{{ $device->name }}"
+                                    title="{{ $device->name }}. {{ $device->description ?? '' }}"
+                                    class="max-h-full max-w-full object-contain"
+                                    onerror="this.src='{{ asset('images/default-device.png') }}'">
+                            </div>
 
-</a>
+                            <!-- Device Name -->
+                            <div
+                                class="h-[45px] flex items-center justify-center px-2 transition-all duration-200 group-hover:bg-[#F9A13D]">
+                                <strong class="text-[#777] font-bold text-[14px] group-hover:text-white">
+                                    {{ $device->name }}
+                                </strong>
+                            </div>
+
+                        </a>
 
                     @endforeach
                 </div>
@@ -174,7 +204,7 @@
 
             @for($page = $start; $page <= $end; $page++)
                 @if($page == $current)
-                    <span class="px-3 py-2 border border-[#d50000] bg-[#d50000] text-white rounded text-sm font-bold">
+                    <span class="px-3 py-2 border border-[#F9A13D] bg-[#F9A13D] text-white rounded text-sm font-bold">
                         {{ $page }}
                     </span>
                 @else
@@ -227,12 +257,12 @@
                         activateCompareMode();
                     } else {
                         // Second click: Check if we can go to compare page
-                        if (selectedDevices.length >= 2) {
+                        if (selectedDevices.length >= 1) {
                             // Go to compare page
                             goToComparePage();
                         } else {
-                            // Show message if less than 2 devices selected
-                            alert('Please select at least 2 devices to compare.');
+                            // Show message if less than 1 devices selected
+                            alert('Please select at least 1 device to compare.');
                         }
                     }
                 });
@@ -286,7 +316,7 @@
                 // Update compare tab appearance
                 const compareTab = document.getElementById('compare-tab');
                 const compareText = document.querySelector('.compare-text');
-                compareTab.classList.add('bg-[#d50000]');
+                compareTab.classList.add('bg-[#F9A13D]');
                 compareText.textContent = 'GO TO COMPARE';
 
                 // Show instruction message
@@ -304,7 +334,7 @@
                 // Update compare tab appearance
                 const compareTab = document.getElementById('compare-tab');
                 const compareText = document.querySelector('.compare-text');
-                compareTab.classList.remove('bg-[#d50000]');
+                compareTab.classList.remove('bg-[#F9A13D]');
                 compareText.textContent = 'COMPARE';
 
                 // Hide instruction message
@@ -327,23 +357,13 @@
                     compareCount.classList.add('hidden');
                 }
 
-                // Update compare tab text based on mode and count
+                // Update compare tab text based on mode
                 if (compareModeActive) {
                     compareText.textContent = 'GO TO COMPARE';
-                    compareTab.classList.add('bg-[#d50000]');
-
-                    // If devices selected, update text
-                    if (count > 0) {
-                        compareText.textContent = `GO TO COMPARE (${count})`;
-                    }
+                    compareTab.classList.add('bg-[#F9A13D]');
                 } else {
                     compareText.textContent = 'COMPARE';
-                    compareTab.classList.remove('bg-[#d50000]');
-
-                    // Still show count if we have selected devices
-                    if (count > 0) {
-                        compareText.textContent = `COMPARE (${count})`;
-                    }
+                    compareTab.classList.remove('bg-[#F9A13D]');
                 }
 
                 // Update checkboxes
@@ -354,11 +374,11 @@
             }
 
             function goToComparePage() {
-                if (selectedDevices.length >= 2) {
+                if (selectedDevices.length >= 1) {
                     const slugs = selectedDevices.map(device => device.slug);
-                    window.location.href = `/compare?devices=${slugs.join(',')}`;
+                    window.location.href = `{{ route('device-comparison') }}?devices=${slugs.join(',')}`;
                 } else {
-                    alert('Please select at least 2 devices to compare.');
+                    alert('Please select at least 1 device to compare.');
                 }
             }
 
@@ -374,16 +394,16 @@
 
                 // Create instruction message
                 const message = document.createElement('div');
-                message.className = 'compare-instruction fixed top-20 left-1/2 transform -translate-x-1/2 bg-[#d50000] text-white px-4 py-2 rounded shadow-lg z-40';
+                message.className = 'compare-instruction fixed top-20 left-1/2 transform -translate-x-1/2 bg-[#F9A13D] text-white px-4 py-2 rounded shadow-lg z-40';
                 message.innerHTML = `
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-info-circle"></i>
-                                <span>Select up to 3 devices. Click "GO TO COMPARE" again when ready.</span>
-                                <button onclick="hideInstructionMessage()" class="ml-4 text-white hover:text-gray-200">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        `;
+                                                                                                            <div class="flex items-center gap-2">
+                                                                                                                <i class="fas fa-info-circle"></i>
+                                                                                                                <span>Select up to 3 devices. Click "GO TO COMPARE" again when ready.</span>
+                                                                                                                <button onclick="hideInstructionMessage()" class="ml-4 text-white hover:text-gray-200">
+                                                                                                                    <i class="fas fa-times"></i>
+                                                                                                                </button>
+                                                                                                            </div>
+                                                                                                        `;
 
                 document.body.appendChild(message);
 
@@ -405,15 +425,13 @@
             }
 
             // Handle device selection from anywhere on the card (only in compare mode)
-            document.querySelectorAll('.relative.bg-white').forEach(card => {
+            document.querySelectorAll('a.relative.bg-white').forEach(card => {
                 card.addEventListener('click', function (e) {
                     // Only work in compare mode
                     if (!compareModeActive) return;
 
-                    // Don't trigger if clicking on link
-                    if (e.target.closest('a')) {
-                        return;
-                    }
+                    // Prevent navigation
+                    e.preventDefault();
 
                     const checkbox = this.querySelector('.device-checkbox');
                     if (checkbox) {

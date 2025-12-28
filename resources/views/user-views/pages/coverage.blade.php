@@ -157,7 +157,7 @@
             <div class="md:ml-3 flex-1">
                 <select
                     name="country"
-                    class="w-full rounded border border-gray-300 bg-white px-2 py-1.5 text-[13px] focus:outline-none focus:ring-1 focus:ring-[#d50000]"
+                    class="w-full rounded border border-gray-300 bg-white px-2 py-1.5 text-[13px] focus:outline-none focus:ring-1 focus:ring-[#F9A13D]"
                     onchange="
                         if (this.value) {
                             // replace with your own route if needed, e.g.:

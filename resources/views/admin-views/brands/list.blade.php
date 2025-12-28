@@ -54,10 +54,9 @@
                                         <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}"
                                             class="rounded-circle" width="40" height="40" style="object-fit: cover;">
                                     @else
-                                        <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center"
-                                            style="width: 40px; height: 40px;">
-                                            <i class="bi bi-image text-white"></i>
-                                        </div>
+                                        <div class="w-full h-32 flex items-center justify-center bg-blue-100 text-blue-600 font-bold text-2xl">
+                                        {{ substr($brand->name, 0, 1) }}
+                                    </div>
                                     @endif
                                 </td>
                                 <td>

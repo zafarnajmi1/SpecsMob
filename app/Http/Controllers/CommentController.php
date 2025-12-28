@@ -74,6 +74,7 @@ class CommentController extends Controller
             'user_id' => auth()->id(),
             'commentable_id' => $item->id,
             'commentable_type' => $model,
+            'parent_id' => $request->parent_id,
             'body' => $request->comment,
             'is_approved' => true, // Auto-approved for simplicity
         ]);

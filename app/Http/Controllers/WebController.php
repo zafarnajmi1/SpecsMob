@@ -9,10 +9,41 @@ use App\Models\Device;
 use App\Models\DeviceImage;
 use App\Models\DeviceImageGroup;
 use App\Models\Review;
+use App\Models\Tag;
+use App\Models\UserFavorite;
 use Illuminate\Http\Request;
 
 class WebController extends Controller
 {
+    public function toggleFan($id)
+    {
+        $device = Device::findOrFail($id);
+
+        if (!$device->allow_fans) {
+            return back()->with('error', 'Fans are not allowed for this device.');
+        }
+
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('info', 'Please login to become a fan.');
+        }
+
+        $favorite = UserFavorite::where('user_id', auth()->id())
+            ->where('device_id', $id)
+            ->first();
+
+        if ($favorite) {
+            $favorite->delete();
+            $message = 'You are no longer a fan of ' . $device->name;
+        } else {
+            UserFavorite::create([
+                'user_id' => auth()->id(),
+                'device_id' => $id
+            ]);
+            $message = 'You are now a fan of ' . $device->name;
+        }
+
+        return back()->with('success', $message);
+    }
     // public function home()
     // {
     //     $brands = Brand::active()->get();
@@ -157,7 +188,7 @@ class WebController extends Controller
         ));
     }
 
-    public function news()
+    public function news(Request $request)
     {
         $popularReviews = [
             [
@@ -177,10 +208,44 @@ class WebController extends Controller
             ],
         ];
 
-        return view('user-views.pages.news', compact('popularReviews'));
+        $query = Article::published()
+            ->news()
+            ->withCount('comments');
+
+        // Search functionality
+        if ($request->filled('q')) {
+            $searchTerm = $request->q;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('title', 'like', "%{$searchTerm}%")
+                    ->orWhere('body', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        // Tag filtering
+        if ($request->filled('tag')) {
+            $tagValue = $request->tag;
+            $query->where(function ($q) use ($tagValue) {
+                $q->whereHas('tags', function ($t) use ($tagValue) {
+                    $t->where('name', $tagValue)
+                        ->orWhere('slug', $tagValue);
+                })
+                    ->orWhereHas('brand', function ($b) use ($tagValue) {
+                        $b->where('name', $tagValue)
+                            ->orWhere('slug', $tagValue);
+                    });
+            });
+        }
+
+        $news_articles = $query->latest('published_at')
+            ->paginate(12)
+            ->withQueryString();
+
+        $tags = Tag::where('type', 'news')->get();
+
+        return view('user-views.pages.news', compact('news_articles', 'popularReviews', 'tags'));
     }
 
-    public function reviews()
+    public function reviews(Request $request)
     {
         $popularReviews = [
             [
@@ -200,7 +265,32 @@ class WebController extends Controller
             ],
         ];
 
-        return view('user-views.pages.reviews', compact('popularReviews'));
+        $tags = Tag::where('type', 'review')->get();
+
+        $query = Review::published()->withCount('comments');
+
+        // Search functionality
+        if ($request->filled('q')) {
+            $searchTerm = $request->q;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('title', 'like', "%{$searchTerm}%")
+                    ->orWhere('body', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        // Tag filtering
+        if ($request->filled('tag')) {
+            $query->whereHas('tags', function ($q) use ($request) {
+                $q->where('name', $request->tag)
+                    ->orWhere('slug', $request->tag);
+            });
+        }
+
+        $reviews_list = $query->latest('published_at')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('user-views.pages.reviews', compact('popularReviews', 'tags', 'reviews_list'));
     }
     public function videos()
     {
@@ -225,7 +315,7 @@ class WebController extends Controller
         return view('user-views.pages.videos', compact('popularReviews'));
     }
 
-    public function featured()
+    public function featured(Request $request)
     {
         $popularReviews = [
             [
@@ -245,7 +335,34 @@ class WebController extends Controller
             ],
         ];
 
-        return view('user-views.pages.featured', compact('popularReviews'));
+        $tags = Tag::where('is_popular', true)->get();
+
+        $query = Article::published()
+            ->featured()
+            ->withCount('comments');
+
+        // Search functionality
+        if ($request->filled('q')) {
+            $searchTerm = $request->q;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('title', 'like', "%{$searchTerm}%")
+                    ->orWhere('body', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        // Tag filtering
+        if ($request->filled('tag')) {
+            $query->whereHas('tags', function ($q) use ($request) {
+                $q->where('name', $request->tag)
+                    ->orWhere('slug', $request->tag);
+            });
+        }
+
+        $featured_articles = $query->latest('published_at')
+            ->paginate(12)
+            ->withQueryString();
+
+        return view('user-views.pages.featured', compact('popularReviews', 'tags', 'featured_articles'));
     }
     public function deals()
     {
@@ -316,8 +433,51 @@ class WebController extends Controller
         return view('user-views.pages.contact', compact('popularReviews'));
     }
 
-    public function phoneFinder()
+    public function phoneFinder(Request $request)
     {
+        $brands = Brand::orderBy('name')->get();
+
+        $query = Device::query()->where('is_published', true);
+
+        // Filter by Brand
+        if ($request->has('brands') && $request->brands != '') {
+            $brandIds = explode(',', $request->brands);
+            $query->whereIn('brand_id', $brandIds);
+        }
+
+        // Filter by Year
+        if ($request->has('year_min') && $request->has('year_max')) {
+            $query->whereYear('released_at', '>=', $request->year_min)
+                ->whereYear('released_at', '<=', $request->year_max);
+        }
+
+        // Filter by RAM (using ram_short)
+        if ($request->has('ram_min')) {
+            $query->where('ram_short', 'REGEXP', '[0-9]+')
+                ->whereRaw("CAST(ram_short AS UNSIGNED) >= ?", [$request->ram_min]);
+        }
+
+        // Filter by Storage (using storage_short)
+        if ($request->has('storage_min')) {
+            $query->where('storage_short', 'REGEXP', '[0-9]+')
+                ->whereRaw("CAST(storage_short AS UNSIGNED) >= ?", [$request->storage_min]);
+        }
+
+        // Filter by Release Status
+        if ($request->has('status') && $request->status != 'all') {
+            $query->where('release_status', $request->status);
+        }
+
+        // Ordering
+        $orderField = $request->get('order', 'latest');
+        if ($orderField == 'latest') {
+            $query->latest();
+        } elseif ($orderField == 'popular') {
+            $query->withCount('comments')->orderBy('comments_count', 'desc');
+        }
+
+        $devices = $query->paginate(24)->withQueryString();
+
         $popularReviews = [
             [
                 'title' => 'OnePlus 15 review',
@@ -336,31 +496,23 @@ class WebController extends Controller
             ],
         ];
 
-        return view('user-views.pages.phone-finder', compact('popularReviews'));
+        return view('user-views.pages.phone-finder', compact('popularReviews', 'brands', 'devices'));
     }
 
     public function review_detail($slug)
     {
         $review = Review::where('slug', $slug)->firstOrFail();
-        // $comments = $review->comments()->where('is_approved', 'approved')->get();
-        $comments = collect([
-            [
-                'username' => 'Ahmad',
-                'location' => 'Pakistan',
-                'avatar_color' => '#8ca6c6',
-                'created_at' => now()->subDays(1),
-                'content' => 'The Nothing Phone (3a) Lite is actually amazing for the price. The battery life is much better than expected.',
-            ],
-            [
-                'username' => 'TechGuru',
-                'location' => 'India',
-                'avatar_color' => '#cc8899',
-                'created_at' => now()->subDays(2),
-                'content' => 'Camera performance is average in low light. But for daylight shots, it performs great!',
-            ],
-        ])->map(function ($item) {
-            return (object) $item;  // convert to object
-        });
+        $comments = $review->comments()
+            ->whereNull('parent_id')
+            ->where('is_approved', true)
+            ->with([
+                'user',
+                'replies' => function ($query) {
+                    $query->where('is_approved', true)->with('user');
+                }
+            ])
+            ->latest()
+            ->get();
         return view('user-views.pages.review-detail', compact('review', 'comments'));
     }
 
@@ -383,29 +535,17 @@ class WebController extends Controller
         // Increment view count
         $article->increment('views_count');
 
-        $comments = $article->comments()->latest()->get();
-
-        // If no comments, use mock data
-        if ($comments->isEmpty()) {
-            $comments = collect([
-                [
-                    'username' => 'Ahmad',
-                    'location' => 'Pakistan',
-                    'avatar_color' => '#8ca6c6',
-                    'created_at' => now()->subDays(1),
-                    'content' => 'The Nothing Phone (3a) Lite is actually amazing for the price. The battery life is much better than expected.',
-                ],
-                [
-                    'username' => 'TechGuru',
-                    'location' => 'India',
-                    'avatar_color' => '#cc8899',
-                    'created_at' => now()->subDays(2),
-                    'content' => 'Camera performance is average in low light. But for daylight shots, it performs great!',
-                ],
-            ])->map(function ($item) {
-                return (object) $item;
-            });
-        }
+        $comments = $article->comments()
+            ->whereNull('parent_id')
+            ->where('is_approved', true)
+            ->with([
+                'user',
+                'replies' => function ($query) {
+                    $query->where('is_approved', true)->with('user');
+                }
+            ])
+            ->latest()
+            ->get();
 
         // Get related articles
         $relatedArticles = Article::published()
@@ -421,7 +561,11 @@ class WebController extends Controller
 
     public function brands()
     {
-        $brands = Brand::active()->get();
+        $brands = Brand::active()->withCount([
+            'devices' => function ($query) {
+                $query->where('is_published', true);
+            }
+        ])->orderBy('name')->get();
         $popularReviews = [
             [
                 'title' => 'OnePlus 15 review',
@@ -483,21 +627,48 @@ class WebController extends Controller
     // }
 
 
-    public function brand_devices($slug)
+    public function brand_devices(Request $request, $slug)
     {
         $brand = Brand::where('slug', $slug)->firstOrFail();
 
-        $devices = $brand->devices()
+        $query = $brand->devices()
             ->where('is_published', '1');
 
-        $sort = request()->get('sort', 'release');
-        if ($sort === 'popularity') {
-            $devices = $devices->orderBy('views_count', 'desc');
-        } else {
-            $devices = $devices->latest('released_at');
+        // Search Filter
+        if ($request->filled('q')) {
+            $query->where('name', 'like', '%' . $request->q . '%');
         }
 
-        $devices = $devices->paginate(15);  // 👈 Pagination added
+        // Type Filter
+        if ($request->filled('type')) {
+            $query->where('device_type_id', $request->type);
+        }
+
+        // Status Filter
+        if ($request->filled('status')) {
+            $query->where('release_status', $request->status);
+        }
+
+        // Year Filter
+        if ($request->filled('year')) {
+            $query->whereYear('released_at', $request->year);
+        }
+
+        $sort = $request->get('sort', 'popularity');
+        if ($sort === 'popularity') {
+            $query->orderBy('released_at', 'desc')->orderBy('id', 'desc');
+        } else {
+            $query->latest('created_at');
+        }
+
+        $devices = $query->paginate(24)->withQueryString();
+
+        $deviceTypes = \App\Models\DeviceType::all();
+        $years = \App\Models\Device::whereNotNull('released_at')
+            ->selectRaw('YEAR(released_at) as year')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year');
 
         $selectedDevices = [];
 
@@ -519,7 +690,7 @@ class WebController extends Controller
             ],
         ];
 
-        return view('user-views.pages.brand-devices', compact('brand', 'devices', 'popularReviews', 'selectedDevices'));
+        return view('user-views.pages.brand-devices', compact('brand', 'devices', 'popularReviews', 'selectedDevices', 'deviceTypes', 'years'));
     }
 
     public function device_detail($slug)
@@ -550,24 +721,17 @@ class WebController extends Controller
             ],
         ];
 
-        $opinions = collect([
-            [
-                'username' => 'Ahmad',
-                'location' => 'Pakistan',
-                'avatar_color' => '#8ca6c6',
-                'created_at' => now()->subDays(1),
-                'content' => 'The Nothing Phone (3a) Lite is actually amazing for the price. The battery life is much better than expected.',
-            ],
-            [
-                'username' => 'TechGuru',
-                'location' => 'India',
-                'avatar_color' => '#cc8899',
-                'created_at' => now()->subDays(2),
-                'content' => 'Camera performance is average in low light. But for daylight shots, it performs great!',
-            ],
-        ])->map(function ($item) {
-            return (object) $item;  // convert to object
-        });
+        $opinions = $device->comments()
+            ->whereNull('parent_id')
+            ->where('is_approved', true)
+            ->with([
+                'user',
+                'replies' => function ($query) {
+                    $query->where('is_approved', true)->with('user');
+                }
+            ])
+            ->latest()
+            ->get();
 
         // return $device;
         return view('user-views.pages.device-detail', compact('device', 'popularReviews', 'opinions'));
@@ -625,24 +789,17 @@ class WebController extends Controller
                 ], 301);
         }
 
-        $comments = collect([
-            [
-                'username' => 'Ahmad',
-                'location' => 'Pakistan',
-                'avatar_color' => '#8ca6c6',
-                'created_at' => now()->subDays(1),
-                'content' => 'The Nothing Phone (3a) Lite is actually amazing for the price. The battery life is much better than expected.',
-            ],
-            [
-                'username' => 'TechGuru',
-                'location' => 'India',
-                'avatar_color' => '#cc8899',
-                'created_at' => now()->subDays(2),
-                'content' => 'Camera performance is average in low light. But for daylight shots, it performs great!',
-            ],
-        ])->map(function ($item) {
-            return (object) $item;  // convert to object
-        });
+        $comments = $device->comments()
+            ->whereNull('parent_id')
+            ->where('is_approved', true)
+            ->with([
+                'user',
+                'replies' => function ($query) {
+                    $query->where('is_approved', true)->with('user');
+                }
+            ])
+            ->latest()
+            ->paginate(10);
 
         $popularReviews = [
             [
@@ -721,24 +878,17 @@ class WebController extends Controller
                 ], 301);
         }
 
-        $comments = collect([
-            [
-                'username' => 'Ahmad',
-                'location' => 'Pakistan',
-                'avatar_color' => '#8ca6c6',
-                'created_at' => now()->subDays(1),
-                'content' => 'The Nothing Phone (3a) Lite is actually amazing for the price. The battery life is much better than expected.',
-            ],
-            [
-                'username' => 'TechGuru',
-                'location' => 'India',
-                'avatar_color' => '#cc8899',
-                'created_at' => now()->subDays(2),
-                'content' => 'Camera performance is average in low light. But for daylight shots, it performs great!',
-            ],
-        ])->map(function ($item) {
-            return (object) $item;  // convert to object
-        });
+        $comments = $review->comments()
+            ->whereNull('parent_id')
+            ->where('is_approved', true)
+            ->with([
+                'user',
+                'replies' => function ($query) {
+                    $query->where('is_approved', true)->with('user');
+                }
+            ])
+            ->latest()
+            ->paginate(10);
 
         $popularReviews = [
             [
@@ -775,24 +925,18 @@ class WebController extends Controller
                 ], 301);
         }
 
-        $comments = collect([
-            [
-                'username' => 'Ahmad',
-                'location' => 'Pakistan',
-                'avatar_color' => '#8ca6c6',
-                'created_at' => now()->subDays(1),
-                'content' => 'The Nothing Phone (3a) Lite is actually amazing for the price. The battery life is much better than expected.',
-            ],
-            [
-                'username' => 'TechGuru',
-                'location' => 'India',
-                'avatar_color' => '#cc8899',
-                'created_at' => now()->subDays(2),
-                'content' => 'Camera performance is average in low light. But for daylight shots, it performs great!',
-            ],
-        ])->map(function ($item) {
-            return (object) $item;  // convert to object
-        });
+        $comments = $article->comments()
+            ->whereNull('parent_id')
+            ->where('is_approved', true)
+            ->with([
+                'user',
+                'replies' => function ($query) {
+                    $query->where('is_approved', true)->with('user');
+                }
+            ])
+            ->latest()
+            ->paginate(10);
+
 
         $popularReviews = [
             [
@@ -816,4 +960,130 @@ class WebController extends Controller
     }
 
 
+    public function device_comparison(Request $request, $slug = null, $id = null)
+    {
+        $device1 = null;
+        $device2 = null;
+        $device3 = null;
+
+        // If called via /compare?devices=slug1,slug2,slug3
+        if ($request->has('devices')) {
+            $slugs = explode(',', $request->devices);
+            $devices = Device::whereIn('slug', $slugs)
+                ->where('is_published', true)
+                ->with(['brand', 'specValues.field.category'])
+                ->withCount('comments')
+                ->take(3)
+                ->get();
+
+            $device1 = $devices->get(0);
+            $device2 = $devices->get(1);
+            $device3 = $devices->get(2);
+        }
+        // If called via /{slug}-compare-{id}
+        elseif ($id) {
+            $device1 = Device::where('id', $id)
+                ->where('is_published', true)
+                ->with(['brand', 'specValues.field.category'])
+                ->withCount('comments')
+                ->firstOrFail();
+
+            if ($request->has('id2')) {
+                $device2 = Device::where('id', $request->id2)
+                    ->where('is_published', true)
+                    ->with(['brand', 'specValues.field.category'])
+                    ->withCount('comments')
+                    ->first();
+            }
+
+            if ($request->has('id3')) {
+                $device3 = Device::where('id', $request->id3)
+                    ->where('is_published', true)
+                    ->with(['brand', 'specValues.field.category'])
+                    ->withCount('comments')
+                    ->first();
+            }
+        }
+
+        return view('user-views.pages.device-comparison', compact('device1', 'device2', 'device3'));
+    }
+
+    public function search_devices(Request $request)
+    {
+        $query = $request->get('q');
+        if (!$query) {
+            return response()->json([]);
+        }
+
+        $devices = Device::where('name', 'LIKE', "%{$query}%")
+            ->where('is_published', true)
+            ->limit(10)
+            ->get(['id', 'name', 'slug', 'thumbnail_url']);
+
+        return response()->json($devices);
+    }
+
+    public function liveSearch(Request $request)
+    {
+        $q = $request->get('q');
+
+        // If query is empty, show recently viewed if IDs provided
+        if (empty($q)) {
+            $recentIds = $request->get('recent', []);
+            if (!empty($recentIds)) {
+                $recentDevices = Device::whereIn('id', $recentIds)
+                    ->where('is_published', true)
+                    ->get(['id', 'name', 'slug', 'thumbnail_url']);
+                return response()->json(['recent' => $recentDevices]);
+            }
+            return response()->json([]);
+        }
+
+        $devices = Device::where('name', 'LIKE', "%{$q}%")
+            ->where('is_published', true)
+            ->limit(8)
+            ->get(['id', 'name', 'slug', 'thumbnail_url']);
+
+        $reviews = Review::where('title', 'LIKE', "%{$q}%")
+            ->published()
+            ->limit(8)
+            ->get(['id', 'title', 'slug', 'cover_image_url']);
+
+        $news = Article::where('title', 'LIKE', "%{$q}%")
+            ->published()
+            ->limit(8)
+            ->get(['id', 'title', 'slug', 'thumbnail_url', 'type']);
+
+        return response()->json([
+            'devices' => $devices,
+            'reviews' => $reviews,
+            'news' => $news
+        ]);
+    }
+
+    public function globalSearch(Request $request)
+    {
+        $q = $request->get('q');
+
+        if (empty($q)) {
+            return redirect()->route('home');
+        }
+
+        $devices = Device::where('name', 'LIKE', "%{$q}%")
+            ->where('is_published', true)
+            ->paginate(12, ['*'], 'devices_page')
+            ->withQueryString();
+
+        $news = Article::where('title', 'LIKE', "%{$q}%")
+            ->published()
+            ->paginate(12, ['*'], 'news_page')
+            ->withQueryString();
+
+        $reviews = Review::where('title', 'LIKE', "%{$q}%")
+            ->published()
+            ->paginate(12, ['*'], 'reviews_page')
+            ->withQueryString();
+
+        return view('user-views.pages.search-results', compact('q', 'devices', 'news', 'reviews'));
+    }
 }

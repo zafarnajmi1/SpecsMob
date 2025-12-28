@@ -18,16 +18,16 @@
             <div
                 class="flex flex-wrap justify-end items-center border-t border-gray-400 shadow text-sm text-white px-4 md:px-6 h-[2.5rem] bg-[Rgba(0,0,0,0.2)] backdrop-blur-sm">
                 <div class="flex gap-4 h-full">
-                    <a href="{{ route('user.posts', Auth::user()->username) }}" class="flex items-center gap-1 hover:bg-[#d50000] transition-colors px-3">
+                    <a href="{{ route('user.posts', Auth::user()->username) }}" class="flex items-center gap-1 hover:bg-[#F9A13D] transition-colors px-3">
                         <i class="fa-regular fa-message"></i> POSTS {{ $posts_count  }}
                     </a>
                     <button id="compare-tab"
-                        class="compare-btn relative cursor-pointer flex items-center gap-1 transition hover:bg-[#d50000] px-3">
+                        class="compare-btn relative cursor-pointer flex items-center gap-1 transition hover:bg-[#F9A13D] px-3">
                         <i class="fa-solid fa-hand-sparkles"></i>
                         <span class="compare-text">UPVOTES</span> {{ $upvotes }}
                     </button>
                     <a href="{{ route('user.account.manage', Auth::user()->username) }}"
-                        class="flex items-center gap-1 hover:bg-[#d50000] transition-colors px-3 transition uppercase">
+                        class="flex items-center gap-1 hover:bg-[#F9A13D] transition-colors px-3 transition uppercase">
                         <i class="fa-solid fa-user"></i> Account Settings
                     </a>
                 </div>

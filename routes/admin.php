@@ -23,7 +23,7 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\RatingController;
 use App\Http\Controllers\Admin\VideoController;
-use App\Http\Controllers\TagController;
+use App\Http\Controllers\Admin\TagController;
 use App\Models\Brand;
 
 // Public admin login routes (no auth required)
@@ -32,12 +32,12 @@ Route::post('/admin/login', [AuthController::class, 'store'])->name('admin.login
 
 // Protected admin routes (auth + admin.access required)
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin.access'])->group(function () {
-    
+
     // Dashboard & Logout - accessible by both admin & manager
     Route::get('/dashboard', [DashboardController::class, 'index'])
-         ->name('dashboard')
-         ->middleware('permission:access_dashboard');
-         
+        ->name('dashboard')
+        ->middleware('permission:access_dashboard');
+
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
 
     // ==================== BRAND MANAGEMENT ====================
@@ -45,10 +45,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin.access'])->gr
         Route::resource('brands', BrandController::class);
     });
     // Get devices for brand (for AJAX)
-Route::get('/brands/{brand}/devices', function(Brand $brand) {
-    $devices = $brand->devices()->select('id', 'name')->get();
-    return response()->json($devices);
-})->name('brands.devices');
+    Route::get('/brands/{brand}/devices', function (Brand $brand) {
+        $devices = $brand->devices()->select('id', 'name')->get();
+        return response()->json($devices);
+    })->name('brands.devices');
 
     // ==================== DEVICE MANAGEMENT ====================
     Route::middleware(['permission:device_view|device_create|device_edit|device_delete'])->group(function () {
@@ -84,26 +84,26 @@ Route::get('/brands/{brand}/devices', function(Brand $brand) {
 
     Route::prefix('admin/seo')->name('admin.seo.')->middleware(['auth', 'can:seo_manage'])->group(function () {
     });
-    
+
     // SEO Management
     Route::prefix('seo')->name('seo.')->middleware(['permission:seo_manage'])->group(function () {
         Route::get('global', [SeoController::class, 'global'])->name('global');
         Route::post('global', [SeoController::class, 'saveGlobal'])->name('global.save');
-    
+
         Route::get('schema', [SeoController::class, 'schema'])->name('schema');
         Route::post('schema', [SeoController::class, 'saveSchema'])->name('schema.save');
-    
+
         Route::get('sitemap', [SeoController::class, 'sitemap'])->name('sitemap');
         Route::post('sitemap', [SeoController::class, 'saveSitemap'])->name('sitemap.save');
     });
 
     // ==================== REVIEW MANAGEMENT ====================
     Route::middleware(['permission:review_view|review_create|review_edit|review_delete'])->group(function () {
-    Route::resource('reviews', ReviewController::class);
-});
+        Route::resource('reviews', ReviewController::class);
+    });
 
     // Tags Management
-    Route::middleware(['permission:tag_view|tag_create|tag_edit|tag_delete'])->group(function () {
+    Route::middleware(['permission:tag_manage'])->group(function () {
         Route::resource('tags', TagController::class);
     });
 
@@ -163,7 +163,7 @@ Route::get('/brands/{brand}/devices', function(Brand $brand) {
             Route::get('/devices', [AnalyticsController::class, 'devices'])->name('devices');
             Route::get('/articles', [AnalyticsController::class, 'articles'])->name('articles');
         });
-        
+
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     });
 

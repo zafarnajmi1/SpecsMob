@@ -51,7 +51,7 @@
                             Logged in
                         </div>
                         <a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();"
-                            class="flex justify-center items-center font-bold px-3 py-1 text-[14px] bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#d50000] hover:text-white transition uppercase">
+                            class="flex justify-center items-center font-bold px-3 py-1 text-[14px] bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#F9A13D] hover:text-white transition uppercase">
                             <span>Logout</span>
                         </a>
                     </div>
@@ -64,7 +64,7 @@
 
                     <!-- SUBMIT -->
                     <div class="flex justify-end">
-                        <button class="flex cursor-pointer justify-center items-center font-bold px-3 py-1 text-[14px] bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#d50000] hover:text-white transition uppercase">
+                        <button class="flex cursor-pointer justify-center items-center font-bold px-3 py-1 text-[14px] bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#F9A13D] hover:text-white transition uppercase">
                             Submit
                         </button>
                     </div>
@@ -74,7 +74,7 @@
         @guest
             <div class="bg-white border border-[#d1d1d1] p-5 mt-4 text-center">
                 <p class="mb-3 text-[#555]">You must be logged in to post a comment.</p>
-                <a href="{{ route('login') }}" class="bg-[#d50000] text-white px-4 py-2 inline-block">
+                <a href="{{ route('login') }}" class="bg-[#F9A13D] text-white px-4 py-2 inline-block">
                     Login
                 </a>
             </div>

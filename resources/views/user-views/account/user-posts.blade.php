@@ -13,10 +13,10 @@
             <h1 class="text-white text-[40px] font-bold px-5 mb-3">{{ $user->name }} - user account</h1>
             <div class="flex flex-wrap justify-end items-center border-t-1 border-gray-400 shadow text-sm text-white px-4 md:px-6 h-[2.5rem] bg-[Rgba(0,0,0,0.2)] backdrop-blur-sm">
                 <div class="flex gap-4 h-full">
-                    <a href="#" class="flex items-center gap-1 hover:bg-[#d50000] transition-colors px-3 transition">
+                    <a href="#" class="flex items-center gap-1 hover:bg-[#F9A13D] transition-colors px-3 transition">
                         <i class="fa-regular fa-message"></i> POSTS {{ $posts_count  }}
                     </a>
-                    <button id="compare-tab" class="compare-btn relative cursor-pointer flex items-center gap-1 transition hover:bg-[#d50000] px-3">
+                    <button id="compare-tab" class="compare-btn relative cursor-pointer flex items-center gap-1 transition hover:bg-[#F9A13D] px-3">
                         <i class="fa-solid fa-hand-sparkles"></i>
                         <span class="compare-text">UPVOTES</span> {{ $upvotes }}
                     </button>
@@ -32,7 +32,7 @@
         <ul class="bg-[#efebe9] py-[6px] pr-[10px] border-l-[10px] border-l-[rgba(88,160,22,.5)]">
             @forelse($groupedComments['Device'] ?? [] as $comment)
                 <li class="py-[6px] pl-[30px]">
-                    <a href="{{ route('device.opinions', ['slug' => $comment->commentable->slug, 'id' => $comment->commentable->id]) }}" class="text-[#555] text-[15px] hover:text-[#d50000] hover:underline">
+                    <a href="{{ route('device.opinions', ['slug' => $comment->commentable->slug, 'id' => $comment->commentable->id]) }}" class="text-[#555] text-[15px] hover:text-[#F9A13D] hover:underline">
                         In <b class="font-bold">{{ $comment->commentable->name }}</b> {{ $comment->created_at->format('F j, Y, g:i a') }}
                     </a>
                     <span class="block text-[#888] mt-1">{{ Str::limit($comment->body, 160) }}</span>
@@ -49,7 +49,7 @@
         <ul class="bg-[#efebe9] py-[6px] pr-[10px] border-l-[10px] border-l-[#ed9d9d]">
             @forelse($groupedComments['Review'] ?? [] as $comment)
                 <li class="py-[6px] pl-[30px]">
-                    <a href="{{ route('review.comments', ['slug' => $comment->commentable->slug, 'id' => $comment->commentable->id]) }}" class="text-[#555] text-[15px] hover:text-[#d50000] hover:underline">
+                    <a href="{{ route('review.comments', ['slug' => $comment->commentable->slug, 'id' => $comment->commentable->id]) }}" class="text-[#555] text-[15px] hover:text-[#F9A13D] hover:underline">
                         In <b class="font-bold">{{ $comment->commentable->title }}</b> {{ $comment->created_at->format('F j, Y, g:i a') }}
                     </a>
                     <span class="block text-[#888] mt-1">{{ Str::limit($comment->body, 160) }}</span>
@@ -66,7 +66,7 @@
         <ul class="bg-[#efebe9] py-[6px] pr-[10px] border-l-[10px] border-l-[#17819f]">
             @forelse($groupedComments['Article'] ?? [] as $comment)
                 <li class="py-[6px] pl-[30px]">
-                    <a href="{{ route('article.comments', ['slug' => $comment->commentable->slug, 'id' => $comment->commentable->id]) }}" class="text-[#555] text-[15px] hover:text-[#d50000] hover:underline">
+                    <a href="{{ route('article.comments', ['slug' => $comment->commentable->slug, 'id' => $comment->commentable->id]) }}" class="text-[#555] text-[15px] hover:text-[#F9A13D] hover:underline">
                         In <b class="font-bold">{{ $comment->commentable->title }}</b> {{ $comment->created_at->format('F j, Y, g:i a') }}
                     </a>
                     <span class="block text-[#888] mt-1">{{ Str::limit($comment->body, 160) }}</span>

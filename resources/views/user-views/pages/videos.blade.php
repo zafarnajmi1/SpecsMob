@@ -102,12 +102,29 @@
 
 <x-page-hero
     title="Videos"
-    :tags="$popularTags"
+    :tags=""
     background="{{ asset('user/images/video.jpg') }}"
     search_action="{{ route('videos') }}"
     query_param="q"
     tag_param="tag"
 />
+
+
+{{-- Header / hero --}}
+<div class="overflow-hidden w-full mb-6 md:h-[310px]">
+    <div
+        class="relative bg-cover bg-center h-full"
+        style="background-image: url('{{ asset('user/images/video.jpg') }}');"
+    >
+        <div class="bg-black/55 h-full">
+            <div class="px-4 h-full md:px-6 py-6 flex flex-col items-start justify-end text-center gap-2">
+                <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-white drop-shadow-md">
+                    Videos
+                </h1>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 {{-- resources/views/userviews/videos/index.blade.php --}}
@@ -202,7 +219,7 @@
         <a
             href="{{ $youtubeChannelUrl }}"
             target="_blank"
-            class="inline-flex flex-col items-center gap-1 px-5 py-3 border border-[#d50000] text-[#d50000] rounded-md hover:bg-[#d50000] hover:text-white transition-colors"
+            class="inline-flex flex-col items-center gap-1 px-5 py-3 border border-[#F9A13D] text-[#F9A13D] rounded-md hover:bg-[#F9A13D] hover:text-white transition-colors"
         >
             <strong class="text-[12px] uppercase tracking-[0.22em]">
                 More videos »
