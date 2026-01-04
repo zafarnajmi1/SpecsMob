@@ -106,11 +106,11 @@ class ArticleController extends Controller
                 $article->tags()->sync($request->tags);
             }
 
-            
+
             // SEO Meta (polymorphic)
             $article->saveSeo($request);
             DB::commit();
-            
+
             ToastMagic::success('Article created successfully!');
             return redirect()->route('admin.articles.index');
         } catch (\Throwable $e) {
@@ -121,105 +121,108 @@ class ArticleController extends Controller
         }
     }
 
-    public function edit(Article $article)
-{
-    $brands = Brand::orderBy('name')->get();
+    public function edit($id)
+    {
+        $article = Article::findOrFail($id);
+        $brands = Brand::orderBy('name')->get();
 
-    // Only devices for the selected brand (if any)
-    $devices = $article->brand_id
-        ? Device::where('brand_id', $article->brand_id)->orderBy('name')->get()
-        : collect();
+        // Only devices for the selected brand (if any)
+        $devices = $article->brand_id
+            ? Device::where('brand_id', $article->brand_id)->orderBy('name')->get()
+            : collect();
 
-    $tags = Tag::orderBy('name')->get();
+        $tags = Tag::orderBy('name')->get();
 
-    return view('admin-views.articles.edit', compact('article', 'brands', 'devices', 'tags'));
-}
-
-
-  public function update(Request $request, Article $article)
-{
-    $validator = Validator::make($request->all(), [
-        'title'         => 'required|string|max:255',
-        'body'          => 'required|string',
-        'type'          => 'required|in:news,article,featured',
-        'brand_id'      => 'nullable|exists:brands,id',
-        'device_id'     => 'nullable|exists:devices,id',
-        'is_published'  => 'boolean',
-        'is_featured'   => 'boolean',
-        'allow_comments'=> 'boolean',
-        'published_at'  => 'nullable|date',
-        'thumbnail_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'tags'          => 'nullable|array',
-        'tags.*'        => 'exists:tags,id',
-    ]);
-
-    if ($validator->fails()) {
-        ToastMagic::error($validator->errors()->first());
-        return redirect()->back()->withInput();
+        return view('admin-views.articles.edit', compact('article', 'brands', 'devices', 'tags'));
     }
 
-    DB::beginTransaction();
 
-    try {
-        $data = [];
+    public function update(Request $request, $id)
+    {
+        $article = Article::findOrFail($id);
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'body' => 'required|string',
+            'type' => 'required|in:news,article,featured',
+            'brand_id' => 'nullable|exists:brands,id',
+            'device_id' => 'nullable|exists:devices,id',
+            'is_published' => 'boolean',
+            'is_featured' => 'boolean',
+            'allow_comments' => 'boolean',
+            'published_at' => 'nullable|date',
+            'thumbnail_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,id',
+        ]);
 
-        // Update thumbnail if new file uploaded
-        if ($request->hasFile('thumbnail_url')) {
-            // Delete old thumbnail if exists
-            if ($article->thumbnail_url && Storage::disk('public')->exists($article->thumbnail_url)) {
-                Storage::disk('public')->delete($article->thumbnail_url);
+        if ($validator->fails()) {
+            ToastMagic::error($validator->errors()->first());
+            return redirect()->back()->withInput();
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $data = [];
+
+            // Update thumbnail if new file uploaded
+            if ($request->hasFile('thumbnail_url')) {
+                // Delete old thumbnail if exists
+                if ($article->thumbnail_url && Storage::disk('public')->exists($article->thumbnail_url)) {
+                    Storage::disk('public')->delete($article->thumbnail_url);
+                }
+
+                $path = $request->file('thumbnail_url')->store('articles/thumbnails', 'public');
+                $data['thumbnail_url'] = $path;
             }
 
-            $path = $request->file('thumbnail_url')->store('articles/thumbnails', 'public');
-            $data['thumbnail_url'] = $path;
+            // Handle draft
+            if ($request->has('draft')) {
+                $data['is_published'] = false;
+            }
+
+            // Fill updated fields
+            $data['title'] = $request->title;
+            $data['slug'] = Str::slug($request->title);
+            $data['body'] = $request->body;
+            $data['type'] = $request->type;
+            $data['brand_id'] = $request->brand_id;
+            $data['device_id'] = $request->device_id;
+            $data['is_published'] = $request->is_published;
+            $data['is_featured'] = $request->is_featured;
+            $data['published_at'] = $request->published_at;
+            $data['updated_by'] = auth()->id();  // optional: track who updated
+
+            // Update Article
+            $article->update($data);
+
+            // Sync tags
+            if ($request->has('tags')) {
+                $article->tags()->sync($request->tags);
+            } else {
+                $article->tags()->sync([]); // remove all tags if empty
+            }
+
+            // SEO polymorphic update
+            $article->saveSeo($request);
+
+            DB::commit();
+
+            ToastMagic::success('Article updated successfully!');
+            return redirect()->route('admin.articles.index');
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            report($e);
+            ToastMagic::error($e->getMessage());
+            return redirect()->back()->withInput();
         }
-
-        // Handle draft
-        if ($request->has('draft')) {
-            $data['is_published'] = false;
-        }
-
-        // Fill updated fields
-        $data['title']        = $request->title;
-        $data['slug']         = Str::slug($request->title);
-        $data['body']         = $request->body;
-        $data['type']         = $request->type;
-        $data['brand_id']     = $request->brand_id;
-        $data['device_id']    = $request->device_id;
-        $data['is_published']  = $request->is_published;
-        $data['is_featured']  = $request->is_featured;
-        $data['published_at'] = $request->published_at;
-        $data['updated_by']   = auth()->id();  // optional: track who updated
-
-        // Update Article
-        $article->update($data);
-
-        // Sync tags
-        if ($request->has('tags')) {
-            $article->tags()->sync($request->tags);
-        } else {
-            $article->tags()->sync([]); // remove all tags if empty
-        }
-
-        // SEO polymorphic update
-        $article->saveSeo($request);
-
-        DB::commit();
-
-        ToastMagic::success('Article updated successfully!');
-        return redirect()->route('admin.articles.index');
-
-    } catch (\Throwable $e) {
-        DB::rollBack();
-        report($e);
-        ToastMagic::error($e->getMessage());
-        return redirect()->back()->withInput();
     }
-}
 
 
-    public function destroy(Article $article)
+    public function destroy($id)
     {
+        $article = Article::findOrFail($id);
         // Delete thumbnail if exists
         if ($article->thumbnail_url) {
             Storage::disk('public')->delete($article->thumbnail_url);

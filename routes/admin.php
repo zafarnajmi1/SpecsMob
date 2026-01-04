@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\RatingController;
 use App\Http\Controllers\Admin\VideoController;
 use App\Http\Controllers\Admin\TagController;
 use App\Models\Brand;
+use App\Http\Controllers\Admin\HomeReviewSliderController;
 
 // Public admin login routes (no auth required)
 Route::get('/admin/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
@@ -44,6 +45,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin.access'])->gr
     Route::middleware(['permission:brand_view|brand_create|brand_edit|brand_delete'])->group(function () {
         Route::resource('brands', BrandController::class);
     });
+
+    // ==================== HOME REVIEW SLIDER ====================
+    Route::middleware(['permission:homereview_slider_view|homereview_slider_create|homereview_slider_edit|homereview_slider_delete'])->group(function () {
+        Route::resource('homereview-slider', HomeReviewSliderController::class);
+    });
+
     // Get devices for brand (for AJAX)
     Route::get('/brands/{brand}/devices', function (Brand $brand) {
         $devices = $brand->devices()->select('id', 'name')->get();
@@ -169,8 +176,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin.access'])->gr
 
     // ==================== USER MANAGEMENT (Admin Only) ====================
     Route::middleware(['permission:user_view|user_create|user_edit|user_delete'])->group(function () {
-        Route::resource('users', \App\Http\Controllers\UserController::class);
+        Route::resource('users', UserController::class);
     });
+
+    // Profile Management
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile.edit');
+    Route::put('/profile', [UserController::class, 'profileUpdate'])->name('profile.update');
 
     // ==================== SYSTEM SETTINGS (Admin Only) ====================
     Route::middleware(['permission:settings_manage'])->group(function () {

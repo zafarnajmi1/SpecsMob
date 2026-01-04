@@ -435,93 +435,93 @@ class DeviceController extends Controller
             // On UPDATE: completely replace image groups for this device
             // (for store(), there are no old rows so this is harmless)
             // Instead of deleting everything:
-$existingGroups = $device->imageGroups()->with('images')->get()->keyBy('id');
+            $existingGroups = $device->imageGroups()->with('images')->get()->keyBy('id');
 
-// Incoming group data
-$imageGroupsInput = $request->all()['image_groups'] ?? [];
+            // Incoming group data
+            $imageGroupsInput = $request->all()['image_groups'] ?? [];
 
-$newGroupIds = [];
+            $newGroupIds = [];
 
-foreach ($imageGroupsInput as $groupIndex => $groupData) {
+            foreach ($imageGroupsInput as $groupIndex => $groupData) {
 
-    $groupId = $groupData['id'] ?? null; // Hidden field for existing group id
-    $title = trim($groupData['title'] ?? '');
-    $groupType = trim($groupData['group_type'] ?? '');
-    $groupOrder = $groupData['order'] ?? $groupIndex;
+                $groupId = $groupData['id'] ?? null; // Hidden field for existing group id
+                $title = trim($groupData['title'] ?? '');
+                $groupType = trim($groupData['group_type'] ?? '');
+                $groupOrder = $groupData['order'] ?? $groupIndex;
 
-    // -----------------------------
-    // A. UPDATE OR CREATE GROUP
-    // -----------------------------
-    if ($groupId && isset($existingGroups[$groupId])) {
-        // Update existing group
-        $group = $existingGroups[$groupId];
-        $group->title = $title;
-        $group->group_type = $groupType;
-        $group->order = $groupOrder;
-        $group->save();
-    } else {
-        // Create new group
-        $group = new DeviceImageGroup();
-        $group->device_id = $device->id;
-        $group->title = $title;
-        $group->group_type = $groupType;
-        $group->order = $groupOrder;
-        $group->slug = Str::slug($title . '-' . uniqid());
-        $group->save();
-    }
+                // -----------------------------
+                // A. UPDATE OR CREATE GROUP
+                // -----------------------------
+                if ($groupId && isset($existingGroups[$groupId])) {
+                    // Update existing group
+                    $group = $existingGroups[$groupId];
+                    $group->title = $title;
+                    $group->group_type = $groupType;
+                    $group->order = $groupOrder;
+                    $group->save();
+                } else {
+                    // Create new group
+                    $group = new DeviceImageGroup();
+                    $group->device_id = $device->id;
+                    $group->title = $title;
+                    $group->group_type = $groupType;
+                    $group->order = $groupOrder;
+                    $group->slug = Str::slug($title . '-' . uniqid());
+                    $group->save();
+                }
 
-    $newGroupIds[] = $group->id;
+                $newGroupIds[] = $group->id;
 
-    // -----------------------------
-    // B. IMAGES
-    // -----------------------------
-    $incomingImages = $groupData['images'] ?? [];
-    $existingImages = $group->images->keyBy('id');
+                // -----------------------------
+                // B. IMAGES
+                // -----------------------------
+                $incomingImages = $groupData['images'] ?? [];
+                $existingImages = $group->images->keyBy('id');
 
-    foreach ($incomingImages as $imgIndex => $imgData) {
+                foreach ($incomingImages as $imgIndex => $imgData) {
 
-        $imageId = $imgData['id'] ?? null;
+                    $imageId = $imgData['id'] ?? null;
 
-        // IMAGE DELETE OPTION — implement if needed
-        if (!empty($imgData['remove']) && $imageId) {
-            $existingImages[$imageId]->delete();
-            continue;
-        }
+                    // IMAGE DELETE OPTION — implement if needed
+                    if (!empty($imgData['remove']) && $imageId) {
+                        $existingImages[$imageId]->delete();
+                        continue;
+                    }
 
-        // New file uploaded
-        if (isset($imgData['image']) && $imgData['image'] instanceof UploadedFile) {
-            $path = $imgData['image']->store("devices/{$device->id}/images", 'public');
+                    // New file uploaded
+                    if (isset($imgData['image']) && $imgData['image'] instanceof UploadedFile) {
+                        $path = $imgData['image']->store("devices/{$device->id}/images", 'public');
 
-            // If updating existing image
-            if ($imageId && isset($existingImages[$imageId])) {
-                $image = $existingImages[$imageId];
-            } else {
-                $image = new DeviceImage();
-                $image->device_image_group_id = $group->id;
+                        // If updating existing image
+                        if ($imageId && isset($existingImages[$imageId])) {
+                            $image = $existingImages[$imageId];
+                        } else {
+                            $image = new DeviceImage();
+                            $image->device_image_group_id = $group->id;
+                        }
+
+                        $image->image_url = $path;
+                        $image->caption = $imgData['caption'] ?? null;
+                        $image->order = $imgData['order'] ?? $imgIndex;
+                        $image->save();
+
+                    } else if ($imageId && isset($existingImages[$imageId])) {
+                        // No new file, update metadata only
+                        $image = $existingImages[$imageId];
+                        $image->caption = $imgData['caption'] ?? null;
+                        $image->order = $imgData['order'] ?? $imgIndex;
+                        $image->save();
+                    }
+
+                }
             }
 
-            $image->image_url = $path;
-            $image->caption = $imgData['caption'] ?? null;
-            $image->order = $imgData['order'] ?? $imgIndex;
-            $image->save();
-
-        } else if ($imageId && isset($existingImages[$imageId])) {
-            // No new file, update metadata only
-            $image = $existingImages[$imageId];
-            $image->caption = $imgData['caption'] ?? null;
-            $image->order = $imgData['order'] ?? $imgIndex;
-            $image->save();
-        }
-
-    }
-}
-
-// -----------------------------
+            // -----------------------------
 // C. DELETE GROUPS NOT IN FORM
 // -----------------------------
-$device->imageGroups()
-    ->whereNotIn('id', $newGroupIds)
-    ->delete();
+            $device->imageGroups()
+                ->whereNotIn('id', $newGroupIds)
+                ->delete();
 
 
             /*
@@ -549,54 +549,53 @@ $device->imageGroups()
                 if ($existingReview) {
                     $existingReview->delete();
                 }
-                return $device;
-            }
-
-            $review = $existingReview ?: new Review();
-            $review->device_id = $device->id;
-            $review->brand_id = $device->brand_id;
-
-            $reviewTitle = trim($reviewData['title'] ?? '');
-
-            if ($reviewTitle === '') {
-                $reviewTitle = $device->name . ' review';
-            }
-
-            $review->title = $reviewTitle;
-
-            $baseSlug = Str::slug($reviewData['slug'] ?? $reviewTitle);
-            $slug = $baseSlug;
-            $counter = 2;
-
-            while (Review::where('slug', $slug)->where('id', '!=', $review->id)->exists()) {
-                $slug = $baseSlug . '-' . $counter++;
-            }
-
-            $review->slug = $slug;
-
-            $review->body = $reviewData['body'] ?? '';
-
-            $isPublished = !empty($reviewData['is_published']);
-            $publishedAtRaw = $reviewData['published_at'] ?? null;
-
-            $review->is_published = $isPublished;
-
-            if ($publishedAtRaw) {
-                $review->published_at = Carbon::parse($publishedAtRaw);
-            } elseif ($isPublished) {
-                $review->published_at = now();
             } else {
-                $review->published_at = null;
-            }
+                $review = $existingReview ?: new Review();
+                $review->device_id = $device->id;
+                $review->brand_id = $device->brand_id;
 
-            if ($request->hasFile('review.cover_image')) {
-                $coverPath = $request
-                    ->file('review.cover_image')
-                    ->store('reviews', 'public');
-                $review->cover_image_url = $coverPath;
-            }
+                $reviewTitle = trim($reviewData['title'] ?? '');
 
-            $review->save();
+                if ($reviewTitle === '') {
+                    $reviewTitle = $device->name . ' review';
+                }
+
+                $review->title = $reviewTitle;
+
+                $baseSlug = Str::slug($reviewData['slug'] ?? $reviewTitle);
+                $slug = $baseSlug;
+                $counter = 2;
+
+                while (Review::where('slug', $slug)->where('id', '!=', $review->id)->exists()) {
+                    $slug = $baseSlug . '-' . $counter++;
+                }
+
+                $review->slug = $slug;
+
+                $review->body = $reviewData['body'] ?? '';
+
+                $isPublished = !empty($reviewData['is_published']);
+                $publishedAtRaw = $reviewData['published_at'] ?? null;
+
+                $review->is_published = $isPublished;
+
+                if ($publishedAtRaw) {
+                    $review->published_at = Carbon::parse($publishedAtRaw);
+                } elseif ($isPublished) {
+                    $review->published_at = now();
+                } else {
+                    $review->published_at = null;
+                }
+
+                if ($request->hasFile('review.cover_image')) {
+                    $coverPath = $request
+                        ->file('review.cover_image')
+                        ->store('reviews', 'public');
+                    $review->cover_image_url = $coverPath;
+                }
+
+                $review->save();
+            }
 
             // 7. SEO Meta (polymorphic)
             $device->saveSeo($request);
@@ -721,8 +720,9 @@ $device->imageGroups()
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Device $device)
+    public function edit($id)
     {
+        $device = Device::findOrFail($id);
         $brands = Brand::latest()->get();
         $deviceTypes = DeviceType::latest()->get();
         $stores = Store::all();
@@ -734,7 +734,7 @@ $device->imageGroups()
                 $query->whereHas('field');  // This will now work correctly
             },
             'specValues.field.category',
-            'variants.offers',
+            'allVariants.offers',
             'imageGroups.images',
             'videos',
             'seo'
@@ -753,8 +753,70 @@ $device->imageGroups()
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Device $device)
+    public function update(Request $request, $id)
     {
+        $device = Device::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'brand_id' => 'required|exists:brands,id',
+            'device_type_id' => 'required|exists:device_types,id',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'announcement_date' => 'nullable|date',
+            'released_at' => 'nullable|date',
+            'weight_grams' => 'nullable|numeric',
+            'dimensions' => 'nullable|string|max:255',
+            'thumbnail' => 'nullable|image|max:2048',
+            // Device variants + offer price
+            'variants' => 'required|array|min:1',
+            'variants.*.label' => 'required|string|max:255',
+            'variants.*.ram_gb' => 'nullable|integer|min:0',
+            'variants.*.storage_gb' => 'nullable|integer|min:0',
+            'variants.*.model_code' => 'nullable|string|max:100',
+            'variants.*.is_active' => 'nullable|boolean',
+            'variants.*.offers' => 'nullable|array',
+            'variants.*.offers.*.store_id' => 'required|exists:stores,id',
+            'variants.*.offers.*.country_id' => 'required|exists:countries,id',
+            'variants.*.offers.*.currency_id' => 'required|exists:currencies,id',
+            'variants.*.offers.*.price' => 'required|numeric|min:0',
+            'variants.*.offers.*.url' => 'nullable|url',
+            'variants.*.offers.*.status' => 'nullable|boolean',
+            'variants.*.offers.*.in_stock' => 'nullable|boolean',
+            'variants.*.offers.*.is_featured' => 'nullable|boolean',
+            'primary_variant' => 'required|integer',
+            // Device Images
+            'image_groups' => 'nullable|array',
+            'image_groups.*.title' => 'required|string|max:255',
+            'image_groups.*.group_type' => 'required|string|max:100',
+            'image_groups.*.order' => 'nullable|integer|min:0',
+            'image_groups.*.images' => 'nullable|array',
+            'image_groups.*.images.*.caption' => 'nullable|string|max:500',
+            'image_groups.*.images.*.order' => 'nullable|integer|min:0',
+            // Review (optional) - keep soft
+            'review.title' => 'nullable|string|max:255',
+            'review.slug' => 'nullable|string|max:255',
+            'review.summary' => 'nullable|string|max:255',
+            'review.published_at' => 'nullable|date',
+            'review.cover_image' => 'nullable|image|max:4096',
+            // SEO validation
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:255',
+            'meta_keywords' => 'nullable|string|max:255',
+            'canonical_url' => 'nullable|string|max:255',
+            'og_title' => 'nullable|string|max:255',
+            'og_description' => 'nullable|string|max:255',
+            'og_image' => 'nullable|string|max:255',
+            'twitter_title' => 'nullable|string|max:255',
+            'twitter_description' => 'nullable|string|max:255',
+            'twitter_image' => 'nullable|string|max:255',
+            'json_ld' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            ToastMagic::error($validator->errors()->first());
+            return redirect()->back()->withInput();
+        }
+
         try {
             $this->saveDevice($request, $device);
 
@@ -770,8 +832,9 @@ $device->imageGroups()
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Device $device)
+    public function destroy($id)
     {
+        $device = Device::findOrFail($id);
         try {
             if ($device->thumbnail_url && Storage::disk('public')->exists($device->thumbnail_url)) {
                 Storage::disk('public')->delete($device->thumbnail_url);

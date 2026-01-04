@@ -219,11 +219,8 @@
                     <div class="col-12">
                         <div class="form-group">
                             <label for="description" class="form-label">Summary</label>
-                            <textarea class="form-control" id="description" name="description" rows="3"
-                                placeholder="Enter device summary">{{ old('description', $isEdit ? $device->description : null) }}</textarea>
-                            @error('description')
-                                <small class="text-danger d-block">{{ $message }}</small>
-                            @enderror
+                            <textarea class="form-control review-content" name="description" rows="2"
+                                placeholder="Write Device summary here...">{{ old('description', $isEdit ? $device->description : null) }}</textarea>
                         </div>
                     </div>
 
@@ -689,9 +686,9 @@
             </div>
             <div class="card-body">
                 <div id="variantsContainer">
-                    @if($isEdit && $device->variants->count() > 0)
+                    @if($isEdit && $device->allVariants->count() > 0)
                         <!-- Show existing variants for editing -->
-                        @foreach($device->variants as $variantIndex => $variant)
+                        @foreach($device->allVariants as $variantIndex => $variant)
                             <div class="variant-section mb-4 p-3 border rounded" data-variant-index="{{ $variantIndex }}">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div class="d-flex align-items-center">
@@ -1216,7 +1213,7 @@
                     @if($isEdit && $device->imageGroups->count() > 0)
                         <!-- Show existing image groups for editing -->
                         @foreach($device->imageGroups as $groupIndex => $group)
-                        <div class="image-group-section mb-4 p-3 border rounded" data-group-index="{{ $groupIndex }}">
+                            <div class="image-group-section mb-4 p-3 border rounded" data-group-index="{{ $groupIndex }}">
                                 <input type="hidden" name="image_groups[{{ $groupIndex }}][id]" value="{{ $group->id }}">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <h6 class="group-title mb-0 text-dark">
@@ -1269,8 +1266,10 @@
                                     <div class="images-container" data-group-index="{{ $groupIndex }}">
                                         @if($group->images->count() > 0)
                                             @foreach($group->images as $imageIndex => $image)
-                                            <div class="image-item card mb-3">
-                                                    <input type="hidden" name="image_groups[{{ $groupIndex }}][images][{{ $imageIndex }}][id]" value="{{ $image->id }}">
+                                                <div class="image-item card mb-3">
+                                                    <input type="hidden"
+                                                        name="image_groups[{{ $groupIndex }}][images][{{ $imageIndex }}][id]"
+                                                        value="{{ $image->id }}">
                                                     <div class="card-body">
                                                         <div class="row">
                                                             <div class="col-md-8">
@@ -1279,7 +1278,7 @@
                                                                     <div class="image-upload-container">
                                                                         <!-- Show existing image -->
                                                                         <div class="existing-image-preview">
-                                                                            <img src="{{ Storage::disk('public')->url($image->image_url) }}"
+                                                                            <img src="{{ asset('storage/' . $image->image_url) }}"
                                                                                 alt="{{ $image->caption }}"
                                                                                 class="img-thumbnail rounded"
                                                                                 style="max-width: 200px; max-height: 200px; object-fit: contain;">
@@ -1508,6 +1507,7 @@
 
 
 <!-- Section 7: Device Reviews -->
+{{--
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
@@ -1525,7 +1525,6 @@
             </div>
 
             <div class="card-body">
-                {{-- TITLE + SLUG --}}
                 <div class="row mb-4">
 
                     <div class="col-md-8">
@@ -1544,12 +1543,12 @@
 
                 </div>
 
-                {{-- COVER IMAGE + PUBLISH DATE --}}
                 <div class="row mb-4">
 
                     <div class="col-md-6">
                         <label class="form-label">Cover Image</label>
-                        <x-image-upload fieldName="review[cover_image]" :existingImage="$existingReview->cover_image_url ?? null" />
+                        <x-image-upload fieldName="review[cover_image]"
+                            :existingImage="$existingReview->cover_image_url ?? null" />
                     </div>
 
                     <div class="col-md-6">
@@ -1560,7 +1559,6 @@
 
                 </div>
 
-                {{-- BODY --}}
                 <div class="border-top pt-3">
                     <div class="mb-3">
                         <label class="form-label">Review Content *</label>
@@ -1574,7 +1572,7 @@
         </div>
     </div>
 </div>
-
+--}}
 
 <!-- Section 3: Publishing & Settings -->
 <div class="row mb-4">
@@ -1792,7 +1790,7 @@
                     @foreach($device->variants as $variantIndex => $variant)
                         {{ $variantIndex }}: {{ $variant->offers->count() }},
                     @endforeach
-                                };
+                                                };
             @else
             let variantCounter = 0;
             let offerCounters = {};
@@ -2003,7 +2001,7 @@
 
             offersContainer.appendChild(offerItem);
         }
-            });
+                    });
     </script>
 
     <!-- Device videos -->
@@ -2088,15 +2086,15 @@
                     // Create iframe embed
                     const embedUrl = `https://www.youtube.com/embed/${videoId}`;
                     previewContainer.innerHTML = `
-                            <iframe 
-                                src="${embedUrl}" 
-                                class="embed-responsive-item" 
-                                frameborder="0" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                allowfullscreen
-                                style="position:absolute; width: 100%; height: 100%; border-radius: 0.375rem;">
-                            </iframe>
-                        `;
+                                    <iframe 
+                                        src="${embedUrl}" 
+                                        class="embed-responsive-item" 
+                                        frameborder="0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                        allowfullscreen
+                                        style="position:absolute; width: 100%; height: 100%; border-radius: 0.375rem;">
+                                    </iframe>
+                                `;
                 }
             });
 
@@ -2112,15 +2110,15 @@
                         if (videoId) {
                             const embedUrl = `https://www.youtube.com/embed/${videoId}`;
                             previewContainer.innerHTML = `
-                                    <iframe 
-                                        src="${embedUrl}" 
-                                        class="embed-responsive-item" 
-                                        frameborder="0" 
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                        allowfullscreen
-                                        style="position:absolute; width: 100%; height: 100%; border-radius: 0.375rem;">
-                                    </iframe>
-                                `;
+                                            <iframe 
+                                                src="${embedUrl}" 
+                                                class="embed-responsive-item" 
+                                                frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen
+                                                style="position:absolute; width: 100%; height: 100%; border-radius: 0.375rem;">
+                                            </iframe>
+                                        `;
                         }
                     }
                 }
@@ -2153,7 +2151,7 @@
                     @foreach($device->imageGroups as $groupIndex => $group)
                         {{ $groupIndex }}: {{ $group->images->count() }},
                     @endforeach
-                                };
+                                                };
             @else
             let groupCounter = 1;
             let imageCounters = { 0: 0 };
@@ -2207,15 +2205,15 @@
                 const imageItem = removeBtn.closest('.image-item');
 
                 // mark image as removed
-const groupIndex = imageItem.closest('.image-group-section').dataset.groupIndex;
-const imageIndex = Array.from(imageItem.parentNode.children).indexOf(imageItem);
+                const groupIndex = imageItem.closest('.image-group-section').dataset.groupIndex;
+                const imageIndex = Array.from(imageItem.parentNode.children).indexOf(imageItem);
 
-const removeInput = document.createElement('input');
-removeInput.type = 'hidden';
-removeInput.name = `image_groups[${groupIndex}][images][${imageIndex}][remove]`;
-removeInput.value = "1";
+                const removeInput = document.createElement('input');
+                removeInput.type = 'hidden';
+                removeInput.name = `image_groups[${groupIndex}][images][${imageIndex}][remove]`;
+                removeInput.value = "1";
 
-imageItem.appendChild(removeInput);
+                imageItem.appendChild(removeInput);
 
                 if (confirm('Are you sure you want to remove this image?')) {
                     imageItem.remove();
@@ -2277,26 +2275,26 @@ imageItem.appendChild(removeInput);
 
         function createImageUploadHTML(fieldName, baseName) {
             return `
-                        <div class="form-group">
-                            <div class="upload-area" id="${fieldName}UploadArea" style="display:flex;">
-                                <div class="upload-placeholder">
-                                    <i class="bi bi-image display-4 text-muted"></i>
-                                    <p class="mt-2 mb-1 text-muted">Click to upload image</p>
-                                    <small class="text-muted">PNG, JPG up to 2MB</small>
-                                </div>
-                                <input type="file" class="form-control d-none" id="${fieldName}" name="${baseName}[image]" accept="image/*">
-                            </div>
+                                <div class="form-group">
+                                    <div class="upload-area" id="${fieldName}UploadArea" style="display:flex;">
+                                        <div class="upload-placeholder">
+                                            <i class="bi bi-image display-4 text-muted"></i>
+                                            <p class="mt-2 mb-1 text-muted">Click to upload image</p>
+                                            <small class="text-muted">PNG, JPG up to 2MB</small>
+                                        </div>
+                                        <input type="file" class="form-control d-none" id="${fieldName}" name="${baseName}[image]" accept="image/*">
+                                    </div>
 
-                            <div class="preview-area mt-2" id="${fieldName}PreviewArea" style="display:none;">
-                                <div class="preview-container position-relative d-inline-block">
-                                    <img id="${fieldName}Preview" src="#" alt="${fieldName} preview" class="img-thumbnail rounded" style="max-width:150px; max-height:150px; object-fit:contain;">
-                                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" id="remove${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}">
-                                        <i class="bi bi-x-lg"></i>
-                                    </button>
+                                    <div class="preview-area mt-2" id="${fieldName}PreviewArea" style="display:none;">
+                                        <div class="preview-container position-relative d-inline-block">
+                                            <img id="${fieldName}Preview" src="#" alt="${fieldName} preview" class="img-thumbnail rounded" style="max-width:150px; max-height:150px; object-fit:contain;">
+                                            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" id="remove${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    `;
+                            `;
         }
 
         function initializeImageUpload(fieldName) {
@@ -2360,15 +2358,15 @@ imageItem.appendChild(removeInput);
             const imageItems = container.querySelectorAll('.image-item');
             if (imageItems.length === 0) {
                 container.innerHTML = `
-                            <div class="text-center py-3 text-muted">
-                                <i class="bi bi-image display-6"></i>
-                                <p class="mt-2 mb-0">No images added yet</p>
-                                <small>Click "Add Image" to upload photos</small>
-                            </div>
-                        `;
+                                    <div class="text-center py-3 text-muted">
+                                        <i class="bi bi-image display-6"></i>
+                                        <p class="mt-2 mb-0">No images added yet</p>
+                                        <small>Click "Add Image" to upload photos</small>
+                                    </div>
+                                `;
             }
         }
-            });
+                    });
 
         // Function to toggle image upload for existing images
         function toggleImageUpload(fieldName) {
@@ -2427,7 +2425,4 @@ imageItem.appendChild(removeInput);
 
     <!-- Device SEO -->
     <script src="{{ asset('admin/assets/js/seo-management.js') }}"></script>
-    </script>
-
-
 @endpush

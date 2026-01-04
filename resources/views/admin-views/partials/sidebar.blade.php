@@ -159,6 +159,30 @@
                     </li>
                 @endcanany
 
+                {{-- Home Review Slider --}}
+                @canany(['homereview_slider_view', 'homereview_slider_create', 'homereview_slider_edit', 'homereview_slider_delete'])
+                    <li class="sidebar-item has-sub {{ request()->routeIs('admin.homereview-slider.*') ? 'active' : '' }}">
+                        <a href="#" class='sidebar-link'>
+                            <i class="bi bi-images"></i>
+                            <span>Home Review Slider</span>
+                        </a>
+                        <ul class="submenu">
+                            @can('homereview_slider_view')
+                                <li
+                                    class="submenu-item {{ request()->routeIs('admin.homereview-slider.index') ? 'active' : '' }}">
+                                    <a href="{{ route('admin.homereview-slider.index') }}">All Sliders</a>
+                                </li>
+                            @endcan
+                            @can('homereview_slider_create')
+                                <li
+                                    class="submenu-item {{ request()->routeIs('admin.homereview-slider.create') ? 'active' : '' }}">
+                                    <a href="{{ route('admin.homereview-slider.create') }}">Add New Slider</a>
+                                </li>
+                            @endcan
+                        </ul>
+                    </li>
+                @endcanany
+
                 {{-- Device Management --}}
                 @canany(['device_view', 'device_create', 'device_edit', 'device_delete', 'devicetype_view', 'devicetype_create'])
                     <li
@@ -371,25 +395,35 @@
                 <li class="sidebar-item has-sub user-menu mt-auto">
                     <div class="sidebar-link user-info">
                         <div class="d-flex align-items-center">
-                            <div class="avatar avatar-sm">
-                                <img src="assets/images/faces/1.jpg" alt="User">
+                            <div class="avatar avatar-sm bg-primary text-white d-flex align-items-center justify-content-center overflow-hidden flex-shrink-0" style="width: 32px; height: 32px; border-radius: 50%;">
+                                @php
+                                    $sidebarImage = auth()->user()->image;
+                                    $isSidebarImageExists = $sidebarImage && (str_starts_with($sidebarImage, 'http') || Storage::disk('public')->exists($sidebarImage));
+                                @endphp
+                                @if($isSidebarImageExists)
+                                    <img src="{{ auth()->user()->image_url }}" alt="User"
+                                        style="width: 100%; height: 100%; object-fit: cover;">
+                                @else
+                                    <span class="text-xs">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
+                                @endif
                             </div>
                             <div class="ms-3">
-                                <h6 class="mb-0">John Duck</h6>
-                                <small class="text-muted">Administrator</small>
+                                <h6 class="mb-0 text-sm">{{ auth()->user()->name }}</h6>
+                                <small
+                                    class="text-muted text-xs">{{ auth()->user()->roles->first()->name ?? 'Administrator' }}</small>
                             </div>
                         </div>
                     </div>
 
                     <ul class="submenu">
                         <li class="submenu-item">
-                            <a href="#"><i class="bi bi-person me-2"></i>Profile</a>
+                            <a href="{{ route('admin.profile.edit') }}"><i class="bi bi-person me-2"></i>Profile</a>
                         </li>
                         <li class="submenu-item">
-                            <a href="#"><i class="bi bi-gear me-2"></i>Settings</a>
-                        </li>
-                        <li class="submenu-item">
-                            <a href="#"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+                            <a href="{{ route('admin.logout') }}"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <i class="bi bi-box-arrow-right me-2"></i>Logout
+                            </a>
                         </li>
                     </ul>
                 </li>

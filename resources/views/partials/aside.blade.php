@@ -1,5 +1,5 @@
 {{-- Sidebar Advertisement Slot --}}
-<div class="w-full bg-white mt-6">
+<!-- <div class="w-full bg-white mt-6">
 
     {{-- Outer wrapper to keep consistent with other sidebar boxes --}}
     <div class="border border-[#d5d5d5] bg-[#f5f5f5] relative flex items-center justify-center py-3">
@@ -20,7 +20,7 @@
         </div>
     </div>
 
-</div>
+</div> -->
 
 
 {{-- components: Latest Devices Sidebar --}}
@@ -34,35 +34,41 @@
     {{-- Device List --}}
     <div class="overflow-y-auto max-h-[390px] p-3 grid grid-cols-3 gap-4">
 
-        @php
-            $latest = [
-                ['name' => 'Realme 15', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/realme-15-int.jpg', 'url' => '#'],
-                ['name' => 'Xiaomi Poco F8 Ultra', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-poco-f8-ultra-.jpg', 'url' => '#'],
-                ['name' => 'Xiaomi Poco F8 Pro', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-poco-f8-pro.jpg', 'url' => '#'],
-                ['name' => 'Huawei Mate 80 Pro Max', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/huawei-mate-80-pro-max.jpg', 'url' => '#'],
-                ['name' => 'Huawei Mate X7', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/huawei-mate-x7.jpg', 'url' => '#'],
-                ['name' => 'Huawei Mate 80 RS Ultimate', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/huawei-mate-80-rs-ultimate.jpg', 'url' => '#'],
-                ['name' => 'Honor Watch X5', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/honor-watch-x5.jpg', 'url' => '#'],
-                ['name' => 'OnePlus Ace 6T', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/oneplus-ace-6t.jpg', 'url' => '#'],
-                ['name' => 'Huawei Mate 80 Pro', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/huawei-mate-80-pro.jpg', 'url' => '#'],
-            ];
-        @endphp
+        @php(
+            $latestDevices = Illuminate\Support\Facades\Cache::remember('latest_devices_sidebar', 3600, function () {
+    return App\Models\Device::where('is_published', true)
+        ->whereIn('release_status', ['announced', 'released'])
+        ->orderByRaw("
+            CASE 
+                WHEN release_status = 'released' 
+                     AND released_at IS NOT NULL 
+                THEN released_at
+                ELSE announcement_date
+            END DESC
+        ")
+        ->limit(9)
+        ->get();
+})
+        )
+@foreach ($latestDevices as $device)
+    <a href="{{ route('device-detail', $device->slug) }}"
+       class="text-center text-[11px] text-[#555] hover:text-[#F9A13D]">
 
-        @foreach ($latest as $device)
-            <a href="{{ $device['url'] }}" class="text-center text-[11px] text-[#555] hover:text-[#F9A13D]">
+        <img src="{{ $device->thumbnail_url }}"
+             alt="{{ $device->name }}"
+             class="w-full h-auto rounded shadow-sm hover:scale-105 transition-transform duration-200 mb-1">
 
-                <img src="{{ $device['img'] }}" alt="{{ $device['name'] }}"
-                    class="w-full h-auto rounded shadow-sm hover:scale-105 transition-transform duration-200 mb-1">
+        <span class="block font-medium leading-tight">
+            {{ $device->name }}
+        </span>
+    </a>
+@endforeach
 
-                <span class="block font-medium leading-tight">
-                    {{ $device['name'] }}
-                </span>
-            </a>
-        @endforeach
 
     </div>
 </div>
 
+<!-- In Stores Now -->
 <div class="w-full bg-white mt-5">
 
     {{-- Header --}}
@@ -73,36 +79,37 @@
     {{-- Device List --}}
     <div class="overflow-y-auto max-h-[390px] bg-[#e7e4e4] p-3 grid grid-cols-3 gap-4">
 
-        @php
-            $latest = [
-                ['name' => 'Realme 15', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/realme-15-int.jpg', 'url' => '#'],
-                ['name' => 'Xiaomi Poco F8 Ultra', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-poco-f8-ultra-.jpg', 'url' => '#'],
-                ['name' => 'Xiaomi Poco F8 Pro', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-poco-f8-pro.jpg', 'url' => '#'],
-                ['name' => 'Huawei Mate 80 Pro Max', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/huawei-mate-80-pro-max.jpg', 'url' => '#'],
-                ['name' => 'Huawei Mate X7', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/huawei-mate-x7.jpg', 'url' => '#'],
-                ['name' => 'Huawei Mate 80 RS Ultimate', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/huawei-mate-80-rs-ultimate.jpg', 'url' => '#'],
-                ['name' => 'Honor Watch X5', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/honor-watch-x5.jpg', 'url' => '#'],
-                ['name' => 'OnePlus Ace 6T', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/oneplus-ace-6t.jpg', 'url' => '#'],
-                ['name' => 'Huawei Mate 80 Pro', 'img' => 'https://fdn2.gsmarena.com/vv/bigpic/huawei-mate-80-pro.jpg', 'url' => '#'],
-            ];
-        @endphp
+        @php(
+            $inStoresNow = Illuminate\Support\Facades\Cache::remember('in_stores_now', 3600, function () {
+    return App\Models\Device::where('is_published', true)
+        ->where('release_status', 'released')
+        ->whereNotNull('released_at')
+        ->whereDate('released_at', '<=', now())
+        ->orderByDesc('released_at')
+        ->limit(9)
+        ->get();
+})
+           )
 
-        @foreach ($latest as $device)
-            <a href="{{ $device['url'] }}" class="text-center text-[11px] text-[#555] hover:text-[#F9A13D]">
+       @foreach ($inStoresNow as $device)
+    <a href="{{ route('device-detail', $device->slug) }}"
+       class="text-center text-[11px] text-[#555] hover:text-[#F9A13D]">
 
-                <img src="{{ $device['img'] }}" alt="{{ $device['name'] }}"
-                    class="w-full h-auto rounded shadow-sm hover:scale-105 transition-transform duration-200 mb-1">
+        <img src="{{ $device->thumbnail_url }}"
+             alt="{{ $device->name }}"
+             class="w-full h-auto rounded shadow-sm hover:scale-105 transition-transform duration-200 mb-1">
 
-                <span class="block font-medium leading-tight">
-                    {{ $device['name'] }}
-                </span>
-            </a>
-        @endforeach
+        <span class="block font-medium leading-tight">
+            {{ $device->name }}
+        </span>
+    </a>
+@endforeach
+
 
     </div>
 </div>
 
-
+<!-- Top 10 by Daily Interest -->
 <div class="w-full bg-white mt-6">
     {{-- Header --}}
     <h4 class="border-l-[11px] border-[#F9A13D] text-[#F9A13D] uppercase font-bold text-[12px] px-4 py-3">
@@ -123,7 +130,7 @@
 
             <tbody class="divide-y divide-gray-200">
 
-                @php
+                @php(
                     $rankings = [
                         ['name' => 'Xiaomi Poco F8 Ultra', 'hits' => '35,721', 'url' => '#'],
                         ['name' => 'OnePlus 15', 'hits' => '24,173', 'url' => '#'],
@@ -135,8 +142,7 @@
                         ['name' => 'Samsung Galaxy A17', 'hits' => '16,797', 'url' => '#'],
                         ['name' => 'Samsung Galaxy S25', 'hits' => '14,365', 'url' => '#'],
                         ['name' => 'Xiaomi Poco X7 Pro', 'hits' => '14,085', 'url' => '#'],
-                    ];
-                @endphp
+                    ])
 
                 @foreach ($rankings as $index => $item)
                     <tr class="{{ $loop->even ? 'bg-[#e8f5e9]' : '' }} transition">
@@ -184,7 +190,7 @@
 
             <tbody class="divide-y divide-gray-200">
 
-                @php
+                @php(
                     $rankings = [
                         ['name' => 'Xiaomi Poco F8 Ultra', 'hits' => '35,721', 'url' => '#'],
                         ['name' => 'OnePlus 15', 'hits' => '24,173', 'url' => '#'],
@@ -196,8 +202,7 @@
                         ['name' => 'Samsung Galaxy A17', 'hits' => '16,797', 'url' => '#'],
                         ['name' => 'Samsung Galaxy S25', 'hits' => '14,365', 'url' => '#'],
                         ['name' => 'Xiaomi Poco X7 Pro', 'hits' => '14,085', 'url' => '#'],
-                    ];
-                @endphp
+                    ])
 
                 @foreach ($rankings as $index => $item)
                     <tr class="{{ $loop->even ? 'bg-[#e4eff6]' : '' }} transition">
@@ -233,7 +238,7 @@
 
     <div class="overflow-y-auto max-h-[380px] px-4 py-2">
 
-        @php
+        @php(
             $comparisons = [
                 ['text' => 'Samsung Galaxy S25 Ultra vs. iPhone 17 Pro Max', 'url' => '#'],
                 ['text' => 'Samsung Galaxy S25 vs. Galaxy S25 FE 5G', 'url' => '#'],
@@ -246,8 +251,7 @@
                 ['text' => 'OnePlus 13 vs. OnePlus 15 5G', 'url' => '#'],
                 ['text' => 'Xiaomi Poco F8 Ultra 5G vs. Poco F8 Pro 5G', 'url' => '#'],
                 ['text' => 'Xiaomi 15T 5G vs. Xiaomi 15T Pro 5G', 'url' => '#'],
-            ];
-        @endphp
+            ])
 
         <ul class="space-y-1">
             @foreach ($comparisons as $index => $item)
@@ -264,16 +268,15 @@
 </div>
 
 
-<div class="w-full bg-white mt-6">
-
-    {{-- Header --}}
+<!-- Electric Vehicles News  -->
+<!-- <div class="w-full bg-white mt-6">
     <h4 class="border-l-[11px] border-[#F9A13D] text-[#F9A13D] uppercase font-bold text-[12px] px-4 py-3">
         <a href="https://www.arenaev.com/" target="_blank" class="hover:text-[#F9A13D]">
             Electric vehicles
         </a>
     </h4>
 
-    @php
+    @php(
         $evNews = [
             [
                 'title' => 'Electric car sales overtake gasoline and diesel in Europe, Tesla misses momentum',
@@ -295,21 +298,19 @@
                 'img' => 'https://st.arenaev.com/news/23/01/solar-panels-stupid/-344x215/arenaev_001.jpg',
                 'url' => 'https://www.arenaev.com/why_solar_panels_on_cars_are_beyond_stupid_at_this_point-news-1295.php',
             ],
-        ];
-    @endphp
+        ])
 
     <div class="px-3 py-3">
         <ul class="space-y-3">
             @foreach ($evNews as $item)
                 <li class="bg-white flex gap-2 p-2 rounded-sm shadow-sm hover:shadow-md transition-shadow">
                     <a href="{{ $item['url'] }}" target="_blank" class="flex gap-2 w-full">
-                        {{-- Thumbnail --}}
+
                         <div class="w-[80px] h-[55px] flex-shrink-0 overflow-hidden rounded-sm">
                             <img src="{{ $item['img'] }}" alt="{{ $item['title'] }}"
                                 class="w-full h-full object-cover hover:scale-105 transition-transform duration-200" />
                         </div>
 
-                        {{-- Title --}}
                         <div class="flex-1 flex items-center">
                             <span class="text-[11px] leading-snug text-[#555] hover:text-[#F9A13D]">
                                 {{ $item['title'] }}
@@ -320,11 +321,10 @@
             @endforeach
         </ul>
     </div>
-</div>
-
+</div> -->
 
 {{-- Sidebar Advertisement Slot --}}
-<div class="w-full bg-white mt-6">
+<!-- <div class="w-full bg-white mt-6">
 
     {{-- Outer wrapper to keep consistent with other sidebar boxes --}}
     <div class="border border-[#d5d5d5] bg-[#f5f5f5] relative flex items-center justify-center py-3">
@@ -345,4 +345,4 @@
         </div>
     </div>
 
-</div>
+</div> -->

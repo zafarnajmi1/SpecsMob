@@ -1,0 +1,1190 @@
+/* ========================================
+   RESPONSIVE DESIGN - PROPORTIONAL SCALING
+   Maintains sidebar + main content layout
+   across ALL devices (mobile, tablet, laptop, desktop)
+   ======================================== */
+
+/* ROOT VARIABLES FOR RESPONSIVE SCALING */
+:root {
+    /* Base font sizes for different screens */
+    --base-font-size: 13px;
+    --heading-scale: 1;
+    --spacing-scale: 1;
+    --sidebar-width: 30%;
+    --main-width: 70%;
+}
+
+/* ========================================
+   MOBILE DEVICES (320px - 480px)
+   ======================================== */
+@media (max-width: 480px) {
+    :root {
+        --base-font-size: 9px;
+        --heading-scale: 0.7;
+        --spacing-scale: 0.6;
+        --sidebar-width: 35%;
+        --main-width: 65%;
+    }
+
+    /* Reduce header padding */
+    body {
+        font-size: var(--base-font-size) !important;
+    }
+
+    /* Logo scaling */
+    .text-3xl {
+        font-size: 1.5rem !important;
+    }
+
+    /* Search input */
+    input[type="search"] {
+        font-size: 10px !important;
+        padding: 0.4rem !important;
+    }
+
+    /* Social icons */
+    .w-\[31px\].h-\[31px\] {
+        width: 22px !important;
+        height: 22px !important;
+        font-size: 10px !important;
+    }
+
+    .w-\[31px\].h-\[31px\] i {
+        font-size: 11px !important;
+    }
+
+    /* Navigation */
+    nav ul li a {
+        font-size: 8px !important;
+        padding: 0.4rem 0.3rem !important;
+    }
+
+    /* Sidebar width - KEEP SIDE BY SIDE */
+    aside {
+        width: var(--sidebar-width) !important;
+        padding-left: 0.3rem !important;
+        padding-right: 0.3rem !important;
+    }
+
+    /* Main content width - KEEP SIDE BY SIDE */
+    main {
+        width: var(--main-width) !important;
+        padding-left: 0.3rem !important;
+        padding-right: 0.3rem !important;
+    }
+
+    /* Phone Finder box */
+    /* .h-\[350px\] {
+        height: 250px !important;
+    } */
+
+    /* Brand links in sidebar */
+    aside a {
+        font-size: 8px !important;
+        padding: 0.3rem 0.4rem !important;
+    }
+
+    /* All text elements */
+    p,
+    span,
+    div,
+    a,
+    li {
+        font-size: inherit;
+    }
+
+    /* Headings */
+    h1 {
+        font-size: calc(1.8rem * var(--heading-scale)) !important;
+    }
+
+    h2 {
+        font-size: calc(1.5rem * var(--heading-scale)) !important;
+    }
+
+    h3 {
+        font-size: calc(1.2rem * var(--heading-scale)) !important;
+    }
+
+    h4 {
+        font-size: calc(1rem * var(--heading-scale)) !important;
+    }
+
+    h5 {
+        font-size: calc(0.9rem * var(--heading-scale)) !important;
+    }
+
+    h6 {
+        font-size: calc(0.8rem * var(--heading-scale)) !important;
+    }
+
+
+    /* Buttons */
+    button,
+    .btn {
+        font-size: 9px !important;
+        padding: 0.4rem 0.6rem !important;
+    }
+
+    /* Gap adjustments */
+    .gap-4 {
+        gap: 0.5rem !important;
+    }
+
+    .gap-5 {
+        gap: 0.6rem !important;
+    }
+
+    .gap-3 {
+        gap: 0.4rem !important;
+    }
+
+    .gap-2 {
+        gap: 0.3rem !important;
+    }
+
+    /* Margin adjustments */
+    .mb-5 {
+        margin-bottom: 0.6rem !important;
+    }
+
+    .mt-5 {
+        margin-top: 0.6rem !important;
+    }
+
+    .my-5 {
+        margin-top: 0.6rem !important;
+        margin-bottom: 0.6rem !important;
+    }
+}
+
+/* ========================================
+   SMALL TABLETS (481px - 640px)
+   ======================================== */
+@media (min-width: 481px) and (max-width: 640px) {
+    :root {
+        --base-font-size: 10px;
+        --heading-scale: 0.8;
+        --spacing-scale: 0.7;
+        --sidebar-width: 33%;
+        --main-width: 67%;
+    }
+
+    body {
+        font-size: var(--base-font-size) !important;
+    }
+
+    /* Logo */
+    .text-3xl {
+        font-size: 1.8rem !important;
+    }
+
+    /* Search */
+    input[type="search"] {
+        font-size: 11px !important;
+        padding: 0.5rem !important;
+    }
+
+    /* Social icons */
+    /* .w-\[31px\].h-\[31px\] {
+        width: 25px !important;
+        height: 25px !important;
+    } */
+
+    .w-\[31px\].h-\[31px\] i {
+        font-size: 12px !important;
+    }
+
+    /* Navigation */
+    nav ul li a {
+        font-size: 9px !important;
+        padding: 0.5rem 0.4rem !important;
+    }
+
+    /* Sidebar - KEEP SIDE BY SIDE */
+    aside {
+        width: var(--sidebar-width) !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+
+    /* Main content - KEEP SIDE BY SIDE */
+    main {
+        width: var(--main-width) !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+
+    /* Phone Finder */
+    .h-\[350px\] {
+        height: 280px !important;
+    }
+
+    /* Brand links */
+    aside a {
+        font-size: 9px !important;
+        padding: 0.4rem 0.5rem !important;
+    }
+
+    /* Headings */
+    h1 {
+        font-size: calc(2rem * var(--heading-scale)) !important;
+    }
+
+    h2 {
+        font-size: calc(1.7rem * var(--heading-scale)) !important;
+    }
+
+    h3 {
+        font-size: calc(1.4rem * var(--heading-scale)) !important;
+    }
+
+    h4 {
+        font-size: calc(1.1rem * var(--heading-scale)) !important;
+    }
+
+    h5 {
+        font-size: calc(1rem * var(--heading-scale)) !important;
+    }
+
+    h6 {
+        font-size: calc(0.9rem * var(--heading-scale)) !important;
+    }
+
+    /* Buttons */
+    button,
+    .btn {
+        font-size: 10px !important;
+        padding: 0.5rem 0.8rem !important;
+    }
+}
+
+/* ========================================
+   TABLETS (641px - 768px)
+   ======================================== */
+@media (min-width: 641px) and (max-width: 768px) {
+    :root {
+        --base-font-size: 11px;
+        --heading-scale: 0.85;
+        --spacing-scale: 0.8;
+        --sidebar-width: 32%;
+        --main-width: 68%;
+    }
+
+    body {
+        font-size: var(--base-font-size) !important;
+    }
+
+    /* Logo */
+    .text-3xl {
+        font-size: 2rem !important;
+    }
+
+    /* Search */
+    input[type="search"] {
+        font-size: 11px !important;
+    }
+
+    /* Social icons */
+    /* .w-\[31px\].h-\[31px\] {
+        width: 27px !important;
+        height: 27px !important;
+    } */
+
+    .w-\[31px\].h-\[31px\] i {
+        font-size: 13px !important;
+    }
+
+    /* Navigation */
+    nav ul li a {
+        font-size: 10px !important;
+        padding: 0.6rem 0.5rem !important;
+    }
+
+    /* Sidebar - KEEP SIDE BY SIDE */
+    aside {
+        width: var(--sidebar-width) !important;
+    }
+
+    /* Main content - KEEP SIDE BY SIDE */
+    main {
+        width: var(--main-width) !important;
+    }
+
+    /* Phone Finder */
+    .h-\[350px\] {
+        height: 300px !important;
+    }
+
+    /* Brand links */
+    aside a {
+        font-size: 9.5px !important;
+    }
+
+    /* Headings */
+    h1 {
+        font-size: calc(2.2rem * var(--heading-scale)) !important;
+    }
+
+    h2 {
+        font-size: calc(1.8rem * var(--heading-scale)) !important;
+    }
+
+    h3 {
+        font-size: calc(1.5rem * var(--heading-scale)) !important;
+    }
+
+    h4 {
+        font-size: calc(1.2rem * var(--heading-scale)) !important;
+    }
+
+    h5 {
+        font-size: calc(1.05rem * var(--heading-scale)) !important;
+    }
+
+    h6 {
+        font-size: calc(0.95rem * var(--heading-scale)) !important;
+    }
+}
+
+/* ========================================
+   SMALL LAPTOPS (769px - 1024px)
+   ======================================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+    :root {
+        --base-font-size: 12px;
+        --heading-scale: 0.9;
+        --spacing-scale: 0.9;
+        --sidebar-width: 31%;
+        --main-width: 69%;
+    }
+
+    body {
+        font-size: var(--base-font-size) !important;
+    }
+
+    /* Logo */
+    .text-3xl {
+        font-size: 2.2rem !important;
+    }
+
+    /* Search */
+    input[type="search"] {
+        font-size: 12px !important;
+    }
+
+    /* Social icons */
+    /* .w-\[31px\].h-\[31px\] {
+        width: 29px !important;
+        height: 29px !important;
+    } */
+
+    .w-\[31px\].h-\[31px\] i {
+        font-size: 14px !important;
+    }
+
+    /* Navigation */
+    nav ul li a {
+        font-size: 11px !important;
+    }
+
+    /* Sidebar - KEEP SIDE BY SIDE */
+    aside {
+        width: var(--sidebar-width) !important;
+    }
+
+    /* Main content - KEEP SIDE BY SIDE */
+    main {
+        width: var(--main-width) !important;
+    }
+
+    /* Phone Finder */
+    .h-\[350px\] {
+        height: 330px !important;
+    }
+
+    /* Headings */
+    h1 {
+        font-size: calc(2.4rem * var(--heading-scale)) !important;
+    }
+
+    h2 {
+        font-size: calc(2rem * var(--heading-scale)) !important;
+    }
+
+    h3 {
+        font-size: calc(1.6rem * var(--heading-scale)) !important;
+    }
+
+    h4 {
+        font-size: calc(1.3rem * var(--heading-scale)) !important;
+    }
+
+    h5 {
+        font-size: calc(1.1rem * var(--heading-scale)) !important;
+    }
+
+    h6 {
+        font-size: calc(1rem * var(--heading-scale)) !important;
+    }
+}
+
+/* ========================================
+   LAPTOPS & DESKTOPS (1025px+)
+   ======================================== */
+@media (min-width: 1025px) {
+    :root {
+        --base-font-size: 13px;
+        --heading-scale: 1;
+        --spacing-scale: 1;
+        --sidebar-width: 30%;
+        --main-width: 70%;
+    }
+
+    /* Default desktop sizes - no changes needed */
+    /* Sidebar - KEEP SIDE BY SIDE */
+    aside {
+        width: var(--sidebar-width) !important;
+    }
+
+    /* Main content - KEEP SIDE BY SIDE */
+    main {
+        width: var(--main-width) !important;
+    }
+}
+
+/* ========================================
+   LARGE DESKTOPS (1440px+)
+   ======================================== */
+@media (min-width: 1440px) {
+    :root {
+        --base-font-size: 14px;
+        --heading-scale: 1.05;
+        --spacing-scale: 1.05;
+    }
+
+    body {
+        font-size: var(--base-font-size) !important;
+    }
+}
+
+/* ========================================
+   UTILITY CLASSES - RESPONSIVE HELPERS
+   ======================================== */
+
+/* Prevent layout breaking */
+* {
+    box-sizing: border-box;
+}
+
+/* Ensure sidebar and main stay side by side */
+/* .max-w-\[1060px\]>.flex {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+} */
+
+
+/* Responsive tables */
+table {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    table {
+        font-size: 10px;
+    }
+}
+
+/* Responsive text overflow */
+.text-responsive {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Hide scrollbar but keep functionality */
+.overflow-x-auto::-webkit-scrollbar {
+    height: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 2px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* ========================================
+   FORCE SIDEBAR + MAIN LAYOUT ON ALL DEVICES
+   ======================================== */
+@media (max-width: 768px) {
+
+    /* Override Tailwind's md:flex-row to keep layout */
+    .flex-col.md\:flex-row {
+        flex-direction: row !important;
+    }
+
+    /* Override Tailwind's md:w-[30%] to keep sidebar width */
+    /* .w-full.md\:w-\[30\%\] {
+        width: var(--sidebar-width) !important;
+    } */
+
+    /* Override Tailwind's md:w-[70%] to keep main width */
+    /* .w-full.md\:w-\[70\%\] {
+        width: var(--main-width) !important;
+    } */
+
+    /* Remove padding on mobile for more space */
+    .px-4.md\:px-0 {
+        padding-left: 0.3rem !important;
+        padding-right: 0.3rem !important;
+    }
+}
+
+/* ========================================
+   SEARCH DROPDOWN RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+    #search-dropdown {
+        width: 95vw !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        font-size: 10px;
+    }
+
+    #search-dropdown .grid-cols-4 {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+
+    #search-dropdown .md\:grid-cols-6 {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    #search-dropdown .md\:grid-cols-3 {
+        grid-template-columns: repeat(1, 1fr) !important;
+    }
+}
+
+/* ========================================
+   LOGIN POPUP RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+    #login-popup {
+        width: 90vw !important;
+        right: 5vw !important;
+        top: 50px !important;
+        font-size: 11px;
+    }
+
+    #login-popup input {
+        font-size: 11px !important;
+        padding: 0.5rem !important;
+    }
+
+    #login-popup button {
+        font-size: 11px !important;
+        padding: 0.5rem !important;
+    }
+}
+
+/* ========================================
+   RESPONSIVE GRID ADJUSTMENTS
+   ======================================== */
+@media (max-width: 480px) {
+    .grid-cols-2 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    .grid-cols-4 {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+/* ========================================
+   RESPONSIVE FONT WEIGHTS
+   ======================================== */
+@media (max-width: 768px) {
+    .font-bold {
+        font-weight: 600 !important;
+        /* Slightly lighter on mobile */
+    }
+}
+
+/* ========================================
+   ENSURE NO HORIZONTAL SCROLL
+   ======================================== */
+body {
+    overflow-x: hidden;
+}
+
+.overflow-x-hidden {
+    overflow-x: hidden !important;
+}
+
+/* ========================================
+   RESPONSIVE SPACING UTILITIES
+   ======================================== */
+@media (max-width: 480px) {
+    .p-4 {
+        padding: 0.5rem !important;
+    }
+
+    .p-3 {
+        padding: 0.4rem !important;
+    }
+
+    .p-2 {
+        padding: 0.3rem !important;
+    }
+
+    .px-4 {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+
+    .py-3 {
+        padding-top: 0.4rem !important;
+        padding-bottom: 0.4rem !important;
+    }
+}
+
+/* ========================================
+   TOUCH-FRIENDLY TARGETS ON MOBILE
+   ======================================== */
+@media (max-width: 768px) {
+
+    a,
+    button {
+        min-height: 32px;
+    }
+}
+
+/* ========================================
+   COMPONENT-SPECIFIC RESPONSIVE STYLES
+   ======================================== */
+
+/* Device Header Component */
+@media (max-width: 480px) {
+
+    /* Device header padding */
+    .p-4.md\:p-6 {
+        padding: 0.5rem !important;
+    }
+
+    /* Device name */
+    .text-2xl.md\:text-3xl {
+        font-size: 1.2rem !important;
+    }
+
+    /* Spec cards grid */
+    .grid-cols-2.sm\:grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.4rem !important;
+    }
+
+    /* Spec card icons */
+    .text-2xl {
+        font-size: 1.2rem !important;
+    }
+
+    /* Spec card text */
+    .text-\[9px\] {
+        font-size: 7px !important;
+    }
+
+    .text-sm {
+        font-size: 10px !important;
+    }
+
+    /* Action buttons */
+    .flex-1.flex.items-center {
+        font-size: 8px !important;
+        padding: 0.4rem 0.2rem !important;
+    }
+
+    /* Hide text on very small screens, show icons only */
+    .hidden.sm\:inline {
+        display: none !important;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 640px) {
+    .text-2xl.md\:text-3xl {
+        font-size: 1.5rem !important;
+    }
+
+    .grid-cols-2.sm\:grid-cols-3 {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+
+    .text-\[9px\] {
+        font-size: 8px !important;
+    }
+
+    .flex-1.flex.items-center {
+        font-size: 9px !important;
+    }
+}
+
+/* Article Cards */
+@media (max-width: 480px) {
+    .articles {
+        padding: 0.5rem !important;
+        gap: 0.5rem !important;
+    }
+
+    .articles .flex {
+        flex-direction: column !important;
+    }
+
+    .articles img {
+        width: 100% !important;
+        max-height: 150px;
+        object-fit: cover;
+    }
+}
+
+/* News List Component */
+@media (max-width: 480px) {
+    .news-list .grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Ranking Tables */
+@media (max-width: 768px) {
+    table {
+        font-size: 10px !important;
+    }
+
+    table th,
+    table td {
+        padding: 0.3rem !important;
+    }
+
+    table img {
+        max-width: 40px !important;
+    }
+}
+
+/* Popular Reviews */
+@media (max-width: 480px) {
+    .popular-review {
+        padding: 0.5rem !important;
+    }
+
+    .popular-review h3 {
+        font-size: 1rem !important;
+    }
+
+    .popular-review img {
+        max-height: 120px !important;
+    }
+}
+
+/* Page Hero Component */
+@media (max-width: 480px) {
+    .page-hero {
+        padding: 1rem !important;
+    }
+
+    .page-hero h1 {
+        font-size: 1.5rem !important;
+    }
+
+    .page-hero p {
+        font-size: 11px !important;
+    }
+}
+
+/* ========================================
+   BRAND GRID RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+
+    /* Brand cards on brand listing page */
+    .brand-card {
+        padding: 0.5rem !important;
+    }
+
+    .brand-card img {
+        max-width: 50px !important;
+        max-height: 50px !important;
+    }
+
+    .brand-card h3 {
+        font-size: 11px !important;
+    }
+}
+
+/* ========================================
+   DEVICE LISTING RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+
+    /* Device cards in listings */
+    .device-card {
+        padding: 0.4rem !important;
+    }
+
+    .device-card img {
+        max-height: 80px !important;
+    }
+
+    .device-card .device-name {
+        font-size: 10px !important;
+    }
+
+    .device-card .device-specs {
+        font-size: 8px !important;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    .device-card {
+        padding: 0.6rem !important;
+    }
+
+    .device-card img {
+        max-height: 100px !important;
+    }
+
+    .device-card .device-name {
+        font-size: 11px !important;
+    }
+
+    .device-card .device-specs {
+        font-size: 9px !important;
+    }
+}
+
+/* ========================================
+   REVIEW CARDS RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+    .review-card {
+        padding: 0.5rem !important;
+    }
+
+    .review-card img {
+        max-height: 100px !important;
+    }
+
+    .review-card h3 {
+        font-size: 11px !important;
+    }
+
+    .review-card p {
+        font-size: 9px !important;
+    }
+}
+
+/* ========================================
+   COMMENTS SECTION RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+    .comment {
+        padding: 0.5rem !important;
+        font-size: 10px !important;
+    }
+
+    .comment .author {
+        font-size: 10px !important;
+    }
+
+    .comment .date {
+        font-size: 8px !important;
+    }
+
+    .comment textarea {
+        font-size: 10px !important;
+        padding: 0.4rem !important;
+    }
+
+    .comment button {
+        font-size: 9px !important;
+        padding: 0.4rem 0.6rem !important;
+    }
+}
+
+/* ========================================
+   FORMS RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+
+    form input,
+    form textarea,
+    form select {
+        font-size: 11px !important;
+        padding: 0.5rem !important;
+    }
+
+    form label {
+        font-size: 10px !important;
+    }
+
+    form button[type="submit"] {
+        font-size: 11px !important;
+        padding: 0.6rem 1rem !important;
+    }
+}
+
+/* ========================================
+   PAGINATION RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+    .pagination {
+        font-size: 10px !important;
+    }
+
+    .pagination a,
+    .pagination span {
+        padding: 0.3rem 0.5rem !important;
+        font-size: 10px !important;
+    }
+}
+
+/* ========================================
+   BREADCRUMBS RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+    .breadcrumb {
+        font-size: 9px !important;
+    }
+
+    .breadcrumb a {
+        padding: 0.2rem 0.3rem !important;
+    }
+}
+
+/* ========================================
+   MODAL/POPUP RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+    .modal {
+        width: 95vw !important;
+        max-width: 95vw !important;
+        margin: 0.5rem !important;
+    }
+
+    .modal-header {
+        padding: 0.5rem !important;
+        font-size: 12px !important;
+    }
+
+    .modal-body {
+        padding: 0.5rem !important;
+        font-size: 11px !important;
+    }
+
+    .modal-footer {
+        padding: 0.5rem !important;
+    }
+}
+
+/* ========================================
+   TABS RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+    .tabs {
+        font-size: 9px !important;
+    }
+
+    .tabs a {
+        padding: 0.4rem 0.5rem !important;
+    }
+}
+
+/* ========================================
+   BADGES & TAGS RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+
+    .badge,
+    .tag {
+        font-size: 8px !important;
+        padding: 0.2rem 0.4rem !important;
+    }
+}
+
+/* ========================================
+   ALERTS & NOTIFICATIONS RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+    .alert {
+        font-size: 10px !important;
+        padding: 0.5rem !important;
+    }
+
+    .alert i {
+        font-size: 12px !important;
+    }
+}
+
+/* ========================================
+   FOOTER RESPONSIVE (if exists)
+   ======================================== */
+@media (max-width: 480px) {
+    footer {
+        font-size: 9px !important;
+    }
+
+    footer .grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.5rem !important;
+    }
+}
+
+/* ========================================
+   SPECIFICATION TABLES RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+    .spec-table {
+        font-size: 9px !important;
+    }
+
+    .spec-table th {
+        font-size: 9px !important;
+        padding: 0.3rem !important;
+    }
+
+    .spec-table td {
+        font-size: 9px !important;
+        padding: 0.3rem !important;
+    }
+
+    .spec-table .spec-label {
+        font-size: 8px !important;
+    }
+
+    .spec-table .spec-value {
+        font-size: 9px !important;
+    }
+}
+
+/* ========================================
+   IMAGE GALLERIES RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+    .gallery {
+        gap: 0.3rem !important;
+    }
+
+    .gallery img {
+        max-height: 100px !important;
+    }
+
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    .gallery-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+/* ========================================
+   VIDEO EMBEDS RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+
+    iframe,
+    video {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    .video-container {
+        position: relative;
+        padding-bottom: 56.25%;
+        /* 16:9 aspect ratio */
+        height: 0;
+        overflow: hidden;
+    }
+
+    .video-container iframe,
+    .video-container video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+/* ========================================
+   PRICE COMPARISON RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+    .price-card {
+        padding: 0.5rem !important;
+        font-size: 10px !important;
+    }
+
+    .price-card .price {
+        font-size: 14px !important;
+    }
+
+    .price-card .store {
+        font-size: 9px !important;
+    }
+}
+
+/* ========================================
+   OPINION/REVIEW STATS RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.4rem !important;
+    }
+
+    .stat-card {
+        padding: 0.4rem !important;
+    }
+
+    .stat-card .stat-value {
+        font-size: 16px !important;
+    }
+
+    .stat-card .stat-label {
+        font-size: 8px !important;
+    }
+}
+
+/* ========================================
+   FILTER SIDEBAR (if exists) RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+    .filter-group {
+        padding: 0.4rem !important;
+    }
+
+    .filter-group label {
+        font-size: 9px !important;
+    }
+
+    .filter-group input[type="checkbox"],
+    .filter-group input[type="radio"] {
+        width: 14px !important;
+        height: 14px !important;
+    }
+}

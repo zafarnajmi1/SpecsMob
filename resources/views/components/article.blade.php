@@ -1,8 +1,8 @@
 @props(['article'])
 
-<a href="{{ route('article-detail', ['slug' => $article->slug, 'type' => $article->type]) }}" class="group block mb-4">
+<a href="{{ route('article-detail', ['slug' => $article->slug, 'type' => $article->type]) }}" class="group block mb-2 w-full">
     <article
-        class="flex flex-col md:flex-row bg-white overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-[#eee] rounded-md">
+        class="flex flex-col md:flex-row bg-white overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-[#eee] rounded-md w-full">
         {{-- Image --}}
         <div class="w-full md:w-[240px] h-[200px] md:h-auto flex-shrink-0 overflow-hidden bg-gray-100">
             <img src="{{ $article->thumbnail_url }}" alt="{{ $article->title }}"

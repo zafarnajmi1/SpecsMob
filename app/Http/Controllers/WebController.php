@@ -163,6 +163,7 @@ class WebController extends Controller
             ->get();
 
         $brands = Brand::active()->get();
+        $mobileBrands = Brand::active()->take(12)->get();
 
         $latestReviews = Review::published()
             ->with(['device.brand'])
@@ -177,14 +178,26 @@ class WebController extends Controller
             ->take(10)
             ->get();
 
+        $featuredReviews = Review::published()
+            ->latest('published_at')
+            ->take(8)
+            ->get();
+
+        $latestDevices = Device::where('is_published', true)
+            ->take(7)
+            ->get();
+
         return view('home', compact(
             'featuredReview',
             'sideReviews',
             'featuredArticle',
             'sideArticles',
             'brands',
+            'mobileBrands',
             'latestReviews',
-            'latestArticles'
+            'latestArticles',
+            'featuredReviews',
+            'latestDevices'
         ));
     }
 
