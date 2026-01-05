@@ -50,10 +50,10 @@
 
             <!-- Nav Links -->
             <div class="flex gap-4 h-full">
-                <a href="#" class="flex items-center gap-1 h-full hover:bg-[#d50000] transition-colors px-2 transition">
+                <a href="#" class="flex items-center gap-1 h-full hover:bg-[#F9A13D] transition-colors px-2 transition">
                     <i class="fa-solid fa-newspaper"></i> {{ $article->title }}
                 </a>
-                <a href="#" class="flex items-center gap-1 h-full hover:bg-[#d50000] transition-colors px-2 transition">
+                <a href="#" class="flex items-center gap-1 h-full hover:bg-[#F9A13D] transition-colors px-2 transition">
                     <i class="fa-regular fa-comment"></i> Comments ({{ $article->comments_count }})
                 </a>
             </div>
@@ -64,7 +64,7 @@
     <div
         class="flex justify-between items-center border-t border-gray-400 shadow text-white px-4 md:px-6 mt-3 py-2 bg-[#f0f0f0] backdrop-blur-sm">
         <a href="#"
-            class="flex justify-center items-center px-3 py-2 text-[14px] font-bold bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#d50000] hover:text-white transition uppercase">
+            class="flex justify-center items-center px-3 py-2 text-[14px] font-bold bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#F9A13D] hover:text-white transition uppercase">
             <span>POST YOUR COMMENT</span>
         </a>
 
@@ -94,7 +94,7 @@
                         </div>
                         <a href="{{ route('logout') }}"
                             onclick="event.preventDefault();document.getElementById('logout-form').submit();"
-                            class="flex justify-center items-center font-bold px-3 py-1 text-[14px] bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#d50000] hover:text-white transition uppercase">
+                            class="flex justify-center items-center font-bold px-3 py-1 text-[14px] bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#F9A13D] hover:text-white transition uppercase">
                             <span>Logout</span>
                         </a>
                     </div>
@@ -107,7 +107,7 @@
                                 class="border-1 border-[#a9a9a9] px-3 py-2 bg-[#cecece] text-[#999] text-[16px] w-full" disabled="disabled">
                             </div>
                             <a href="{{ route('user.account.manage', Auth::user()->username) }}"
-                                class="flex justify-center items-center font-bold px-3 py-1 text-[14px] bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#d50000] hover:text-white transition uppercase">
+                                class="flex justify-center items-center font-bold px-3 py-1 text-[14px] bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#F9A13D] hover:text-white transition uppercase">
                                 <span>Manage</span>
                             </a>
                     </fieldset>
@@ -121,7 +121,7 @@
 
                     {{-- SUBMIT --}}
                     <div class="flex justify-end">
-                        <button class="flex cursor-pointer justify-center items-center font-bold px-3 py-1 text-[14px] bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#d50000] hover:text-white transition uppercase">
+                        <button class="flex cursor-pointer justify-center items-center font-bold px-3 py-1 text-[14px] bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#F9A13D] hover:text-white transition uppercase">
                             Submit
                         </button>
                     </div>
@@ -131,7 +131,7 @@
         @guest
             <div class="bg-white border border-[#d1d1d1] p-5 mt-4 text-center">
                 <p class="mb-3 text-[#555]">You must be logged in to post an opinion.</p>
-                <a href="{{ route('login') }}" class="bg-[#d50000] text-white px-4 py-2 inline-block">
+                <a href="{{ route('login') }}" class="bg-[#F9A13D] text-white px-4 py-2 inline-block">
                     Login
                 </a>
             </div>

@@ -58,6 +58,15 @@ Route::controller(WebController::class)
             'id' => '[0-9]+'
         ])->name('article.comments');
         Route::get('/article', 'contact')->name('articles.show'); //dummy
+        Route::get('/compare', 'device_comparison')->name('device-comparison');
+        Route::get('/{slug}-compare-{id}', 'device_comparison')->where([
+            'slug' => '[A-Za-z0-9\-]+',
+            'id' => '[0-9]+'
+        ])->name('device.compare');
+        Route::get('/search', 'globalSearch')->name('search.global');
+        Route::get('/live-search', 'liveSearch')->name('search.live');
+        Route::get('/search-devices', 'search_devices')->name('device.search');
+        Route::post('/devices/{id}/fan', 'toggleFan')->name('device.fan');
     });
 
 //Device opinions

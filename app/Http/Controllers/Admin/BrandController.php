@@ -49,12 +49,12 @@ class BrandController extends Controller
             'logo.mimes' => 'The logo must be a JPEG, PNG, JPG, GIF, or SVG file.',
             'logo.max' => 'The logo must not exceed 2MB in size.',
         ]);
-        
+
         if ($validator->fails()) {
             ToastMagic::error($validator->errors()->first());
             return redirect()->back();
         }
-        
+
         try {
             $logoPath = null;
             if ($request->hasFile('logo')) {
@@ -75,7 +75,7 @@ class BrandController extends Controller
                 'description' => $request->description,
                 'status' => $request->status,
             ]);
-            
+
             ToastMagic::success('Brand created successfully!');
             return redirect()->route('admin.brands.index');
         } catch (\Exception $e) {
@@ -100,16 +100,18 @@ class BrandController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Brand $brand)
+    public function edit($id)
     {
+        $brand = Brand::findOrFail($id);
         return view('admin-views.brands.edit', compact('brand'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Brand $brand)
+    public function update(Request $request, $id)
     {
+        $brand = Brand::findOrFail($id);
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:brands,name,' . $brand->id,
             'description' => 'nullable|string',
@@ -170,8 +172,9 @@ class BrandController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Brand $brand)
+    public function destroy($id)
     {
+        $brand = Brand::findOrFail($id);
         try {
             // Check if brand has any devices before deletion
             // if ($brand->devices()->exists()) {

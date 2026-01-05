@@ -77,6 +77,7 @@ class DeviceOpinionController extends Controller
             'user_id' => auth()->id(),
             'commentable_id' => $device->id, // Device ID
             'commentable_type' => Device::class, // Device model class
+            'parent_id' => $request->parent_id, // For replies
             'body' => $request->opinion,
             'is_approved' => true, // Auto-approve for simplicity
         ]);
@@ -84,6 +85,6 @@ class DeviceOpinionController extends Controller
         ToastMagic::success('Your opinion posted.');
 
         // 7️⃣ Redirect to user's posts page
-        return redirect()->route('user.posts', ['username' => Auth()->user()->username]);
+        return redirect()->route('device.opinions', ['slug' => $slug, 'id' => $id]);
     }
 }

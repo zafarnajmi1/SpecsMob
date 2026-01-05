@@ -39,7 +39,7 @@ class User extends Authenticatable
             'last_login_at' => 'datetime',
         ];
     }
-    
+
     // Accessor for profile image
     public function getImageUrlAttribute()
     {
@@ -58,8 +58,12 @@ class User extends Authenticatable
     }
 
     public function deviceOpinions()
-{
-    return $this->hasMany(DeviceOpinion::class);
-}
+    {
+        return $this->hasMany(DeviceOpinion::class);
+    }
 
+    public function favorites()
+    {
+        return $this->hasMany(UserFavorite::class);
+    }
 }

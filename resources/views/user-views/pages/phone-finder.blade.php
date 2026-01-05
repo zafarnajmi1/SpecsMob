@@ -2,7 +2,7 @@
 @section('title', 'Phone Finder')
 
 @section('content')
-<style>
+    <style>
         /* Custom styles for sliders and dropdowns */
         .slider-container {
             position: relative;
@@ -89,36 +89,44 @@
             border-bottom: 2px solid #3b82f6;
             color: #3b82f6;
         }
-</style>
+    </style>
 
 
-{{-- Hero / header --}}
-<div class="overflow-hidden w-full mb-6 md:h-[310px]">
-    <div
-        class="relative bg-cover bg-center h-full"
-        style='background-image: url("{{ asset('user/images/phonefinder.jpg') }}");'
-    >
-        <div class="bg-black/55 h-full">
-            <div class="px-4 md:px-6 py-6 h-full flex flex-col justify-end gap-2">
-                <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-white drop-shadow-md">
-                    Phone Finder
-                </h1>
+    {{-- Hero / header --}}
+    <div class="overflow-hidden w-full mb-6 md:h-[310px]">
+        <div class="relative bg-cover bg-center h-full"
+            style='background-image: url("{{ asset('user/images/phonefinder.jpg') }}");'>
+            <div class="bg-black/25 h-full">
+                <div class="px-4 md:px-6 py-6 h-full flex flex-col justify-end gap-2">
+                    <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-white drop-shadow-md">
+                        Phone Finder
+                    </h1>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
 
     <div class="container mx-auto px-4 py-8">
         <!-- Tabs -->
         <div class="flex border-b-6 border-[#b5d779] mb-6 justify-end">
-            <button class="px-4 py-2 font-medium bg-[rgba(118,177,208,.5)] text-white shadow hover:bg-[#d50000]">Tablets</button>
-            <button class="px-4 py-2 font-medium bg-[rgba(118,177,208,.5)] text-white shadow hover:bg-[#d50000] tab-active active:bg-[#b5d779] active:text-white">Phones</button>
+            <button
+                class="px-4 py-2 font-medium bg-[rgba(118,177,208,.5)] text-white shadow hover:bg-[#F9A13D]">Tablets</button>
+            <button
+                class="px-4 py-2 font-medium bg-[rgba(118,177,208,.5)] text-white shadow hover:bg-[#F9A13D] tab-active active:bg-[#b5d779] active:text-white">Phones</button>
         </div>
 
         <!-- Filter Form -->
-        <form class="bg-white rounded-lg shadow-md p-6">
+        <form action="{{ route('phone-finder') }}" method="GET" id="phone-finder-form"
+            class="bg-white rounded-lg shadow-md p-6">
+            <input type="hidden" name="brands" id="selected-brands" value="{{ request('brands') }}">
+            <input type="hidden" name="year_min" id="year-min" value="{{ request('year_min', 2000) }}">
+            <input type="hidden" name="year_max" id="year-max" value="{{ request('year_max', 2025) }}">
+            <input type="hidden" name="ram_min" id="ram-min" value="{{ request('ram_min', 0) }}">
+            <input type="hidden" name="storage_min" id="storage-min" value="{{ request('storage_min', 0) }}">
+            <input type="hidden" name="status" id="release-status" value="{{ request('status', 'all') }}">
+
             <!-- General Section -->
             <div class="mb-8">
                 <h3 class="text-xl font-semibold mb-4 border-b pb-2">General</h3>
@@ -127,27 +135,22 @@
                     <!-- Brand -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
-                        <div class="custom-select">
+                        <div class="custom-select" id="brand-select">
                             <div class="select-selected">
-                                <span>Select brands</span>
+                                <span id="brand-display">@if(request('brands')) Brands Selected @else Select brands
+                                @endif</span>
                                 <i class="fas fa-chevron-down"></i>
                             </div>
                             <div class="select-items">
-                                <div>Acer</div>
-                                <div>Alcatel</div>
-                                <div>Apple</div>
-                                <div>Asus</div>
-                                <div>BlackBerry</div>
-                                <div>Google</div>
-                                <div>HTC</div>
-                                <div>Huawei</div>
-                                <div>LG</div>
-                                <div>Motorola</div>
-                                <div>Nokia</div>
-                                <div>OnePlus</div>
-                                <div>Samsung</div>
-                                <div>Sony</div>
-                                <div>Xiaomi</div>
+                                <div data-value="">All Brands</div>
+                                @foreach($brands as $brand)
+                                    <div data-value="{{ $brand->id }}" class="flex items-center gap-2">
+                                        <input type="checkbox" class="brand-checkbox" value="{{ $brand->id }}"
+                                            @if(in_array($brand->id, explode(',', request('brands')))) checked @endif
+                                            onclick="event.stopPropagation()">
+                                        <span>{{ $brand->name }}</span>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
                     </div>
@@ -580,30 +583,30 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- RAM -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">RAM</label>
-                        <div class="slider-container">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">RAM(Min GB)</label>
+                        <div class="slider-container" id="ram-slider">
                             <div class="slider-track">
-                                <div class="slider-range" style="left: 0%; width: 100%;"></div>
+                                <div class="slider-range" style="left: 0%; width: 0%;"></div>
                                 <div class="slider-handle" style="left: 0%;"></div>
                             </div>
                             <div class="flex justify-between w-full mt-2">
-                                <span class="text-sm">2GB</span>
-                                <span class="text-sm">24GB</span>
+                                <span class="text-sm">0</span>
+                                <span class="text-sm">24</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Storage -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Storage</label>
-                        <div class="slider-container">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Storage (Min GB)</label>
+                        <div class="slider-container" id="storage-slider">
                             <div class="slider-track">
-                                <div class="slider-range" style="left: 0%; width: 100%;"></div>
+                                <div class="slider-range" style="left: 0%; width: 0%;"></div>
                                 <div class="slider-handle" style="left: 0%;"></div>
                             </div>
                             <div class="flex justify-between w-full mt-2">
-                                <span class="text-sm">64MB</span>
-                                <span class="text-sm">1TB</span>
+                                <span class="text-sm">0</span>
+                                <span class="text-sm">1024</span>
                             </div>
                         </div>
                     </div>
@@ -1176,61 +1179,193 @@
                 </button>
             </div>
         </form>
+
+        <!-- Results Section -->
+        <div class="mt-12">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Results ({{ $devices->total() }})</h2>
+                <div class="flex items-center gap-4">
+                    <span class="text-sm text-gray-500">Order by:</span>
+                    <select
+                        onchange="window.location.href = updateQueryStringParameter(window.location.href, 'order', this.value)"
+                        class="border border-gray-300 rounded px-3 py-1 text-sm outline-none">
+                        <option value="latest" @if(request('order') == 'latest') selected @endif>Latest</option>
+                        <option value="popular" @if(request('order') == 'popular') selected @endif>Popularity</option>
+                    </select>
+                </div>
+            </div>
+
+            @if($devices->count() > 0)
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    @foreach($devices as $device)
+                        <div class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden flex flex-col">
+                            <a href="{{ route('device-detail', $device->slug) }}" class="p-4 flex-grow flex flex-col items-center">
+                                <div class="w-full h-48 bg-white flex items-center justify-center mb-4">
+                                    <img src="{{ $device->thumbnail_url }}" alt="{{ $device->name }}"
+                                        class="max-h-full max-w-full object-contain">
+                                </div>
+                                <h3 class="font-bold text-[#1976d2] text-center mb-2">{{ $device->name }}</h3>
+                                <div class="text-xs text-center text-gray-500 space-y-1">
+                                    <p>{{ $device->os_short }}</p>
+                                    <p>{{ $device->storage_short }} / {{ $device->ram_short }} RAM</p>
+                                    <p>{{ $device->battery_short }}</p>
+                                </div>
+                            </a>
+                            <div
+                                class="bg-gray-50 px-4 py-2 border-t flex justify-between items-center text-[10px] font-bold uppercase text-gray-400">
+                                <span>{{ $device->brand->name }}</span>
+                                <span class="text-[#F9A13D]">{{ $device->released_at->format('M Y') }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="mt-10 flex justify-center">
+                    {{ $devices->links() }}
+                </div>
+            @else
+                <div class="bg-white p-20 rounded-lg shadow-sm text-center">
+                    <i class="fa-solid fa-mobile-screen-button text-5xl text-gray-200 mb-4 block"></i>
+                    <h3 class="text-xl font-bold text-gray-400">No phones match your filters</h3>
+                    <p class="text-gray-400 mt-2">Try adjusting your criteria or clearing some filters.</p>
+                    <a href="{{ route('phone-finder') }}"
+                        class="inline-block mt-6 text-[#1976d2] font-bold hover:underline uppercase text-sm">Clear All
+                        Filters</a>
+                </div>
+            @endif
+        </div>
     </div>
 @endsection
 
 @push('scripts')
     <script>
-        // Custom dropdown functionality
         document.addEventListener('DOMContentLoaded', function () {
-            const customSelects = document.querySelectorAll('.custom-select');
-
-            customSelects.forEach(select => {
-                const selected = select.querySelector('.select-selected');
-                const items = select.querySelector('.select-items');
-
-                selected.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    closeAllSelect(this);
-                    items.style.display = items.style.display === 'block' ? 'none' : 'block';
-                });
-
-                const options = items.querySelectorAll('div');
-                options.forEach(option => {
-                    option.addEventListener('click', function () {
-                        selected.querySelector('span').textContent = this.textContent;
-                        items.style.display = 'none';
-                    });
-                });
-            });
-
-            function closeAllSelect(elmnt) {
-                const selects = document.querySelectorAll('.select-items');
-                const selected = document.querySelectorAll('.select-selected');
-
-                selects.forEach(item => {
-                    if (elmnt !== item.previousElementSibling) {
-                        item.style.display = 'none';
-                    }
-                });
-
-                selected.forEach(item => {
-                    if (elmnt !== item) {
-                        item.classList.remove('select-arrow-active');
-                    }
-                });
+            // Helper for query strings
+            window.updateQueryStringParameter = function (uri, key, value) {
+                var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+                var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+                if (uri.match(re)) {
+                    return uri.replace(re, '$1' + key + "=" + value + '$2');
+                } else {
+                    return uri + separator + key + "=" + value;
+                }
             }
 
-            document.addEventListener('click', closeAllSelect);
-        });
+            // --- Custom Select (Multiple Brands) ---
+            const brandSelect = document.getElementById('brand-select');
+            const brandDisplay = document.getElementById('brand-display');
+            const selectedBrandsInput = document.getElementById('selected-brands');
+            const brandCheckboxes = document.querySelectorAll('.brand-checkbox');
 
-        // Tab functionality
-        const tabs = document.querySelectorAll('.flex.border-b button');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function () {
-                tabs.forEach(t => t.classList.remove('tab-active'));
-                this.classList.add('tab-active');
+            if (brandSelect) {
+                const selected = brandSelect.querySelector('.select-selected');
+                const items = brandSelect.querySelector('.select-items');
+
+                selected.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    items.classList.toggle('hidden');
+                });
+
+                document.addEventListener('click', () => items.classList.add('hidden'));
+
+                brandCheckboxes.forEach(cb => {
+                    cb.addEventListener('change', () => {
+                        updateSelectedBrands();
+                    });
+                });
+
+                function updateSelectedBrands() {
+                    const selected = Array.from(brandCheckboxes)
+                        .filter(cb => cb.checked)
+                        .map(cb => cb.value);
+
+                    selectedBrandsInput.value = selected.join(',');
+                    brandDisplay.textContent = selected.length > 0 ? `${selected.length} Brands Selected` : 'Select brands';
+                }
+            }
+
+            // --- Sliders (Year, Price, RAM, etc.) ---
+            function initSlider(container, minInputId, maxInputId, step = 1) {
+                const track = container.querySelector('.slider-track');
+                const range = track.querySelector('.slider-range');
+                const handles = track.querySelectorAll('.slider-handle');
+                const minValSpan = container.nextElementSibling.children[0];
+                const maxValSpan = container.nextElementSibling.children[1];
+
+                let isDragging = null;
+                const minVal = parseInt(minValSpan.dataset.min || minValSpan.textContent);
+                const maxVal = parseInt(maxValSpan.dataset.max || maxValSpan.textContent);
+
+                const update = () => {
+                    const minP = parseFloat(handles[0].style.left);
+                    const maxP = maxInputId ? parseFloat(handles[1].style.left) : 100;
+
+                    range.style.left = minP + '%';
+                    range.style.width = (maxP - minP) + '%';
+
+                    const calculatedMin = Math.round(minVal + (minP / 100) * (maxVal - minVal));
+                    minValSpan.textContent = calculatedMin;
+                    document.getElementById(minInputId).value = calculatedMin;
+
+                    if (maxInputId) {
+                        const calculatedMax = Math.round(minVal + (maxP / 100) * (maxVal - minVal));
+                        maxValSpan.textContent = calculatedMax;
+                        document.getElementById(maxInputId).value = calculatedMax;
+                    }
+                };
+
+                handles.forEach((handle, i) => {
+                    handle.addEventListener('mousedown', () => isDragging = i);
+
+                    // Initial position (if needed)
+                    // handles[0].style.left = '0%';
+                    // if(handles[1]) handles[1].style.left = '100%';
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (isDragging === null) return;
+
+                    const rect = track.getBoundingClientRect();
+                    let p = ((e.clientX - rect.left) / rect.width) * 100;
+                    p = Math.max(0, Math.min(100, p));
+
+                    if (isDragging === 0 && maxInputId && p >= parseFloat(handles[1].style.left)) return;
+                    if (isDragging === 1 && p <= parseFloat(handles[0].style.left)) return;
+
+                    handles[isDragging].style.left = p + '%';
+                    update();
+                });
+
+                document.addEventListener('mouseup', () => isDragging = null);
+                update();
+            }
+
+            // Initialize Sliders
+            const yearSlider = document.querySelector('.slider-container'); // First one
+            if (yearSlider) {
+                const h = yearSlider.querySelectorAll('.slider-handle');
+                    const yMin = {{ request('year_min', 2000) }};
+                    const yMax = {{ request('year_max', 2025) }};
+                    h[0].style.left = ((yMin - 2000) / 25 * 100) + '%';
+                    h[1].style.left = ((yMax - 2000) / 25 * 100) + '%';
+                    initSlider(yearSlider, 'year-min', 'year-max');
+                }
+
+                const ramSlider = document.getElementById('ram-slider');
+                if(ramSlider) {
+                    const h = ramSlider.querySelector('.slider-handle');
+                    const rMin = {{ request('ram_min', 0) }};
+                    h.style.left = (rMin / 24 * 100) + '%';
+                    initSlider(ramSlider, 'ram-min', null);
+                }
+
+                const storageSlider = document.getElementById('storage-slider');
+                if(storageSlider) {
+                    const h = storageSlider.querySelector('.slider-handle');
+                    const sMin = {{ request('storage_min', 0) }};
+                    h.style.left = (sMin / 1024 * 100) + '%';
+                    initSlider(storageSlider, 'storage-min', null);
+                }
             });
-        });
-    </script>
+        </script>
 @endpush

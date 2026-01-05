@@ -17,7 +17,7 @@
                     bg-[rgba(0,0,0,0.25)] backdrop-blur-sm">
             <div class="flex gap-4 h-full">
                 <a href="{{ route('user.posts', Auth::user()->username) }}"
-                   class="flex items-center gap-1 hover:bg-[#d50000] px-3 transition">
+                   class="flex items-center gap-1 hover:bg-[#F9A13D] px-3 transition">
                     <i class="fa-regular fa-message"></i>
                     POSTS {{ $posts_count }}
                 </a>
@@ -91,7 +91,7 @@
         </div>
 
         <div class="flex justify-end">
-            <button class="bg-[#d50000] cursor-pointer text-white px-5 py-2 rounded hover:bg-red-700">
+            <button class="bg-[#F9A13D] cursor-pointer text-white px-5 py-2 rounded hover:bg-[#F9A13D]">
                 Submit
             </button>
         </div>
@@ -116,7 +116,7 @@
                    class="w-full border px-3 py-2 rounded mb-4">
 
             <div class="flex justify-end">
-                <button class="bg-[#d50000] cursor-pointer text-white px-5 py-2 rounded hover:bg-red-700">
+                <button class="bg-[#F9A13D] cursor-pointer text-white px-5 py-2 rounded hover:bg-[#F9A13D]">
                     Change
                 </button>
             </div>
@@ -159,7 +159,7 @@
 
     {{-- ===== Delete Account ===== --}}
     <section class="bg-white border rounded shadow-sm p-6">
-        <h3 class="text-lg font-semibold mb-2 text-red-700">Delete your account</h3>
+        <h3 class="text-lg font-semibold mb-2 text-[#F9A13D]">Delete your account</h3>
         <p class="text-sm text-gray-600 mb-4">
             This will permanently delete your account and all personal data.
         </p>
@@ -170,7 +170,7 @@
             @method('DELETE')
 
             <div class="flex justify-end">
-                <button class="bg-red-700 cursor-pointer text-white px-5 py-2 rounded hover:bg-red-800">
+                <button class="bg-[#F9A13D] cursor-pointer text-white px-5 py-2 rounded hover:bg-[#F9A13D]">
                     Delete
                 </button>
             </div>

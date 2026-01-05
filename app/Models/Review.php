@@ -10,7 +10,7 @@ class Review extends Model
 {
     use Seoable;
     use HasTimeAgo;
-    
+
     protected $fillable = [
         'device_id',
         'title',
@@ -33,18 +33,18 @@ class Review extends Model
     public function scopePublished($query)
     {
         return $query->where('is_published', true)
-                     ->whereNotNull('published_at')
-                     ->where('published_at', '<=', now());
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
     }
 
     // In Review model
-public function getCoverImageUrlAttribute($value)
-{
-    if ($value) {
-        return asset('storage/' . $value);
+    public function getCoverImageUrlAttribute($value)
+    {
+        if ($value) {
+            return asset('storage/' . $value);
+        }
+        return asset('user/images/default-preview.png');
     }
-    return asset('user/images/default-preview.png');
-}
 
     public function seo()
     {
@@ -75,15 +75,20 @@ public function getCoverImageUrlAttribute($value)
     public function comments()
     {
         return $this->morphMany(Comment::class, 'commentable')
-                    ->where('is_approved', true)
-                    ->latest();
+            ->where('is_approved', true)
+            ->latest();
     }
-    
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'review_tag');
+    }
+
     // ✅ Helper method to check if published
     public function isPublished()
     {
-        return $this->is_published && 
-               $this->published_at && 
-               $this->published_at->lte(now());
+        return $this->is_published &&
+            $this->published_at &&
+            $this->published_at->lte(now());
     }
 }

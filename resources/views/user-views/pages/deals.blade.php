@@ -157,6 +157,7 @@
         </div>
     </div>
 </div>
+
 <section class="bg-[#e7e4e4] my-5 flex flex-col gap-3 p-2 md:p-3">
 
     {{-- Markets filter --}}
@@ -256,7 +257,7 @@
                                 href="{{ $deal['offer_url'] }}"
                                 target="_blank"
                                 rel="noopener"
-                                class="hover:text-[#d50000]"
+                                class="hover:text-[#F9A13D]"
                             >
                                 {{ $deal['description'] }}
                             </a>
@@ -268,7 +269,7 @@
                                 href="{{ $deal['offer_url'] }}"
                                 target="_blank"
                                 rel="noopener"
-                                class="px-2 py-1 rounded border border-gray-300 text-[#555] hover:border-[#d50000] hover:text-[#d50000] transition-colors"
+                                class="px-2 py-1 rounded border border-gray-300 text-[#555] hover:border-[#F9A13D] hover:text-[#F9A13D] transition-colors"
                             >
                                 {{ $deal['memory_label'] }}
                             </a>

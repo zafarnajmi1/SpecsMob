@@ -3,131 +3,172 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('admin/assets/vendors/simple-datatables/style.css') }}">
+    <style>
+        .device-thumbnail {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .device-thumbnail:hover {
+            transform: scale(1.1);
+        }
+
+        .dataTable-table td {
+            vertical-align: middle !important;
+        }
+
+        .badge {
+            padding: 0.5em 0.8em;
+            font-weight: 500;
+            border-radius: 6px;
+        }
+
+        .badge-published {
+            background: linear-gradient(135deg, #43d39e 0%, #25c799 100%);
+            color: white;
+        }
+
+        .badge-draft {
+            background: linear-gradient(135deg, #ff7976 0%, #dc3545 100%);
+            color: white;
+        }
+
+        .quick-specs-small {
+            font-size: 0.75rem;
+            color: #6c757d;
+        }
+
+        .quick-specs-small strong {
+            color: #435ebe;
+        }
+    </style>
 @endpush
 
 @section('content')
 
-<div class="page-heading">
-    <div class="page-title">
-        <div class="row">
-            <div class="col-12 col-md-6 order-md-1 order-last">
-                <h3>All Devices</h3>
-            </div>
-            <div class="col-12 col-md-6 order-md-2 order-first">
-                <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Devices</li>
-                    </ol>
-                </nav>
+    <div class="page-heading">
+        <div class="page-title">
+            <div class="row">
+                <div class="col-12 col-md-6 order-md-1 order-last">
+                    <h3>All Devices</h3>
+                </div>
+                <div class="col-12 col-md-6 order-md-2 order-first">
+                    <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Devices</li>
+                        </ol>
+                    </nav>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<section class="section">
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="card-title">Devices List</h4>
-            <a href="{{ route('admin.devices.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg"></i> Add New Device
-            </a>
-        </div>
+    <section class="section">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Devices List</h4>
+                <a href="{{ route('admin.devices.create') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> Add New Device
+                </a>
+            </div>
 
-        <div class="card-body">
-            <table class="table table-striped" id="table1">
-                <thead>
-                    <tr>
-                        <th>No.</th>
-                        <th>Thumbnail</th>
-                        <th>Name</th>
-                        <th>Slug</th>
-                        <th>Quick Specs</th>
-                        <th>Status</th>
-                        <th>Created At</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @forelse($devices as $device)
+            <div class="card-body">
+                <table class="table table-striped" id="table1">
+                    <thead>
                         <tr>
-                             <td>{{ $loop->iteration }}</td>
-                            <!-- Thumbnail -->
-                            <td>
-                                @if($device->thumbnail_url)
-                                    <img src="{{ asset( $device->thumbnail_url) }}"
-                                         alt="{{ $device->name }}"
-                                         width="60" height="60"
-                                         style="object-fit: cover; border-radius:8px;">
-                                @else
-                                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center"
-                                         style="width:60px; height:60px; border-radius:8px;">
-                                        <i class="bi bi-image"></i>
+                            <th>No.</th>
+                            <th>Thumbnail</th>
+                            <th>Name</th>
+                            <th>Slug</th>
+                            <th>Quick Specs</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @forelse($devices as $device)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <!-- Thumbnail -->
+                                <td>
+                                    @if($device->thumbnail_url)
+                                        <img src="{{ asset($device->thumbnail_url) }}" alt="{{ $device->name }}" class="device-thumbnail">
+                                    @else
+                                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center device-thumbnail">
+                                            <i class="bi bi-image"></i>
+                                        </div>
+                                    @endif
+                                </td>
+
+                                <!-- Name -->
+                                <td>{{ $device->name }}</td>
+
+                                <!-- Slug -->
+                                <td>{{ $device->slug }}</td>
+
+                                <!-- Quick Specs -->
+                                <td>
+                                    <div class="quick-specs-small">
+                                        <strong>OS:</strong> {{ $device->os_short ?? '—' }} <br>
+                                        <strong>CPU:</strong> {{ $device->chipset_short ?? '—' }} <br>
+                                        <strong>Storage:</strong> {{ $device->storage_short ?? '—' }} <br>
+                                        <strong>RAM:</strong> {{ $device->ram_short ?? '—' }}
                                     </div>
-                                @endif
-                            </td>
+                                </td>
 
-                            <!-- Name -->
-                            <td>{{ $device->name }}</td>
+                                <!-- Status -->
+                                <td>
+                                    @if($device->is_published)
+                                        <span class="badge badge-published">Published</span>
+                                    @else
+                                        <span class="badge badge-draft">Draft</span>
+                                    @endif
+                                </td>
 
-                            <!-- Slug -->
-                            <td>{{ $device->slug }}</td>
+                                <!-- Created -->
+                                <td>{{ $device->created_at->format('M d, Y') }}</td>
 
-                            <!-- Quick Specs -->
-                            <td style="font-size: 12px;">
-                                <strong>OS:</strong> {{ $device->os_short ?? '—' }} <br>
-                                <strong>Chipset:</strong> {{ $device->chipset_short ?? '—' }} <br>
-                                <strong>Storage:</strong> {{ $device->storage_short ?? '—' }} <br>
-                                <strong>Camera:</strong> {{ $device->main_camera_short ?? '—' }} <br>
-                                <strong>RAM:</strong> {{ $device->ram_short ?? '—' }}
-                            </td>
+                                <!-- Actions -->
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{{ route('admin.devices.edit', $device->id) }}" class="btn btn-sm btn-warning">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
 
-                            <!-- Status -->
-                            <td>
-                                @if($device->is_published)
-                                    <span class="badge bg-success">Published</span>
-                                @else
-                                    <span class="badge bg-danger">Unpublished</span>
-                                @endif
-                            </td>
+                                        <form action="{{ route('admin.devices.destroy', $device->id) }}" method="POST"
+                                            class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" class="btn btn-danger btn-sm confirm-delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
 
-                            <!-- Created -->
-                            <td>{{ $device->created_at->format('M d, Y') }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center">
+                                    No devices found.
+                                    <a href="{{ route('admin.devices.create') }}">Create the first device</a>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
 
-                            <!-- Actions -->
-                            <td>
-                                <div class="btn-group">
-                                    <a href="{{ route('admin.devices.edit', $device->id) }}" class="btn btn-sm btn-warning">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
+                </table>
+            </div>
 
-                                    <form action="{{ route('admin.devices.destroy', $device->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" class="btn btn-danger btn-sm confirm-delete">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="text-center">
-                                No devices found.
-                                <a href="{{ route('admin.devices.create') }}">Create the first device</a>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-
-            </table>
         </div>
-
-    </div>
-</section>
+    </section>
 
 @endsection
 

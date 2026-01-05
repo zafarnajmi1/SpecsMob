@@ -1,0 +1,515 @@
+/* ========================================
+   GSMARENA-STYLE RESPONSIVE ENHANCEMENTS
+   Additional refinements to match GSMarena.com
+   ======================================== */
+
+/* ========================================
+   ENHANCED MOBILE STYLING (GSMarena Style)
+   ======================================== */
+@media (max-width: 480px) {
+
+    /* Tighter gap between sidebar and main - GSMarena style */
+    .max-w-\[1060px\] .flex {
+        gap: 0.25rem !important;
+    }
+
+    /* Bolder fonts for better mobile readability */
+    body {
+        font-weight: 400 !important;
+    }
+
+    /* Navigation - bolder text */
+    nav ul li a {
+        font-weight: 700 !important;
+        letter-spacing: 0.01em !important;
+    }
+
+    /* Sidebar brand links - bolder */
+    aside a {
+        font-weight: 600 !important;
+        letter-spacing: 0.02em !important;
+    }
+
+    /* Headings - stronger weights */
+    h1,
+    h2,
+    h3 {
+        font-weight: 700 !important;
+    }
+
+    h4,
+    h5,
+    h6 {
+        font-weight: 600 !important;
+    }
+
+    /* Button text - bolder */
+    button,
+    .btn,
+    a.button {
+        font-weight: 600 !important;
+    }
+
+    /* Reduce sidebar width ratio to match GSMarena (33/67) */
+    aside.w-full.md\:w-\[30\%\] {
+        width: 33% !important;
+    }
+
+    main.w-full.md\:w-\[70\%\] {
+        width: 67% !important;
+    }
+
+    /* Phone Finder - reduce columns more aggressively */
+    .flex.justify-center.bg-\[#e8e8e8\]>div {
+        min-width: 45px !important;
+    }
+
+    /* Minimal padding on containers */
+    .max-w-\[1060px\] {
+        padding-left: 0.2rem !important;
+        padding-right: 0.2rem !important;
+    }
+
+    /* Tighter padding on sidebar */
+    aside {
+        padding-left: 0.15rem !important;
+        padding-right: 0.1rem !important;
+    }
+
+    /* Tighter padding on main content */
+    main {
+        padding-left: 0.2rem !important;
+        padding-right: 0.15rem !important;
+    }
+
+    /* Reduce Phone Finder height more */
+    .h-\[350px\] {
+        height: 220px !important;
+    }
+
+    /* Smaller brand text */
+    aside a {
+        font-size: 7.5px !important;
+        padding: 0.2rem 0.25rem !important;
+        line-height: 1.2 !important;
+    }
+
+    /* Header icons - smaller */
+    .w-\[31px\].h-\[31px\] {
+        width: 19px !important;
+        height: 19px !important;
+    }
+
+    .w-\[31px\].h-\[31px\] i {
+        font-size: 9px !important;
+    }
+
+    /* Logo - smaller */
+    .text-3xl {
+        font-size: 1.2rem !important;
+    }
+
+    /* Search input - more compact */
+    input[type="search"] {
+        font-size: 9px !important;
+        padding: 0.3rem !important;
+    }
+
+    /* Navigation - very compact */
+    nav ul li a {
+        font-size: 7.5px !important;
+        padding: 0.3rem 0.2rem !important;
+    }
+
+    /* All padding reductions */
+    .p-4 {
+        padding: 0.3rem !important;
+    }
+
+    .p-3 {
+        padding: 0.25rem !important;
+    }
+
+    .p-2 {
+        padding: 0.2rem !important;
+    }
+
+    .px-4 {
+        padding-left: 0.3rem !important;
+        padding-right: 0.3rem !important;
+    }
+
+    .py-3 {
+        padding-top: 0.25rem !important;
+        padding-bottom: 0.25rem !important;
+    }
+
+    .pt-5 {
+        padding-top: 0.3rem !important;
+    }
+
+    .pb-5 {
+        padding-bottom: 0.3rem !important;
+    }
+
+    /* Margin reductions */
+    .mb-5 {
+        margin-bottom: 0.4rem !important;
+    }
+
+    .mt-5 {
+        margin-top: 0.4rem !important;
+    }
+
+    .my-5 {
+        margin-top: 0.4rem !important;
+        margin-bottom: 0.4rem !important;
+    }
+
+    .mb-6 {
+        margin-bottom: 0.5rem !important;
+    }
+
+    /* Gap reductions */
+    .gap-4 {
+        gap: 0.3rem !important;
+    }
+
+    .gap-5 {
+        gap: 0.35rem !important;
+    }
+
+    .gap-6 {
+        gap: 0.4rem !important;
+    }
+
+    .gap-3 {
+        gap: 0.25rem !important;
+    }
+
+    .gap-2 {
+        gap: 0.2rem !important;
+    }
+}
+
+/* ========================================
+   ENHANCED TABLET STYLING (GSMarena Style)
+   ======================================== */
+@media (min-width: 481px) and (max-width: 768px) {
+
+    /* Bolder fonts */
+    nav ul li a {
+        font-weight: 700 !important;
+    }
+
+    aside a {
+        font-weight: 600 !important;
+    }
+
+    h1,
+    h2,
+    h3 {
+        font-weight: 700 !important;
+    }
+
+    /* Tighter gaps */
+    .max-w-\[1060px\] .flex {
+        gap: 0.4rem !important;
+    }
+}
+
+/* ========================================
+   PHONE FINDER BRAND GRID - RESPONSIVE COLUMNS
+   ======================================== */
+@media (max-width: 320px) {
+
+    /* Very small screens - reduce to 3 columns */
+    .flex.justify-center.bg-\[#e8e8e8\] {
+        padding: 0.2rem !important;
+    }
+
+    .flex.justify-center.bg-\[#e8e8e8\]>div {
+        flex: 0 0 auto;
+        min-width: 40px !important;
+    }
+
+    aside a {
+        font-size: 6.5px !important;
+        padding: 0.15rem 0.2rem !important;
+    }
+}
+
+@media (min-width: 321px) and (max-width: 375px) {
+
+    /* Small mobile - 4 columns */
+    .flex.justify-center.bg-\[#e8e8e8\]>div {
+        min-width: 42px !important;
+    }
+
+    aside a {
+        font-size: 7px !important;
+    }
+}
+
+@media (min-width: 376px) and (max-width: 480px) {
+
+    /* Larger mobile - maintain 4 columns */
+    .flex.justify-center.bg-\[#e8e8e8\]>div {
+        min-width: 48px !important;
+    }
+}
+
+/* ========================================
+   ARTICLE/NEWS CARDS - RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+
+    /* Article cards - more compact */
+    .articles {
+        padding: 0.3rem !important;
+        gap: 0.3rem !important;
+    }
+
+    /* Article images - smaller */
+    .articles img {
+        max-height: 120px !important;
+    }
+
+    /* Article text - smaller */
+    .articles h3,
+    .articles h4 {
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        line-height: 1.3 !important;
+    }
+
+    .articles p {
+        font-size: 8px !important;
+        line-height: 1.4 !important;
+    }
+}
+
+/* ========================================
+   DEVICE CARDS - RESPONSIVE
+   ======================================== */
+@media (max-width: 480px) {
+    .device-card {
+        padding: 0.3rem !important;
+    }
+
+    .device-card img {
+        max-height: 70px !important;
+    }
+
+    .device-card .device-name {
+        font-size: 9px !important;
+        font-weight: 700 !important;
+        line-height: 1.2 !important;
+    }
+
+    .device-card .device-specs {
+        font-size: 7.5px !important;
+        line-height: 1.3 !important;
+    }
+}
+
+/* ========================================
+   HEADER - RESPONSIVE LOGO
+   ======================================== */
+@media (max-width: 480px) {
+
+    /* Logo image */
+    .text-3xl img {
+        max-width: 90px !important;
+        height: auto !important;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    .text-3xl img {
+        max-width: 110px !important;
+    }
+}
+
+/* ========================================
+   SEARCH DROPDOWN - ENHANCED MOBILE
+   ======================================== */
+@media (max-width: 480px) {
+    #search-dropdown {
+        font-size: 9px !important;
+        padding: 0.3rem !important;
+    }
+
+    #search-dropdown h3 {
+        font-size: 8px !important;
+        font-weight: 700 !important;
+    }
+
+    #search-dropdown a {
+        font-size: 8px !important;
+        padding: 0.2rem !important;
+    }
+
+    #search-dropdown img {
+        max-width: 30px !important;
+        max-height: 30px !important;
+    }
+}
+
+/* ========================================
+   SPECIFICATION TABLES - MOBILE
+   ======================================== */
+@media (max-width: 480px) {
+    table {
+        font-size: 8px !important;
+    }
+
+    table th,
+    table td {
+        padding: 0.2rem !important;
+        font-size: 8px !important;
+    }
+
+    table th {
+        font-weight: 700 !important;
+    }
+
+    .spec-table .spec-label {
+        font-size: 7.5px !important;
+        font-weight: 600 !important;
+    }
+
+    .spec-table .spec-value {
+        font-size: 8px !important;
+    }
+}
+
+/* ========================================
+   COMMENTS SECTION - MOBILE
+   ======================================== */
+@media (max-width: 480px) {
+    .comment {
+        padding: 0.3rem !important;
+        font-size: 9px !important;
+    }
+
+    .comment .author {
+        font-size: 9px !important;
+        font-weight: 700 !important;
+    }
+
+    .comment .date {
+        font-size: 7.5px !important;
+    }
+
+    .comment textarea {
+        font-size: 9px !important;
+        padding: 0.3rem !important;
+    }
+
+    .comment button {
+        font-size: 8px !important;
+        padding: 0.3rem 0.5rem !important;
+        font-weight: 600 !important;
+    }
+}
+
+/* ========================================
+   FORMS - MOBILE
+   ======================================== */
+@media (max-width: 480px) {
+
+    form input,
+    form textarea,
+    form select {
+        font-size: 10px !important;
+        padding: 0.4rem !important;
+    }
+
+    form label {
+        font-size: 9px !important;
+        font-weight: 600 !important;
+    }
+
+    form button[type="submit"] {
+        font-size: 10px !important;
+        padding: 0.5rem 0.8rem !important;
+        font-weight: 700 !important;
+    }
+}
+
+/* ========================================
+   BADGES & TAGS - MOBILE
+   ======================================== */
+@media (max-width: 480px) {
+
+    .badge,
+    .tag {
+        font-size: 7px !important;
+        padding: 0.15rem 0.3rem !important;
+        font-weight: 600 !important;
+    }
+}
+
+/* ========================================
+   PAGINATION - MOBILE
+   ======================================== */
+@media (max-width: 480px) {
+    .pagination {
+        font-size: 9px !important;
+    }
+
+    .pagination a,
+    .pagination span {
+        padding: 0.25rem 0.4rem !important;
+        font-size: 9px !important;
+        font-weight: 600 !important;
+    }
+}
+
+/* ========================================
+   ENSURE TEXT REMAINS READABLE
+   ======================================== */
+@media (max-width: 480px) {
+
+    /* Ensure line heights are adequate */
+    p,
+    span,
+    div,
+    a,
+    li {
+        line-height: 1.4 !important;
+    }
+
+    /* Headings line height */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        line-height: 1.3 !important;
+    }
+}
+
+/* ========================================
+   OPTIMIZE FOR TOUCH
+   ======================================== */
+@media (max-width: 768px) {
+
+    /* Ensure clickable elements are touch-friendly */
+    a,
+    button,
+    input[type="submit"],
+    input[type="button"] {
+        min-height: 30px;
+        min-width: 30px;
+    }
+
+    /* Increase tap target for small text links */
+    aside a {
+        min-height: 28px;
+        display: inline-flex;
+        align-items: center;
+    }
+}

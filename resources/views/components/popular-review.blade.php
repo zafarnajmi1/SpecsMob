@@ -10,16 +10,10 @@
     <div class="px-3 pb-3 pt-2">
 
         @forelse ($reviews as $review)
-            <a
-                href="{{ $review['url'] ?? '#' }}"
-                class="block group bg-black relative overflow-hidden shadow-sm"
-            >
+            <a href="{{ $review['url'] ?? '#' }}" class="block group bg-black relative overflow-hidden shadow-sm">
                 {{-- Thumbnail --}}
-                <img
-                    src="{{ $review['img'] ?? '' }}"
-                    alt="{{ $review['title'] ?? '' }}"
-                    class="w-full h-[140px] object-cover opacity-90 group-hover:opacity-100 group-hover:scale-[1.03] transition-transform transition-opacity duration-200"
-                />
+                <img src="{{ $review['img'] ?? '' }}" alt="{{ $review['title'] ?? '' }}"
+                    class="w-full h-[140px] object-cover opacity-90 group-hover:opacity-100 group-hover:scale-[1.03] transition-transform transition-opacity duration-200" />
 
                 {{-- Title strip --}}
                 <div class="absolute bottom-0 left-0 right-0 bg-black/75 px-3 py-2">

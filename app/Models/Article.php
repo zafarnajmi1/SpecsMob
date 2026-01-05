@@ -56,16 +56,16 @@ class Article extends Model
     }
 
     // In Article model
-public function getExcerptAttribute($value)
-{
-    if ($value) {
-        return $value;
+    public function getExcerptAttribute($value)
+    {
+        if ($value) {
+            return $value;
+        }
+
+        // Generate excerpt from body if not set
+        $excerpt = strip_tags($this->body);
+        return Str::limit($excerpt, 200);
     }
-    
-    // Generate excerpt from body if not set
-    $excerpt = strip_tags($this->body);
-    return Str::limit($excerpt, 200);
-}
     public function seo()
     {
         return $this->morphOne(SeoMeta::class, 'seoable');
@@ -112,7 +112,7 @@ public function getExcerptAttribute($value)
 
     public function scopeFeatured($query)
     {
-        return $query->where('type', 'featured');
+        return $query->where('is_featured', true);
     }
 
     public function scopePublished($query)
