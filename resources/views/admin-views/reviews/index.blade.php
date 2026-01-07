@@ -7,111 +7,89 @@
 
 @section('content')
 
-    <div class="page-heading">
-        <div class="page-title">
-            <div class="row">
-                <div class="col-12 col-md-6 order-md-1 order-last">
-                    <h3>All Reviews</h3>
-                </div>
-                <div class="col-12 col-md-6 order-md-2 order-first">
-                    <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Reviews</li>
-                        </ol>
-                    </nav>
-                </div>
+<div class="page-heading">
+    <div class="page-title">
+        <div class="row">
+            <div class="col-12 col-md-6 order-md-1 order-last">
+                <h3>All Reviews</h3>
+            </div>
+            <div class="col-12 col-md-6 order-md-2 order-first">
+                <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Reviews</li>
+                    </ol>
+                </nav>
             </div>
         </div>
     </div>
+</div>
 
-    <section class="section">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="card-title">Reviews List</h4>
-                <a href="{{ route('admin.reviews.create') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-lg"></i> Add New Review
-                </a>
-            </div>
+<section class="section">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="card-title">Reviews List</h4>
+            <a href="{{ route('admin.reviews.create') }}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Add New Review
+            </a>
+        </div>
 
-            <div class="card-body">
-                <table class="table table-striped" id="table1">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>No.</th>
-                            <th>Title</th>
-                            <th>Slug</th>
-                            <th>Cover Image</th>
-                            <th>Body</th>
-                            <th>author_id</th>
-                            <th>is_published</th>
-                            <th>Created At</th>
+                            <th>Review</th>
+                            <th>Brand & Device</th>
+                            <th>Author</th>
+                            <th>Status</th>
+                            <th>Created</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($reviews as $review)
                             <tr>
-                                {{-- No. --}}
-                                <td>{{ $loop->iteration }}</td>
-
-                                {{-- Title --}}
-                                <td>{{ $review->title }}</td>
-
-                                {{-- Slug --}}
-                                <td>{{ $review->slug }}</td>
-
-                                {{-- Cover Image --}}
                                 <td>
-                                    @if($review->cover_image_url)
-                                        <img src="{{ asset( $review->cover_image_url) }}" alt="{{ $review->title }}"
-                                            width="60" height="60" style="object-fit: cover; border-radius:8px;">
-                                    @else
-                                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center"
-                                            style="width:60px; height:60px; border-radius:8px;">
-                                            <i class="bi bi-image"></i>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar avatar-lg me-3">
+                                            <img src="{{ $review->cover_image_url }}" alt="{{ $review->title }}"
+                                                style="width: 80px; height: 50px; border-radius: 4px; object-fit: cover;">
                                         </div>
-                                    @endif
+                                        <div>
+                                            <h6 class="mb-0">{{ $review->title }}</h6>
+                                            <small
+                                                class="text-muted">{{ Str::limit(strip_tags($review->body), 50) }}</small>
+                                        </div>
+                                    </div>
                                 </td>
-
-                                {{-- Body (short preview) --}}
-                                <td style="max-width: 250px; font-size: 12px;">
-                                    {{ \Illuminate\Support\Str::limit(strip_tags($review->body), 80) }}
-                                </td>
-
-                                {{-- author_id (or author name if you eager-load relation) --}}
                                 <td>
-                                    @if($review->author)
-                                        {{ $review->author->name }}
-                                    @else
-                                        {{ $review->author_id ?? '—' }}
-                                    @endif
+                                    <span
+                                        class="badge bg-light-primary text-primary">{{ $review->device->brand->name ?? 'N/A' }}</span>
+                                    <div class="text-sm mt-1">{{ $review->device->name ?? 'N/A' }}</div>
                                 </td>
-
-                                {{-- is_published --}}
+                                <td>
+                                    <div class="fw-bold">{{ $review->author->name ?? 'System' }}</div>
+                                </td>
                                 <td>
                                     @if($review->is_published)
                                         <span class="badge bg-success">Published</span>
                                     @else
-                                        <span class="badge bg-danger">Unpublished</span>
+                                        <span class="badge bg-warning text-dark">Draft</span>
                                     @endif
                                 </td>
-
-                                {{-- Created At --}}
-                                <td>{{ $review->created_at->format('M d, Y') }}</td>
-
-                                {{-- Actions --}}
+                                <td>{{ $review->created_at->format('d/m/Y') }}</td>
                                 <td>
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.reviews.edit', $review->id) }}" class="btn btn-sm btn-warning">
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ route('admin.reviews.edit', $review->id) }}"
+                                            class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-
                                         <form action="{{ route('admin.reviews.destroy', $review->id) }}" method="POST"
-                                            class="d-inline">
+                                            onsubmit="return confirm('Archive/Delete this review?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="button" class="btn btn-danger btn-sm confirm-delete">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
@@ -120,25 +98,14 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center">
-                                    No reviews found.
-                                    <a href="{{ route('admin.reviews.create') }}">Create the first review</a>
-                                </td>
+                                <td colspan="6" class="text-center py-5">No reviews found. <a
+                                        href="{{ route('admin.reviews.create') }}">Create one now</a></td>
                             </tr>
                         @endforelse
                     </tbody>
-</table>
+                </table>
             </div>
-
+            <div class="mt-4">
+                {{ $reviews->links() }}
+            </div>
         </div>
-    </section>
-
-@endsection
-
-@push('scripts')
-    <script src="{{ asset('admin/assets/vendors/simple-datatables/simple-datatables.js') }}"></script>
-    <script>
-        let table1 = document.querySelector('#table1');
-        new simpleDatatables.DataTable(table1);
-    </script>
-@endpush

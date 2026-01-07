@@ -89,8 +89,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin.access'])->gr
         Route::get('articles/type/{type}', [ArticleController::class, 'indexByType'])->name('articles.type');
     });
 
-    Route::prefix('admin/seo')->name('admin.seo.')->middleware(['auth', 'can:seo_manage'])->group(function () {
-    });
 
     // SEO Management
     Route::prefix('seo')->name('seo.')->middleware(['permission:seo_manage'])->group(function () {
@@ -184,8 +182,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin.access'])->gr
     Route::put('/profile', [UserController::class, 'profileUpdate'])->name('profile.update');
 
     // ==================== SYSTEM SETTINGS (Admin Only) ====================
-    Route::middleware(['permission:settings_manage'])->group(function () {
-        Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
-        Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::middleware(['permission:settings_manage'])->prefix('settings')->name('settings.')->group(function () {
+        Route::get('/general', [SettingsController::class, 'index'])->name('general');
+        Route::get('/social', [SettingsController::class, 'social'])->name('social');
+        Route::get('/ads', [SettingsController::class, 'ads'])->name('ads');
+        Route::get('/mail', [SettingsController::class, 'mail'])->name('mail');
+
+        Route::post('/update', [SettingsController::class, 'update'])->name('update');
+
+        // Dynamic redirect for base settings route
+        Route::get('/', function () {
+            return redirect()->route('admin.settings.general');
+        })->name('index');
     });
 });

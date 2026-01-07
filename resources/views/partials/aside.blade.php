@@ -130,37 +130,43 @@
 
             <tbody class="divide-y divide-gray-200">
 
-                @php(
-                    $rankings = [
-                        ['name' => 'Xiaomi Poco F8 Ultra', 'hits' => '35,721', 'url' => '#'],
-                        ['name' => 'OnePlus 15', 'hits' => '24,173', 'url' => '#'],
-                        ['name' => 'Samsung Galaxy A56', 'hits' => '23,603', 'url' => '#'],
-                        ['name' => 'Samsung Galaxy S25 Ultra', 'hits' => '23,102', 'url' => '#'],
-                        ['name' => 'Apple iPhone 17 Pro Max', 'hits' => '22,020', 'url' => '#'],
-                        ['name' => 'Xiaomi Poco F8 Pro', 'hits' => '21,829', 'url' => '#'],
-                        ['name' => 'Xiaomi 17 Pro Max', 'hits' => '17,405', 'url' => '#'],
-                        ['name' => 'Samsung Galaxy A17', 'hits' => '16,797', 'url' => '#'],
-                        ['name' => 'Samsung Galaxy S25', 'hits' => '14,365', 'url' => '#'],
-                        ['name' => 'Xiaomi Poco X7 Pro', 'hits' => '14,085', 'url' => '#'],
-                    ])
 
-                @foreach ($rankings as $index => $item)
+                @php(
+                    // Fetch Top 10 devices by daily hits
+                    $topByDailyInterest = Illuminate\Support\Facades\Cache::remember('top_10_daily_interest', 300, function () {
+                        return App\Models\Device::where('is_published', true)
+                            ->join('device_stats', 'devices.id', '=', 'device_stats.device_id')
+                            ->whereDate('device_stats.daily_hits_date', today())
+                            ->where('device_stats.daily_hits', '>', 0)
+                            ->orderByDesc('device_stats.daily_hits')
+                            ->limit(10)
+                            ->select('devices.*', 'device_stats.daily_hits')
+                            ->get();
+                    }))
+
+                @forelse ($topByDailyInterest as $index => $device)
                     <tr class="{{ $loop->even ? 'bg-[#e8f5e9]' : '' }} transition">
 
                         <td class="py-1 pl-3 font-semibold">{{ $index + 1 }}.</td>
 
                         <td class="py-1">
-                            <a href="{{ $item['url'] }}" class="hover:text-[#F9A13D]">
-                                {{ $item['name'] }}
+                            <a href="{{ route('device-detail', $device->slug) }}" class="hover:text-[#F9A13D]">
+                                {{ $device->name }}
                             </a>
                         </td>
 
                         <td class="py-1 pr-3 text-right font-semibold">
-                            {{ $item['hits'] }}
+                            {{ number_format($device->daily_hits) }}
                         </td>
 
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="3" class="py-4 text-center text-[11px] text-gray-400">
+                            No daily hits data available yet
+                        </td>
+                    </tr>
+                @endforelse
 
             </tbody>
 
@@ -191,36 +197,39 @@
             <tbody class="divide-y divide-gray-200">
 
                 @php(
-                    $rankings = [
-                        ['name' => 'Xiaomi Poco F8 Ultra', 'hits' => '35,721', 'url' => '#'],
-                        ['name' => 'OnePlus 15', 'hits' => '24,173', 'url' => '#'],
-                        ['name' => 'Samsung Galaxy A56', 'hits' => '23,603', 'url' => '#'],
-                        ['name' => 'Samsung Galaxy S25 Ultra', 'hits' => '23,102', 'url' => '#'],
-                        ['name' => 'Apple iPhone 17 Pro Max', 'hits' => '22,020', 'url' => '#'],
-                        ['name' => 'Xiaomi Poco F8 Pro', 'hits' => '21,829', 'url' => '#'],
-                        ['name' => 'Xiaomi 17 Pro Max', 'hits' => '17,405', 'url' => '#'],
-                        ['name' => 'Samsung Galaxy A17', 'hits' => '16,797', 'url' => '#'],
-                        ['name' => 'Samsung Galaxy S25', 'hits' => '14,365', 'url' => '#'],
-                        ['name' => 'Xiaomi Poco X7 Pro', 'hits' => '14,085', 'url' => '#'],
-                    ])
+                    // Fetch Top 10 devices by total fans
+                    $topByFans = Illuminate\Support\Facades\Cache::remember('top_10_fans', 300, function () {
+                        return App\Models\Device::where('is_published', true)
+                            ->join('device_stats', 'devices.id', '=', 'device_stats.device_id')
+                            ->orderByDesc('device_stats.total_fans')
+                            ->limit(10)
+                            ->select('devices.*', 'device_stats.total_fans')
+                            ->get();
+                    }))
 
-                @foreach ($rankings as $index => $item)
+                @forelse ($topByFans as $index => $device)
                     <tr class="{{ $loop->even ? 'bg-[#e4eff6]' : '' }} transition">
 
                         <td class="py-1 pl-3 font-semibold">{{ $index + 1 }}.</td>
 
                         <td class="py-1">
-                            <a href="{{ $item['url'] }}" class="hover:text-[#F9A13D]">
-                                {{ $item['name'] }}
+                            <a href="{{ route('device-detail', $device->slug) }}" class="hover:text-[#F9A13D]">
+                                {{ $device->name }}
                             </a>
                         </td>
 
                         <td class="py-1 pr-3 text-right font-semibold">
-                            {{ $item['hits'] }}
+                            {{ number_format($device->total_fans) }}
                         </td>
 
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="3" class="py-4 text-center text-gray-400">
+                            No fan data yet.
+                        </td>
+                    </tr>
+                @endforelse
 
             </tbody>
 
@@ -239,31 +248,32 @@
     <div class="overflow-y-auto max-h-[380px] px-4 py-2">
 
         @php(
-            $comparisons = [
-                ['text' => 'Samsung Galaxy S25 Ultra vs. iPhone 17 Pro Max', 'url' => '#'],
-                ['text' => 'Samsung Galaxy S25 vs. Galaxy S25 FE 5G', 'url' => '#'],
-                ['text' => 'Samsung Galaxy A60 vs. Galaxy M40', 'url' => '#'],
-                ['text' => 'Samsung Galaxy S24 Ultra vs. Galaxy S25 Ultra', 'url' => '#'],
-                ['text' => 'Apple iPhone 16 Pro Max vs. iPhone 17 Pro Max', 'url' => '#'],
-                ['text' => 'Samsung Galaxy A36 vs. Galaxy A56', 'url' => '#'],
-                ['text' => 'Apple iPhone 16 vs. Apple iPhone 17', 'url' => '#'],
-                ['text' => 'Oppo Find X9 Pro vs. OnePlus 15 5G', 'url' => '#'],
-                ['text' => 'OnePlus 13 vs. OnePlus 15 5G', 'url' => '#'],
-                ['text' => 'Xiaomi Poco F8 Ultra 5G vs. Poco F8 Pro 5G', 'url' => '#'],
-                ['text' => 'Xiaomi 15T 5G vs. Xiaomi 15T Pro 5G', 'url' => '#'],
-            ])
+            $topComparisons = Illuminate\Support\Facades\Cache::remember('top_popular_comparisons', 300, function () {
+                return App\Models\ComparisonStat::with(['device1', 'device2'])
+                    ->whereHas('device1', fn($q) => $q->where('is_published', true))
+                    ->whereHas('device2', fn($q) => $q->where('is_published', true))
+                    ->orderByDesc('total_hits')
+                    ->limit(10)
+                    ->get();
+            }))
 
         <ul class="space-y-1">
-            @foreach ($comparisons as $index => $item)
+            @forelse ($topComparisons as $index => $stat)
                 <li class="{{ $loop->even ? 'bg-[#fff2ee]' : '' }} px-2 py-1 transition">
-                    <a href="{{ $item['url'] }}" class="text-[12px] text-[#555] hover:text-[#F9A13D] leading-tight">
-                        {{ $item['text'] }}
+                    <a href="{{ route('device-comparison', ['slug' => $stat->device1->slug, 'id' => $stat->device1->id, 'id2' => $stat->device2->id]) }}" 
+                       class="text-[12px] text-[#555] hover:text-[#F9A13D] leading-tight">
+                        {{ $stat->device1->name }} vs. {{ $stat->device2->name }}
                     </a>
                 </li>
-            @endforeach
+            @empty
+                <li class="px-2 py-4 text-center text-[12px] text-gray-400">
+                    No comparison data yet.
+                </li>
+            @endforelse
         </ul>
 
     </div>
+
 
 </div>
 

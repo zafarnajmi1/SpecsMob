@@ -31,13 +31,13 @@
                             <form class="form" action="{{ route('admin.videos.store') }}" method="POST"
                                 enctype="multipart/form-data" id="deviceForm">
                                 @csrf
-                                
+
                                 @include('admin-views.video._form')
 
                                 <!-- Include SEO Fields -->
-                                 <div class="row mb-4">
+                                <div class="row mb-4">
                                     <div class="col-12">
-                                         @include('components.seo-fields', ['model' => null])
+                                        @include('components.seo-fields', ['model' => null])
                                     </div>
                                 </div>
 
@@ -47,7 +47,7 @@
                                         <button type="submit" class="btn btn-primary me-2">
                                             <i class="bi bi-check-lg"></i> Create Video
                                         </button>
-                                        <a href="{{ route('admin.devices.index') }}" class="btn btn-light-secondary">
+                                        <a href="{{ route('admin.videos.index') }}" class="btn btn-light-secondary">
                                             <i class="bi bi-arrow-left"></i> Cancel
                                         </a>
                                     </div>

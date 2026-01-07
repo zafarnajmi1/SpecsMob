@@ -49,9 +49,9 @@ class DashboardController extends Controller
         }
 
         // Dummy data if no real data
-        if (!$hasVisitsData) {
-            $visitsData = [10, 25, 15, 40, 30, 55, 45, 70, 60, 85, 75, 100];
-        }
+        // if (!$hasVisitsData) {
+        //     $visitsData = [10, 25, 15, 40, 30, 55, 45, 70, 60, 85, 75, 100];
+        // }
 
         // Visitors Profile by Country (Proxy)
         $countryDistribution = User::select('country', \DB::raw('count(*) as total'))
@@ -62,15 +62,15 @@ class DashboardController extends Controller
             ->get();
 
         // Dummy data for country distribution if none
-        if ($countryDistribution->isEmpty()) {
-            $countryDistribution = collect([
-                (object) ['country' => 'United States', 'total' => 450],
-                (object) ['country' => 'Indonesia', 'total' => 320],
-                (object) ['country' => 'United Kingdom', 'total' => 280],
-                (object) ['country' => 'Germany', 'total' => 150],
-                (object) ['country' => 'India', 'total' => 120],
-            ]);
-        }
+        // if ($countryDistribution->isEmpty()) {
+        //     $countryDistribution = collect([
+        //         (object) ['country' => 'United States', 'total' => 450],
+        //         (object) ['country' => 'Indonesia', 'total' => 320],
+        //         (object) ['country' => 'United Kingdom', 'total' => 280],
+        //         (object) ['country' => 'Germany', 'total' => 150],
+        //         (object) ['country' => 'India', 'total' => 120],
+        //     ]);
+        // }
 
         // Latest Comments (Unified)
         $latestComments = Comment::with(['user', 'commentable'])

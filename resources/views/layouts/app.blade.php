@@ -489,6 +489,8 @@
         <!-- Mobile Homepage SECTION -->
         {{-- Tablets & Mobile CONTENT & FOOTER --}}
         <div class="lg:hidden">
+            @yield('news_content')
+
             @if(View::hasSection('mobile-home-section'))
                 @yield('mobile-home-section')
             @else
@@ -500,7 +502,7 @@
             {{-- Tablets & Mobile FOOTER --}}
 
             <footer class="mt-8 text-white">
-             <div class="bg-[#cfcfcf] text-[#757575] flex items-center justify-between px-14 py-1">
+                <div class="bg-[#cfcfcf] text-[#757575] flex items-center justify-between px-14 py-1">
                     <a href="{{ route('home') }}"
                         class="flex justify-center items-center font-bold uppercase text-[15px] hover:text-[#F9A13D]">
                         HOME
@@ -517,37 +519,39 @@
                         class="flex justify-center items-center font-bold uppercase text-[15px] hover:text-[#F9A13D]">
                         all phones
                     </a>
-            </div>
-            <div class="bg-black py-4">
-                <!-- Social Links -->
-                <div class="flex justify-center flex-wrap gap-6 mb-8">
-                    @php(
-                        $socials = [
-                            ['icon' => 'fa-facebook-f', 'prefix' => 'fa-brands', 'url' => "https://www.facebook.com/profile.php?id=61573093576333"],
-                            ['icon' => 'fa-instagram', 'prefix' => 'fa-brands', 'url' => "https://www.instagram.com/specs_mob/"],
-                            ['icon' => 'fa-tiktok', 'prefix' => 'fa-brands', 'url' => "https://www.tiktok.com/@specs.mob?_t=ZS-8vTFUJxpFTO&_r=1"],
-                            ['icon' => 'fa-youtube', 'prefix' => 'fa-brands', 'url' => "https://www.youtube.com/@SpecsMob" ]]
-                        )
-                    @foreach ($socials as $social)
-                        <a href="{{ $social['url'] }}" class="w-10 h-10 rounded-full bg-[#F9A13D] flex items-center justify-center text-white text-lg">
-                            <i class="{{ $social['prefix'] }} {{ $social['icon'] }}"></i>
-                        </a>
-                    @endforeach
                 </div>
+                <div class="bg-black py-4">
+                    <!-- Social Links -->
+                    <div class="flex justify-center flex-wrap gap-6 mb-8">
+                        @php(
+                            $socials = [
+                                ['icon' => 'fa-facebook-f', 'prefix' => 'fa-brands', 'url' => "https://www.facebook.com/profile.php?id=61573093576333"],
+                                ['icon' => 'fa-instagram', 'prefix' => 'fa-brands', 'url' => "https://www.instagram.com/specs_mob/"],
+                                ['icon' => 'fa-tiktok', 'prefix' => 'fa-brands', 'url' => "https://www.tiktok.com/@specs.mob?_t=ZS-8vTFUJxpFTO&_r=1"],
+                                ['icon' => 'fa-youtube', 'prefix' => 'fa-brands', 'url' => "https://www.youtube.com/@SpecsMob"]
+                            ]
+                        )
+                        @foreach ($socials as $social)
+                            <a href="{{ $social['url'] }}"
+                                class="w-10 h-10 rounded-full bg-[#F9A13D] flex items-center justify-center text-white text-lg">
+                                <i class="{{ $social['prefix'] }} {{ $social['icon'] }}"></i>
+                            </a>
+                        @endforeach
+                    </div>
 
-                <!-- Final info bar -->
-                <div class=" mt-4 text-center">
-                    <p class="text-[11px] text-gray-300 mb-2">
-                        © 2000-2026 SpecMob. All rights reserved.
-                    </p>
-                    <div class="flex justify-center gap-4 text-[10px] font-bold uppercase">
-                        <a href="#" class="hover:text-white font-bold text-[14px]">Privacy</a>
-                        <a href="#" class="hover:text-white font-bold text-[14px]">Terms</a>
-                        <a href="#" class="hover:text-white font-bold text-[14px]">Glossary</a>
-                        <a href="#" class="hover:text-white font-bold text-[14px]">Contact Us</a>
+                    <!-- Final info bar -->
+                    <div class=" mt-4 text-center">
+                        <p class="text-[11px] text-gray-300 mb-2">
+                            © 2000-2026 SpecMob. All rights reserved.
+                        </p>
+                        <div class="flex justify-center gap-4 text-[10px] font-bold uppercase">
+                            <a href="#" class="hover:text-white font-bold text-[14px]">Privacy</a>
+                            <a href="#" class="hover:text-white font-bold text-[14px]">Terms</a>
+                            <a href="#" class="hover:text-white font-bold text-[14px]">Glossary</a>
+                            <a href="#" class="hover:text-white font-bold text-[14px]">Contact Us</a>
+                        </div>
                     </div>
                 </div>
-            </div>
             </footer>
         </div>
 
