@@ -109,9 +109,17 @@ class ReviewController extends Controller
     }
 
 
-    public function index()
+    public function index(Request $request)
     {
-        $reviews = Review::with('author')->latest('created_at')->get();
+        $query = Review::with(['author', 'device', 'device.brand'])->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('title', 'like', "%{$search}%")
+                ->orWhere('body', 'like', "%{$search}%");
+        }
+
+        $reviews = $query->paginate(20)->withQueryString();
         return view('admin-views.reviews.index', compact('reviews'));
     }
 
@@ -211,17 +219,27 @@ class ReviewController extends Controller
     {
         $review = Review::findOrFail($id);
         try {
-            if ($review->thumbnail_url && Storage::disk('public')->exists($review->thumbnail_url)) {
-                Storage::disk('public')->delete($review->thumbnail_url);
+            DB::beginTransaction();
+
+            // Delete cover image
+            if ($review->getRawOriginal('cover_image_url')) {
+                Storage::disk('public')->delete($review->getRawOriginal('cover_image_url'));
             }
+
+            // Cleanup relations
+            $review->sections()->delete();
+            $review->tags()->detach();
+            $review->seo()->delete();
 
             $review->delete();
 
+            DB::commit();
             ToastMagic::success('Review deleted successfully');
             return back();
         } catch (\Throwable $e) {
+            DB::rollBack();
             report($e);
-            ToastMagic::error('Failed to delete review.');
+            ToastMagic::error('Failed to delete review: ' . $e->getMessage());
             return back();
         }
     }

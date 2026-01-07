@@ -4,7 +4,7 @@
             <div class="d-flex justify-content-between">
                 <div class="logo">
                     <a href="{{ route('admin.dashboard') }}">
-                        <img src="{{ asset('admin/assets/images/logo/logo.png') }}" style="width:60%; height:70%;"
+                        <img src="{{ asset('logo.png') }}" style="width:70%; height:auto;"
                             alt="Logo">
                     </a>
                 </div>
@@ -49,13 +49,13 @@
                             @endcan
 
                             {{-- Article Types --}}
-                            <li class="submenu-item {{ request()->routeIs('admin.articles.news') ? 'active' : '' }}">
+                            <li class="submenu-item {{ request()->query('type') == 'news' ? 'active' : '' }}">
                                 <a href="{{ route('admin.articles.index', ['type' => 'news']) }}">News Articles</a>
                             </li>
-                            <li class="submenu-item {{ request()->routeIs('admin.articles.blog') ? 'active' : '' }}">
-                                <a href="{{ route('admin.articles.index', ['type' => 'blog']) }}">Blog Posts</a>
+                            <li class="submenu-item {{ request()->query('type') == 'article' ? 'active' : '' }}">
+                                <a href="{{ route('admin.articles.index', ['type' => 'article']) }}">Blog Posts</a>
                             </li>
-                            <li class="submenu-item {{ request()->routeIs('admin.articles.featured') ? 'active' : '' }}">
+                            <li class="submenu-item {{ request()->query('type') == 'featured' ? 'active' : '' }}">
                                 <a href="{{ route('admin.articles.index', ['type' => 'featured']) }}">Featured Content</a>
                             </li>
 
@@ -214,23 +214,7 @@
                     </li>
                 @endcanany
 
-                {{-- Tag Management --}}
-                @can('tag_manage')
-                    <li class="sidebar-item has-sub {{ request()->routeIs('admin.tags.*') ? 'active' : '' }}">
-                        <a href="#" class='sidebar-link'>
-                            <i class="bi bi-tags-fill"></i>
-                            <span>Tag Management</span>
-                        </a>
-                        <ul class="submenu">
-                            <li class="submenu-item {{ request()->routeIs('admin.tags.index') ? 'active' : '' }}">
-                                <a href="{{ route('admin.tags.index') }}">View Tags</a>
-                            </li>
-                            <li class="submenu-item {{ request()->routeIs('admin.tags.create') ? 'active' : '' }}">
-                                <a href="{{ route('admin.tags.create') }}">Add New Tag</a>
-                            </li>
-                        </ul>
-                    </li>
-                @endcan
+
 
                 {{-- Pricing & Market Setup --}}
                 @canany(['country_view', 'currency_view', 'store_view'])
@@ -263,7 +247,7 @@
                 {{-- Reviews & Comments --}}
                 @canany(['review_manage', 'opinion_moderate', 'comment_moderate'])
                     <li
-                        class="sidebar-item has-sub {{ request()->routeIs('admin.opinions.*', 'admin.comments.*', 'admin.article-comments.*') ? 'active' : '' }}">
+                        class="sidebar-item has-sub {{ request()->routeIs('admin.opinions.*', 'admin.comments.*', 'admin.article-comments.*', 'admin.reviews.*') ? 'active' : '' }}">
                         <a href="#" class='sidebar-link'>
                             <i class="bi bi-chat-left-text-fill"></i>
                             <span>Reviews & Comments</span>
@@ -372,11 +356,26 @@
 
                 {{-- Settings (Admin Only) --}}
                 @can('settings_manage')
-                    <li class="sidebar-item {{ request()->routeIs('admin.settings') ? 'active' : '' }}">
-                        <a href="{{ route('admin.settings') }}" class='sidebar-link'>
+                    <li
+                        class="sidebar-item has-sub {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+                        <a href="#" class='sidebar-link'>
                             <i class="bi bi-gear-fill"></i>
                             <span>Settings</span>
                         </a>
+                        <ul class="submenu">
+                            <li class="submenu-item {{ request()->routeIs('admin.settings.general') ? 'active' : '' }}">
+                                <a href="{{ route('admin.settings.general') }}">General Settings</a>
+                            </li>
+                            <li class="submenu-item {{ request()->routeIs('admin.settings.social') ? 'active' : '' }}">
+                                <a href="{{ route('admin.settings.social') }}">Social Links</a>
+                            </li>
+                            <li class="submenu-item {{ request()->routeIs('admin.settings.ads') ? 'active' : '' }}">
+                                <a href="{{ route('admin.settings.ads') }}">Ad Management</a>
+                            </li>
+                            <li class="submenu-item {{ request()->routeIs('admin.settings.mail') ? 'active' : '' }}">
+                                <a href="{{ route('admin.settings.mail') }}">Mail Configuration</a>
+                            </li>
+                        </ul>
                     </li>
                 @endcan
 

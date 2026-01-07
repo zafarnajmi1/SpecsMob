@@ -33,12 +33,17 @@ class WebController extends Controller
 
         if ($favorite) {
             $favorite->delete();
+            $device->stats()->decrement('total_fans');
             $message = 'You are no longer a fan of ' . $device->name;
         } else {
             UserFavorite::create([
                 'user_id' => auth()->id(),
                 'device_id' => $id
             ]);
+
+            $stats = $device->stats()->firstOrCreate(['device_id' => $device->id]);
+            $stats->incrementFan();
+
             $message = 'You are now a fan of ' . $device->name;
         }
 
@@ -183,7 +188,20 @@ class WebController extends Controller
             ->take(8)
             ->get();
 
+        $featuredArticles = Article::published()
+            ->featured()
+            ->latest('published_at')
+            ->take(6)
+            ->get();
+
         $latestDevices = Device::where('is_published', true)
+            ->latest()
+            ->take(7)
+            ->get();
+
+        $inStoreDevices = Device::where('is_published', true)
+            ->where('release_status', Device::STATUS_RELEASED)
+            ->latest()
             ->take(7)
             ->get();
 
@@ -197,7 +215,9 @@ class WebController extends Controller
             'latestReviews',
             'latestArticles',
             'featuredReviews',
-            'latestDevices'
+            'featuredArticles',
+            'latestDevices',
+            'inStoreDevices'
         ));
     }
 
@@ -250,12 +270,18 @@ class WebController extends Controller
         }
 
         $news_articles = $query->latest('published_at')
-            ->paginate(12)
+            ->paginate(2)
             ->withQueryString();
+
+        $featuredArticles = Article::published()
+            ->featured()
+            ->latest('published_at')
+            ->take(6)
+            ->get();
 
         $tags = Tag::where('type', 'news')->get();
 
-        return view('user-views.pages.news', compact('news_articles', 'popularReviews', 'tags'));
+        return view('user-views.pages.news', compact('news_articles', 'popularReviews', 'tags', 'featuredArticles'));
     }
 
     public function reviews(Request $request)
@@ -716,6 +742,10 @@ class WebController extends Controller
         // Load specifications
         $device->load(['specValues.field.category']);
 
+        // Increment hit statistic
+        $stats = $device->stats()->firstOrCreate(['device_id' => $device->id]);
+        $stats->incrementHit();
+
         $popularReviews = [
             [
                 'title' => 'OnePlus 15 review',
@@ -1016,6 +1046,17 @@ class WebController extends Controller
                     ->withCount('comments')
                     ->first();
             }
+        }
+
+        // Track popular comparisons
+        if ($device1 && $device2) {
+            \App\Models\ComparisonStat::incrementHit($device1->id, $device2->id);
+        }
+        if ($device1 && $device3) {
+            \App\Models\ComparisonStat::incrementHit($device1->id, $device3->id);
+        }
+        if ($device2 && $device3) {
+            \App\Models\ComparisonStat::incrementHit($device2->id, $device3->id);
         }
 
         return view('user-views.pages.device-comparison', compact('device1', 'device2', 'device3'));
