@@ -8,6 +8,7 @@
 
 @section('content')
     <x-device-header :device="$device" activeTab="pictures" />
+    <x-device-mobile-header :device="$device" activeTab="pictures" />
 
 
     <!-- Pictures Section -->
@@ -17,9 +18,9 @@
             <div class="flex flex-col gap-2 items-start mt-6 w-full">
 
                 <h2 class="text-[23px] font-normal text-[#777]
-                                           border-l-[10px] border-solid border-[#17819f]
-                                           py-[5px] px-[20px] pl-[30px]
-                                           font-[Arimo,'Google-Oswald',sans-serif]">
+                                                   border-l-[10px] border-solid border-[#17819f]
+                                                   py-[5px] px-[20px] pl-[30px]
+                                                   font-[Arimo,'Google-Oswald',sans-serif]">
                     {{ $group->title }}
                 </h2>
 
@@ -37,7 +38,7 @@
     </div>
 
     <div
-        class="flex flex-wrap justify-end items-center border-t border-gray-400 shadow text-sm text-white px-4 md:px-6 h-[2.5rem] bg-[rgba(0,0,0,0.2)] backdrop-blur-sm">
+        class="hidden lg:flex flex-wrap justify-end items-center border-t border-gray-400 shadow text-sm text-white px-4 md:px-6 h-[2.5rem] bg-[rgba(0,0,0,0.2)] backdrop-blur-sm">
         <div class="flex gap-4 h-full">
             <a href="{{ route('device-detail', $device->slug) }}"
                 class="flex items-center gap-1 hover:bg-[#F9A13D] transition-colors px-3">

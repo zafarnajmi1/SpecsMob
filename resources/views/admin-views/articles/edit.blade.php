@@ -163,27 +163,37 @@
                                          alt="{{ $article->title }}" 
                                          class="img-fluid rounded mb-2 border" 
                                          style="max-height: 150px;">
-                                    <div class="form-check d-flex justify-content-center">
+                                    <div class="form-check d-flex justify-content-center mt-2">
                                         <input class="form-check-input me-2" type="checkbox" 
-                                               id="remove_thumbnail" name="remove_thumbnail" value="1">
+                                               id="remove_thumbnail" name="remove_thumbnail" value="1"
+                                               onchange="handleRemoveImageChange()">
                                         <label class="form-check-label text-danger" for="remove_thumbnail">
                                             Remove current image
                                         </label>
                                     </div>
                                 </div>
+                                @else
+                                <div class="mb-3 text-center">
+                                    <div class="bg-light p-4 rounded border-2 border-dashed" style="border: 2px dashed #dee2e6;">
+                                        <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                        <p class="text-muted mt-2">No image uploaded</p>
+                                    </div>
+                                </div>
                                 @endif
                                 
                                 <div class="mb-3">
-                                    <label for="thumbnail" class="form-label">Upload New Thumbnail</label>
+                                    <label for="thumbnail" class="form-label">{{ $article->thumbnail_url ? 'Upload New Thumbnail' : 'Upload Thumbnail' }}</label>
                                     <input type="file" class="form-control @error('thumbnail_url') is-invalid @enderror" 
-                                           id="thumbnail" name="thumbnail_url" accept="image/*">
+                                           id="thumbnail" name="thumbnail_url" accept="image/*"
+                                           onchange="handleImagePreview(event)">
+                                    <small class="form-text text-muted d-block mt-2">Recommended size: 800x450px. Max file size: 2MB</small>
                                     @error('thumbnail_url')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div id="imagePreview" class="mt-2 text-center" style="display: none;">
+                                <div id="imagePreview" class="mt-3 text-center" style="display: none;">
                                     <p class="text-muted small">New Preview:</p>
-                                    <img id="previewImage" class="img-fluid rounded" style="max-height: 150px;">
+                                    <img id="previewImage" class="img-fluid rounded border" style="max-height: 150px;">
                                 </div>
                             </div>
                         </div>
@@ -292,20 +302,34 @@
         $('#meta_description').on('input', function() {
             $('#metaDescCount').text($(this).val().length);
         });
-
-        // Image preview
-        $('#thumbnail').change(function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#previewImage').attr('src', e.target.result);
-                    $('#imagePreview').show();
-                }
-                reader.readAsDataURL(file);
-            }
-        });
     });
+
+    // Image preview handler
+    function handleImagePreview(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#previewImage').attr('src', e.target.result);
+                $('#imagePreview').show();
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Handle remove image checkbox
+    function handleRemoveImageChange() {
+        const isChecked = document.getElementById('remove_thumbnail').checked;
+        const thumbnailInput = document.getElementById('thumbnail');
+        
+        if (isChecked) {
+            thumbnailInput.disabled = true;
+            thumbnailInput.classList.add('opacity-50');
+        } else {
+            thumbnailInput.disabled = false;
+            thumbnailInput.classList.remove('opacity-50');
+        }
+    }
 </script>
 
 

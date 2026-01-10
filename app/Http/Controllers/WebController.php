@@ -223,23 +223,6 @@ class WebController extends Controller
 
     public function news(Request $request)
     {
-        $popularReviews = [
-            [
-                'title' => 'OnePlus 15 review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oneplus-15/-347x151/gsmarena_000.jpg',
-                'url' => '/review/oneplus-15',
-            ],
-            [
-                'title' => 'Realme GT 8 Pro review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/realme-gt-8-pro/-347x151/gsmarena_001.jpg',
-                'url' => '/review/realme-gt-8-pro',
-            ],
-            [
-                'title' => 'Oppo Find X9 Pro review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oppo-find-x9-pro/-347x151/gsmarena_001.jpg',
-                'url' => '/review/oppo-find-x9-pro',
-            ],
-        ];
 
         $query = Article::published()
             ->news()
@@ -270,7 +253,7 @@ class WebController extends Controller
         }
 
         $news_articles = $query->latest('published_at')
-            ->paginate(2)
+            ->paginate(10)
             ->withQueryString();
 
         $featuredArticles = Article::published()
@@ -281,28 +264,11 @@ class WebController extends Controller
 
         $tags = Tag::where('type', 'news')->get();
 
-        return view('user-views.pages.news', compact('news_articles', 'popularReviews', 'tags', 'featuredArticles'));
+        return view('user-views.pages.news', compact('news_articles', 'tags', 'featuredArticles'));
     }
 
     public function reviews(Request $request)
     {
-        $popularReviews = [
-            [
-                'title' => 'OnePlus 15 review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oneplus-15/-347x151/gsmarena_000.jpg',
-                'url' => '/review/oneplus-15',
-            ],
-            [
-                'title' => 'Realme GT 8 Pro review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/realme-gt-8-pro/-347x151/gsmarena_001.jpg',
-                'url' => '/review/realme-gt-8-pro',
-            ],
-            [
-                'title' => 'Oppo Find X9 Pro review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oppo-find-x9-pro/-347x151/gsmarena_001.jpg',
-                'url' => '/review/oppo-find-x9-pro',
-            ],
-        ];
 
         $tags = Tag::where('type', 'review')->get();
 
@@ -313,7 +279,13 @@ class WebController extends Controller
             $searchTerm = $request->q;
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('title', 'like', "%{$searchTerm}%")
-                    ->orWhere('body', 'like', "%{$searchTerm}%");
+                    ->orWhere('body', 'like', "%{$searchTerm}%")
+                    ->orWhereHas('device', function ($dq) use ($searchTerm) {
+                        $dq->where('name', 'like', "%{$searchTerm}%")
+                            ->orWhereHas('brand', function ($bq) use ($searchTerm) {
+                                $bq->where('name', 'like', "%{$searchTerm}%");
+                            });
+                    });
             });
         }
 
@@ -329,50 +301,20 @@ class WebController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('user-views.pages.reviews', compact('popularReviews', 'tags', 'reviews_list'));
+        return view('user-views.pages.reviews', compact('tags', 'reviews_list'));
     }
+
     public function videos()
     {
-        $popularReviews = [
-            [
-                'title' => 'OnePlus 15 review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oneplus-15/-347x151/gsmarena_000.jpg',
-                'url' => '/review/oneplus-15',
-            ],
-            [
-                'title' => 'Realme GT 8 Pro review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/realme-gt-8-pro/-347x151/gsmarena_001.jpg',
-                'url' => '/review/realme-gt-8-pro',
-            ],
-            [
-                'title' => 'Oppo Find X9 Pro review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oppo-find-x9-pro/-347x151/gsmarena_001.jpg',
-                'url' => '/review/oppo-find-x9-pro',
-            ],
-        ];
+        $videos = \App\Models\Video::where('is_published', true)
+            ->orderByDesc('published_at')
+            ->get();
 
-        return view('user-views.pages.videos', compact('popularReviews'));
+        return view('user-views.pages.videos', compact('videos'));
     }
 
     public function featured(Request $request)
     {
-        $popularReviews = [
-            [
-                'title' => 'OnePlus 15 review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oneplus-15/-347x151/gsmarena_000.jpg',
-                'url' => '/review/oneplus-15',
-            ],
-            [
-                'title' => 'Realme GT 8 Pro review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/realme-gt-8-pro/-347x151/gsmarena_001.jpg',
-                'url' => '/review/realme-gt-8-pro',
-            ],
-            [
-                'title' => 'Oppo Find X9 Pro review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oppo-find-x9-pro/-347x151/gsmarena_001.jpg',
-                'url' => '/review/oppo-find-x9-pro',
-            ],
-        ];
 
         $tags = Tag::where('is_popular', true)->get();
 
@@ -401,29 +343,27 @@ class WebController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        return view('user-views.pages.featured', compact('popularReviews', 'tags', 'featured_articles'));
+        return view('user-views.pages.featured', compact('tags', 'featured_articles'));
     }
-    public function deals()
-    {
-        $popularReviews = [
-            [
-                'title' => 'OnePlus 15 review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oneplus-15/-347x151/gsmarena_000.jpg',
-                'url' => '/review/oneplus-15',
-            ],
-            [
-                'title' => 'Realme GT 8 Pro review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/realme-gt-8-pro/-347x151/gsmarena_001.jpg',
-                'url' => '/review/realme-gt-8-pro',
-            ],
-            [
-                'title' => 'Oppo Find X9 Pro review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oppo-find-x9-pro/-347x151/gsmarena_001.jpg',
-                'url' => '/review/oppo-find-x9-pro',
-            ],
-        ];
 
-        return view('user-views.pages.deals', compact('popularReviews'));
+    public function deals(Request $request)
+    {
+        $query = \App\Models\Deal::where('is_active', true);
+
+        if ($request->has('markets')) {
+            $markets = $request->input('markets');
+            if (is_array($markets) && count($markets) > 0) {
+                // Determine if we are filtering by exact region strings
+                $query->whereIn('region', $markets);
+            }
+        }
+
+        $deals = $query->latest()->get();
+
+        // Get distinct regions for the filter sidebar
+        $availableMarkets = \App\Models\Deal::select('region')->distinct()->orderBy('region')->pluck('region');
+
+        return view('user-views.pages.deals', compact('deals', 'availableMarkets'));
     }
 
     public function coverage()
@@ -540,7 +480,12 @@ class WebController extends Controller
 
     public function review_detail($slug)
     {
-        $review = Review::where('slug', $slug)->firstOrFail();
+        $review = Review::where('slug', $slug)
+            ->with('device.brand') // Load device and brand relationships
+            ->firstOrFail();
+
+        $device = $review->device; // Get the device from the review
+
         $comments = $review->comments()
             ->whereNull('parent_id')
             ->where('is_approved', true)
@@ -552,7 +497,35 @@ class WebController extends Controller
             ])
             ->latest()
             ->get();
-        return view('user-views.pages.review-detail', compact('review', 'comments'));
+
+        // Popular Articles (Top 5 by views)
+        $popularArticles = Article::published()
+            ->orderByDesc('views_count')
+            ->take(5)
+            ->get();
+        $maxArticleViews = $popularArticles->max('views_count') ?: 1;
+
+        // Popular Devices (Top 5 by daily_hits)
+        $popularDevices = \App\Models\Device::select('devices.*')
+            ->join('device_stats', 'devices.id', '=', 'device_stats.device_id')
+            ->orderByDesc('device_stats.daily_hits')
+            ->take(5)
+            ->with('stats')
+            ->get();
+
+        $maxDeviceHits = $popularDevices->max(function ($device) {
+            return $device->stats->daily_hits ?? 0;
+        }) ?: 1;
+
+        return view('user-views.pages.review-detail', compact(
+            'review',
+            'device',
+            'comments',
+            'popularArticles',
+            'maxArticleViews',
+            'popularDevices',
+            'maxDeviceHits'
+        ));
     }
 
 
@@ -595,7 +568,56 @@ class WebController extends Controller
             ->take(3)
             ->get();
 
-        return view('user-views.pages.article-detail', compact('article', 'comments', 'relatedArticles'));
+        // Get Recommended articles (featured)
+        $recommendedArticles = Article::published()
+            ->featured() // Use the featured scope
+            ->with(['author'])
+            ->withCount('comments')
+            ->latest('published_at')
+            ->take(6)
+            ->get();
+
+        // If no Recommended articles, get the latest published articles
+        if ($recommendedArticles->isEmpty()) {
+            $recommendedArticles = Article::published()
+                ->with(['author'])
+                ->withCount('comments')
+                ->latest('published_at')
+                ->take(6)
+                ->get();
+        }
+
+        // Popular Articles (Top 5 by views)
+        $popularArticles = Article::published()
+            ->orderByDesc('views_count')
+            ->take(5)
+            ->get();
+        $maxArticleViews = $popularArticles->max('views_count') ?: 1;
+
+        // Popular Devices (Top 5 by daily_hits or total_hits, prioritizing trending)
+        // Using a Join for performance to sort by stats
+        $popularDevices = \App\Models\Device::select('devices.*')
+            ->join('device_stats', 'devices.id', '=', 'device_stats.device_id')
+            ->orderByDesc('device_stats.daily_hits') // Trending daily
+            ->take(5)
+            ->with('stats') // Eager load for access if needed
+            ->get();
+
+        // Calculate max hits for progress bar (using daily_hits as we sorted by it)
+        $maxDeviceHits = $popularDevices->max(function ($device) {
+            return $device->stats->daily_hits ?? 0;
+        }) ?: 1;
+
+        return view('user-views.pages.article-detail', compact(
+            'article',
+            'comments',
+            'relatedArticles',
+            'recommendedArticles',
+            'popularArticles',
+            'maxArticleViews',
+            'popularDevices',
+            'maxDeviceHits'
+        ));
     }
 
     public function brands()
@@ -700,7 +722,7 @@ class WebController extends Controller
             $query->latest('created_at');
         }
 
-        $devices = $query->paginate(24)->withQueryString();
+        $devices = $query->paginate(11)->withQueryString();
 
         $deviceTypes = \App\Models\DeviceType::all();
         $years = \App\Models\Device::whereNotNull('released_at')
@@ -746,24 +768,7 @@ class WebController extends Controller
         $stats = $device->stats()->firstOrCreate(['device_id' => $device->id]);
         $stats->incrementHit();
 
-        $popularReviews = [
-            [
-                'title' => 'OnePlus 15 review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oneplus-15/-347x151/gsmarena_000.jpg',
-                'url' => '/review/oneplus-15',
-            ],
-            [
-                'title' => 'Realme GT 8 Pro review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/realme-gt-8-pro/-347x151/gsmarena_001.jpg',
-                'url' => '/review/realme-gt-8-pro',
-            ],
-            [
-                'title' => 'Oppo Find X9 Pro review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oppo-find-x9-pro/-347x151/gsmarena_001.jpg',
-                'url' => '/review/oppo-find-x9-pro',
-            ],
-        ];
-
+        // Get opinions/comments
         $opinions = $device->comments()
             ->whereNull('parent_id')
             ->where('is_approved', true)
@@ -776,8 +781,48 @@ class WebController extends Controller
             ->latest()
             ->get();
 
-        // return $device;
-        return view('user-views.pages.device-detail', compact('device', 'popularReviews', 'opinions'));
+        // Recommended Articles - Latest articles related to this device or brand
+        $recommendedArticles = Article::published()
+            ->where(function ($query) use ($device) {
+                $query->where('device_id', $device->id)
+                    ->orWhere('brand_id', $device->brand_id);
+            })
+            ->latest('published_at')
+            ->take(6)
+            ->get();
+
+        // If no device-specific articles, get general latest articles
+        if ($recommendedArticles->isEmpty()) {
+            $recommendedArticles = Article::published()
+                ->latest('published_at')
+                ->take(6)
+                ->get();
+        }
+
+        // Latest Devices - Recent devices from the same brand
+        $latestDevices = Device::where('brand_id', $device->brand_id)
+            ->where('id', '!=', $device->id)
+            ->where('is_published', true)
+            ->latest('created_at')
+            ->take(6)
+            ->get();
+
+        // In Store Devices - Devices from same brand with active offers
+        $inStoreDevices = Device::where('brand_id', $device->brand_id)
+            ->where('id', '!=', $device->id)
+            ->where('is_published', true)
+            ->whereHas('activeOffers')
+            ->latest('created_at')
+            ->take(6)
+            ->get();
+
+        return view('user-views.pages.device-detail', compact(
+            'device',
+            'opinions',
+            'recommendedArticles',
+            'latestDevices',
+            'inStoreDevices'
+        ));
     }
 
     public function device_pictures(string $slug, int $id)
@@ -832,7 +877,7 @@ class WebController extends Controller
                 ], 301);
         }
 
-        $comments = $device->comments()
+        $commentsQuery = $device->comments()
             ->whereNull('parent_id')
             ->where('is_approved', true)
             ->with([
@@ -840,9 +885,13 @@ class WebController extends Controller
                 'replies' => function ($query) {
                     $query->where('is_approved', true)->with('user');
                 }
-            ])
-            ->latest()
-            ->paginate(10);
+            ]);
+
+        if ($search = request('q')) {
+            $commentsQuery->where('body', 'like', "%{$search}%");
+        }
+
+        $comments = $commentsQuery->latest()->paginate(10);
 
         $popularReviews = [
             [
@@ -1139,5 +1188,12 @@ class WebController extends Controller
             ->withQueryString();
 
         return view('user-views.pages.search-results', compact('q', 'devices', 'news', 'reviews'));
+    }
+
+    public function phone_finder_results(){
+        $devices = Device::where('is_published', true)
+            ->paginate(24);
+            // ->withQueryString();
+        return view('user-views.pages.phone-finder-results', compact('devices'));
     }
 }

@@ -667,13 +667,7 @@ body {
 /* ========================================
    TOUCH-FRIENDLY TARGETS ON MOBILE
    ======================================== */
-@media (max-width: 768px) {
 
-    a,
-    button {
-        min-height: 32px;
-    }
-}
 
 /* ========================================
    COMPONENT-SPECIFIC RESPONSIVE STYLES
@@ -1098,35 +1092,6 @@ body {
 @media (min-width: 481px) and (max-width: 768px) {
     .gallery-grid {
         grid-template-columns: repeat(3, 1fr) !important;
-    }
-}
-
-/* ========================================
-   VIDEO EMBEDS RESPONSIVE
-   ======================================== */
-@media (max-width: 768px) {
-
-    iframe,
-    video {
-        max-width: 100% !important;
-        height: auto !important;
-    }
-
-    .video-container {
-        position: relative;
-        padding-bottom: 56.25%;
-        /* 16:9 aspect ratio */
-        height: 0;
-        overflow: hidden;
-    }
-
-    .video-container iframe,
-    .video-container video {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
     }
 }
 

@@ -23,6 +23,37 @@
 </div> -->
 
 
+{{-- Popular Reviews section --}}
+<div class="w-full bg-white">
+    <h4 class="border-l-[11px] border-[#F9A13D] text-[#F9A13D] uppercase font-bold text-[12px] px-4 py-3 border-b">
+        Popular Reviews
+    </h4>
+
+    @php(
+        $popularReviewsSidebar = Illuminate\Support\Facades\Cache::remember('popular_reviews_sidebar', 3600, function () {
+            return App\Models\Review::published()
+                ->orderByDesc('views_count')
+                ->limit(3)
+                ->get();
+        })
+    )
+
+    <div class="p-3 space-y-3">
+        @foreach ($popularReviewsSidebar as $review)
+            <div class="group relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                <a href="{{ route('review-detail', $review->slug) }}" class="block">
+                    <img src="{{ $review->cover_image_url }}" alt="{{ $review->title }}" 
+                        class="w-full h-[150px] object-cover hover:scale-105 transition-transform duration-300">
+                    <div class="absolute bottom-0 left-0 right-0 bg-black/60 p-2">
+                        <span class="text-white text-[12px] font-bold line-clamp-1 group-hover:text-[#F9A13D] transition-colors">
+                            {{ $review->title }}
+                        </span>
+                    </div>
+                </a>
+            </div>
+        @endforeach
+    </div>
+</div>
 {{-- components: Latest Devices Sidebar --}}
 <div class="w-full bg-white mt-5">
 
@@ -36,37 +67,37 @@
 
         @php(
             $latestDevices = Illuminate\Support\Facades\Cache::remember('latest_devices_sidebar', 3600, function () {
-    return App\Models\Device::where('is_published', true)
-        ->whereIn('release_status', ['announced', 'released'])
-        ->orderByRaw("
-            CASE 
-                WHEN release_status = 'released' 
-                     AND released_at IS NOT NULL 
-                THEN released_at
-                ELSE announcement_date
-            END DESC
-        ")
-        ->limit(9)
-        ->get();
-})
+                return App\Models\Device::where('is_published', true)
+                    ->whereIn('release_status', ['announced', 'released'])
+                    ->orderByRaw("
+                        CASE 
+                            WHEN release_status = 'released' 
+                                 AND released_at IS NOT NULL 
+                            THEN released_at
+                            ELSE announcement_date
+                        END DESC
+                    ")
+                    ->limit(9)
+                    ->get();
+            })
         )
-@foreach ($latestDevices as $device)
-    <a href="{{ route('device-detail', $device->slug) }}"
-       class="text-center text-[11px] text-[#555] hover:text-[#F9A13D]">
+        @foreach ($latestDevices as $device)
+            <a href="{{ route('device-detail', $device->slug) }}"
+                class="text-center text-[11px] text-[#555] hover:text-[#F9A13D]">
 
-        <img src="{{ $device->thumbnail_url }}"
-             alt="{{ $device->name }}"
-             class="w-full h-auto rounded shadow-sm hover:scale-105 transition-transform duration-200 mb-1">
+                <img src="{{ $device->thumbnail_url }}" alt="{{ $device->name }}"
+                    class="w-full h-auto rounded shadow-sm hover:scale-105 transition-transform duration-200 mb-1">
 
-        <span class="block font-medium leading-tight">
-            {{ $device->name }}
-        </span>
-    </a>
-@endforeach
+                <span class="block font-medium leading-tight">
+                    {{ $device->name }}
+                </span>
+            </a>
+        @endforeach
 
 
     </div>
 </div>
+
 
 <!-- In Stores Now -->
 <div class="w-full bg-white mt-5">
@@ -81,33 +112,33 @@
 
         @php(
             $inStoresNow = Illuminate\Support\Facades\Cache::remember('in_stores_now', 3600, function () {
-    return App\Models\Device::where('is_published', true)
-        ->where('release_status', 'released')
-        ->whereNotNull('released_at')
-        ->whereDate('released_at', '<=', now())
-        ->orderByDesc('released_at')
-        ->limit(9)
-        ->get();
-})
+                return App\Models\Device::where('is_published', true)
+                    ->where('release_status', 'released')
+                    ->whereNotNull('released_at')
+                    ->whereDate('released_at', '<=', now())
+                    ->orderByDesc('released_at')
+                    ->limit(9)
+                    ->get();
+            })
            )
 
-       @foreach ($inStoresNow as $device)
-    <a href="{{ route('device-detail', $device->slug) }}"
-       class="text-center text-[11px] text-[#555] hover:text-[#F9A13D]">
+        @foreach ($inStoresNow as $device)
+            <a href="{{ route('device-detail', $device->slug) }}"
+                class="text-center text-[11px] text-[#555] hover:text-[#F9A13D]">
 
-        <img src="{{ $device->thumbnail_url }}"
-             alt="{{ $device->name }}"
-             class="w-full h-auto rounded shadow-sm hover:scale-105 transition-transform duration-200 mb-1">
+                <img src="{{ $device->thumbnail_url }}" alt="{{ $device->name }}"
+                    class="w-full h-auto rounded shadow-sm hover:scale-105 transition-transform duration-200 mb-1">
 
-        <span class="block font-medium leading-tight">
-            {{ $device->name }}
-        </span>
-    </a>
-@endforeach
+                <span class="block font-medium leading-tight">
+                    {{ $device->name }}
+                </span>
+            </a>
+        @endforeach
 
 
     </div>
 </div>
+
 
 <!-- Top 10 by Daily Interest -->
 <div class="w-full bg-white mt-6">
@@ -115,11 +146,9 @@
     <h4 class="border-l-[11px] border-[#F9A13D] text-[#F9A13D] uppercase font-bold text-[12px] px-4 py-3">
         Top 10 by Daily Interest
     </h4>
-
     {{-- Table Wrapper --}}
     <div class="overflow-x-auto">
         <table class="w-full text-left text-[12px] text-[#555]">
-
             <thead class="bg-[#a4c08d] text-[white]">
                 <tr>
                     <th class="w-[30px] py-2 pl-3">#</th>
@@ -127,12 +156,8 @@
                     <th class="py-2 pr-3 text-right">Daily Hits</th>
                 </tr>
             </thead>
-
             <tbody class="divide-y divide-gray-200">
-
-
                 @php(
-                    // Fetch Top 10 devices by daily hits
                     $topByDailyInterest = Illuminate\Support\Facades\Cache::remember('top_10_daily_interest', 300, function () {
                         return App\Models\Device::where('is_published', true)
                             ->join('device_stats', 'devices.id', '=', 'device_stats.device_id')
@@ -142,7 +167,7 @@
                             ->limit(10)
                             ->select('devices.*', 'device_stats.daily_hits')
                             ->get();
-                    }))
+                }))
 
                 @forelse ($topByDailyInterest as $index => $device)
                     <tr class="{{ $loop->even ? 'bg-[#e8f5e9]' : '' }} transition">
@@ -176,6 +201,7 @@
 </div>
 
 
+<!-- Top 10 by fans -->
 <div class="w-full bg-white mt-6">
     {{-- Header --}}
     <h4 class="border-l-[11px] border-[#F9A13D] text-[#F9A13D] uppercase font-bold text-[12px] px-4 py-3">
@@ -205,7 +231,7 @@
                             ->limit(10)
                             ->select('devices.*', 'device_stats.total_fans')
                             ->get();
-                    }))
+                }))
 
                 @forelse ($topByFans as $index => $device)
                     <tr class="{{ $loop->even ? 'bg-[#e4eff6]' : '' }} transition">
@@ -239,7 +265,8 @@
 </div>
 
 
-<div class="w-full bg-white mt-6">
+<!-- Popular Comparisons -->
+<div class="w-full bg-white my-6">
     {{-- Header --}}
     <h4 class="border-l-[11px] border-[#F9A13D] text-[#F9A13D] uppercase font-bold text-[12px] px-4 py-3">
         Popular Comparisons
@@ -255,14 +282,14 @@
                     ->orderByDesc('total_hits')
                     ->limit(10)
                     ->get();
-            }))
+        }))
 
         <ul class="space-y-1">
             @forelse ($topComparisons as $index => $stat)
                 <li class="{{ $loop->even ? 'bg-[#fff2ee]' : '' }} px-2 py-1 transition">
-                    <a href="{{ route('device-comparison', ['slug' => $stat->device1->slug, 'id' => $stat->device1->id, 'id2' => $stat->device2->id]) }}" 
-                       class="text-[12px] text-[#555] hover:text-[#F9A13D] leading-tight">
-                        {{ $stat->device1->name }} vs. {{ $stat->device2->name }}
+                    <a href="{{ route('device.compare', ['slug' => $stat->device1->slug, 'id' => $stat->device1->id, 'id2' => $stat->device2->id]) }}"
+                        class="text-[12px] text-[#555] hover:text-[#F9A13D] leading-tight block">
+                        {{ $stat->device1->name }} <span class="text-gray-400 mx-0.5">vs.</span> {{ $stat->device2->name }}
                     </a>
                 </li>
             @empty
@@ -276,6 +303,7 @@
 
 
 </div>
+
 
 
 <!-- Electric Vehicles News  -->
@@ -310,19 +338,19 @@
             ],
         ])
 
-    <div class="px-3 py-3">
+    <div class="px-3 pb-4">
         <ul class="space-y-3">
             @foreach ($evNews as $item)
-                <li class="bg-white flex gap-2 p-2 rounded-sm shadow-sm hover:shadow-md transition-shadow">
+                <li class="bg-white flex gap-2 p-1 rounded-sm shadow-sm hover:shadow-md transition-shadow border border-gray-100">
                     <a href="{{ $item['url'] }}" target="_blank" class="flex gap-2 w-full">
 
-                        <div class="w-[80px] h-[55px] flex-shrink-0 overflow-hidden rounded-sm">
+                        <div class="w-[85px] h-[55px] flex-shrink-0 overflow-hidden rounded-sm">
                             <img src="{{ $item['img'] }}" alt="{{ $item['title'] }}"
                                 class="w-full h-full object-cover hover:scale-105 transition-transform duration-200" />
                         </div>
 
                         <div class="flex-1 flex items-center">
-                            <span class="text-[11px] leading-snug text-[#555] hover:text-[#F9A13D]">
+                            <span class="text-[11px] leading-snug font-medium text-[#444] hover:text-[#F9A13D] line-clamp-2">
                                 {{ $item['title'] }}
                             </span>
                         </div>
@@ -333,7 +361,8 @@
     </div>
 </div> -->
 
-{{-- Sidebar Advertisement Slot --}}
+
+<!-- Sidebar Advertisement Slot -->
 <!-- <div class="w-full bg-white mt-6">
 
     {{-- Outer wrapper to keep consistent with other sidebar boxes --}}

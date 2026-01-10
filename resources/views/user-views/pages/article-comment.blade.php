@@ -26,7 +26,7 @@
                         class="flex items-center gap-1 h-full hover:bg-[#F9A13D] transition-colors px-2 transition">
                         <i class="fa-regular fa-comment"></i> COMMENTS ({{ $article->comments_count ?? 0 }})
                     </a>
-                    <a href="#comments"
+                    <a href="{{ route('comment.post', ['slug' => $article->slug, 'id' => $article->id, 'type' => 'article'])}}"
                         class="flex items-center gap-1 h-full hover:bg-[#F9A13D] transition-colors px-2 transition">
                         <i class="fa-regular fa-message"></i> POST YOUR COMMENTS
                     </a>

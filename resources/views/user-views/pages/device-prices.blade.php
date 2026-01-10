@@ -8,6 +8,7 @@
 
 @section('content')
     <x-device-header :device="$device" activeTab="prices" />
+    <x-device-mobile-header :device="$device" activeTab="prices" />
 
     <!-- Pricing Section -->
     <div>
@@ -38,7 +39,7 @@
         </div>
 
         <!-- Pricing Tables -->
-        <div class="space-y-8 px-2">
+        <div class="hidden lg:block space-y-8 px-2">
             @php
                 // Group offers by country
                 $offersByCountry = $device->offers->groupBy('country.name');
@@ -163,6 +164,124 @@
         </div>
 
 
+        <!-- Mobile screen Pricing Tables -->
+        <div class="lg:hidden space-y-4 px-0">
+            @php
+                // Group offers by country
+                $offersByCountry = $device->offers->groupBy('country.name');
+
+                // Get ALL variants for the device
+                $allVariants = $device->variants()
+                    ->where('device_variants.status', true)
+                    ->orderBy('storage_gb')
+                    ->orderBy('ram_gb')
+                    ->get();
+            @endphp
+
+            @if($offersByCountry->isEmpty() || $allVariants->isEmpty())
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mx-2 mb-6 rounded">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">
+                                No pricing information available for {{ $device->name }} at the moment. Please check back later.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @else
+                @foreach($offersByCountry as $countryName => $countryOffers)
+                    <div class="bg-white border-t border-b border-gray-200" x-data="{ open: true }">
+                        <!-- Country Header -->
+                        <div @click="open = !open" 
+                             class="flex justify-between items-center px-4 py-3 bg-white cursor-pointer select-none hover:bg-gray-50 transition-colors">
+                            <h3 class="text-[19px] font-normal text-[#444] leading-none">{{ $countryName }}</h3>
+                            <i class="fa-solid fa-chevron-down text-xs text-gray-500 transition-transform duration-200" 
+                               :class="{ 'rotate-180': open }"></i>
+                        </div>
+
+                        <!-- Content -->
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 -translate-y-1"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 translate-y-0"
+                             x-transition:leave-end="opacity-0 -translate-y-1"
+                             class="border-t border-gray-100">
+                            @foreach($allVariants as $variant)
+                                @php
+                                    $variantOffers = $countryOffers->where('device_variant_id', $variant->id);
+                                @endphp
+
+                                @if($variantOffers->isNotEmpty())
+                                    <!-- Variant Header -->
+                                    <div class="px-4 pt-4 pb-2 text-[#888] font-bold text-[12px] uppercase">
+                                        @if($variant->storage_gb && $variant->ram_gb)
+                                            {{ $variant->storage_gb }}GB {{ $variant->ram_gb }}GB RAM
+                                        @else
+                                            {{ $variant->label }}
+                                        @endif
+                                    </div>
+
+                                    <!-- Offers List -->
+                                    <div>
+                                        @foreach($variantOffers as $offer)
+                                            @php
+                                                // Collect all offers from this store for this variant
+                                                $storeId = $offer->store->id ?? 0;
+                                                $storeOffers = $variantOffers->where('store_id', $storeId);
+                                                
+                                                // Prepare offers array for modal
+                                                $offersData = [];
+                                                foreach($storeOffers as $storeOffer) {
+                                                    $offersData[] = [
+                                                        'image' => $device->image_url ?? '',
+                                                        'title' => $device->name . ' ' . ($variant->storage_gb && $variant->ram_gb ? $variant->storage_gb . 'GB ' . $variant->ram_gb . 'GB RAM' : $variant->label),
+                                                        'price' => ($storeOffer->currency->symbol ?? '') . ' ' . number_format($storeOffer->price, 2),
+                                                        'url' => $storeOffer->url ?: '#',
+                                                        'inStock' => $storeOffer->in_stock
+                                                    ];
+                                                }
+                                            @endphp
+                                            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 cursor-pointer"
+                                                 @click="$dispatch('open-pricing-modal', {
+                                                     deviceName: '{{ addslashes($device->name) }}',
+                                                     variantLabel: '{{ $variant->storage_gb && $variant->ram_gb ? $variant->storage_gb . "GB " . $variant->ram_gb . "GB RAM" : addslashes($variant->label) }}',
+                                                     storeName: '{{ addslashes($offer->store->name ?? "Store") }}',
+                                                     storeLogo: '{{ $offer->store->logo_url ?? "" }}',
+                                                     offers: {{ json_encode($offersData) }}
+                                                 })">
+                                                <!-- Store -->
+                                                <div class="flex-shrink-0">
+                                                    @if($offer->store && $offer->store->logo_url)
+                                                        <img src="{{ $offer->store->logo_url }}" alt="{{ $offer->store->name }}" 
+                                                             class="h-6 w-auto object-contain max-w-[120px]">
+                                                    @else
+                                                        <span class="font-bold text-[#333] text-[15px]">{{ $offer->store->name ?? 'Store' }}</span>
+                                                    @endif
+                                                </div>
+
+                                                <!-- Price -->
+                                                <span class="text-[#F9A13D] font-bold text-[16px] whitespace-nowrap">
+                                                    {{ $offer->currency->symbol ?? '' }} {{ number_format($offer->price, 2) }}
+                                                </span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                @endforeach
+            @endif
+        </div>
+
+
         <!-- Disclaimer Notes -->
         <div class="mt-8 space-y-3 text-[#292828] mb-4 leading-relaxed text-[13px] px-2">
             <p class="leading-relaxed">
@@ -187,6 +306,94 @@
         </div>
     </div>
 
+    <!-- Pricing Modal (Mobile Only) -->
+    <div x-data="pricingModal()" 
+         @open-pricing-modal.window="openModal($event.detail)"
+         x-show="isOpen"
+         x-cloak
+         class="fixed inset-0 z-50 lg:hidden"
+         style="display: none;">
+        
+        <!-- Semi-transparent Gray Backdrop (GSMarena Style) -->
+        <div class="fixed inset-0 bg-gray-600 bg-opacity-40 transition-opacity"
+             @click="closeModal()"></div>
+
+        <!-- Modal Content -->
+        <div class="fixed inset-0 flex items-start justify-center pt-12 px-3">
+            <div class="relative bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col"
+                 @click.stop>
+                
+                <!-- Header (Fixed) -->
+                <div class="px-4 pt-4 pb-3 border-b border-gray-200 flex-shrink-0">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex-1 pr-4">
+                            <h3 class="text-[17px] font-bold text-[#F9A13D] mb-0.5" x-text="modalData.deviceName"></h3>
+                            <span class="text-[12px] text-gray-500 font-semibold" x-text="modalData.variantLabel"></span>
+                        </div>
+                        <button @click="closeModal()" 
+                                class="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <p class="text-[10px] text-gray-500 leading-relaxed mt-2">
+                        For full specs, item condition, and final price incl. taxes and fees refer to each store listing.
+                    </p>
+
+                    <!-- Store Logo -->
+                    <div class="mt-3">
+                        <template x-if="modalData.storeLogo">
+                            <img :src="modalData.storeLogo" 
+                                 :alt="modalData.storeName"
+                                 class="h-8 w-auto object-contain">
+                        </template>
+                        <template x-if="!modalData.storeLogo">
+                            <span class="font-bold text-[16px] text-[#333]" x-text="modalData.storeName"></span>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Product Listings (Scrollable) -->
+                <div class="flex-1 overflow-y-auto px-4 py-3">
+                    <template x-for="(offer, index) in modalData.offers" :key="index">
+                        <div class="flex items-center gap-3 border-b border-gray-100 py-3 last:border-0">
+                            <!-- Product Image -->
+                            <div class="flex-shrink-0 w-16 h-16">
+                                <img :src="offer.image" 
+                                     :alt="offer.title"
+                                     class="w-full h-full object-contain">
+                            </div>
+
+                            <!-- Product Details -->
+                            <div class="flex-1 min-w-0">
+                                <p class="text-[13px] text-gray-800 leading-tight mb-1.5 line-clamp-2" x-text="offer.title"></p>
+                                <p class="text-[18px] font-bold text-[#F9A13D]" x-text="offer.price"></p>
+                                <template x-if="!offer.inStock">
+                                    <span class="inline-block text-[10px] text-[#F9A13D] font-semibold mt-0.5">
+                                        Out of stock
+                                    </span>
+                                </template>
+                            </div>
+
+                            <!-- GO TO STORE Button -->
+                            <div class="flex-shrink-0">
+                                <a :href="offer.url" 
+                                   target="_blank" 
+                                   rel="nofollow noopener"
+                                   class="inline-block bg-[#F9A13D] hover:bg-[#e89530] text-white font-bold text-[11px] py-2 px-3 rounded text-center transition-colors uppercase whitespace-nowrap">
+                                    GO TO STORE
+                                </a>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 @endsection
 
 @push('scripts')
@@ -198,6 +405,31 @@
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.set('currency', value);
                 window.location.href = currentUrl.toString();
+            }
+        }
+
+        // Alpine.js component for pricing modal
+        function pricingModal() {
+            return {
+                isOpen: false,
+                modalData: {
+                    deviceName: '',
+                    variantLabel: '',
+                    storeName: '',
+                    storeLogo: '',
+                    offers: []
+                },
+                openModal(data) {
+                    this.modalData = data;
+                    this.isOpen = true;
+                    // Prevent body scroll when modal is open
+                    document.body.style.overflow = 'hidden';
+                },
+                closeModal() {
+                    this.isOpen = false;
+                    // Restore body scroll
+                    document.body.style.overflow = '';
+                }
             }
         }
     </script>

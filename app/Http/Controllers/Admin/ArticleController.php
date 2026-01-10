@@ -26,6 +26,15 @@ class ArticleController extends Controller
             $query->where('type', $request->type);
         }
 
+        // Filter by status
+        if ($request->filled('status')) {
+            if ($request->status === 'published') {
+                $query->where('is_published', true);
+            } elseif ($request->status === 'draft') {
+                $query->where('is_published', false);
+            }
+        }
+
         // Search
         if ($request->filled('search')) {
             $search = $request->search;
@@ -156,6 +165,7 @@ class ArticleController extends Controller
             'is_featured' => 'nullable|boolean',
             'allow_comments' => 'nullable|boolean',
             'published_at' => 'nullable|date',
+            'remove_thumbnail' => 'nullable|boolean',
             'thumbnail_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'tags' => 'nullable|array',
             'tags.*' => 'nullable|string',

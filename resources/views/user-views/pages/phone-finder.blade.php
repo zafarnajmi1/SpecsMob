@@ -1,5 +1,7 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Phone Finder')
+
+
 
 @section('content')
     <style>
@@ -22,7 +24,7 @@
         .slider-range {
             position: absolute;
             height: 4px;
-            background-color: #3b82f6;
+            background-color: #F9A13D;
             border-radius: 2px;
         }
 
@@ -31,12 +33,17 @@
             width: 20px;
             height: 20px;
             background-color: white;
-            border: 2px solid #3b82f6;
+            border: 2px solid #F9A13D;
             border-radius: 50%;
             top: 50%;
-            transform: translateY(-50%);
+            transform: translateX(-50%) translateY(-50%);
             cursor: pointer;
             z-index: 2;
+            transition: z-index 0.1s ease;
+        }
+
+        .slider-handle:active {
+            z-index: 5;
         }
 
         .custom-select {
@@ -86,14 +93,14 @@
         }
 
         .tab-active {
-            border-bottom: 2px solid #3b82f6;
-            color: #3b82f6;
+            border-bottom: 2px solid #F9A13D;
+            color: #F9A13D;
         }
     </style>
 
 
     {{-- Hero / header --}}
-    <div class="overflow-hidden w-full mb-6 md:h-[310px]">
+    <div class="hidden lg:block overflow-hidden w-full mb-6 md:h-[310px]">
         <div class="relative bg-cover bg-center h-full"
             style='background-image: url("{{ asset('user/images/phonefinder.jpg') }}");'>
             <div class="bg-black/25 h-full">
@@ -105,17 +112,31 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('phone-finder')
 
 
-
-    <div class="container mx-auto px-4 py-8">
-        <!-- Tabs -->
-        <div class="flex border-b-6 border-[#b5d779] mb-6 justify-end">
+    <div class="container mx-auto lg:px-4 lg:py-8 py-2">
+        <!-- PC & laptop Tabs -->
+        <div class="hidden lg:flex border-b-6 border-[#b5d779] mb-6 justify-end">
             <button
                 class="px-4 py-2 font-medium bg-[rgba(118,177,208,.5)] text-white shadow hover:bg-[#F9A13D]">Tablets</button>
             <button
                 class="px-4 py-2 font-medium bg-[rgba(118,177,208,.5)] text-white shadow hover:bg-[#F9A13D] tab-active active:bg-[#b5d779] active:text-white">Phones</button>
         </div>
+
+        <!-- Mobile and tablet tabs -->
+         <div class="lg:hidden px-2 flex flex-col">
+            <h2 class="font-bold text-lg ml-4">Phone Finder</h2>
+             <div class="flex gap-2 mb-6 justify-start border-b border-gray-300">
+                 <button
+                     class="px-4 py-2 font-bold text-[14px] text-[#F9A13D] border-b-4 border-[#F9A13D]">Phones</button>
+                 <button
+                     class="px-4 py-2 font-bold text-[14px] text-gray-500">Tablets</button>
+             </div>
+             <a href="{{route('phone-finder-results')}}" class="uppercase text-white bg-[#F9A13D] rounded-sm shadow text-center py-2 font-bold text-[23px]">SHOW {{ $results ?? 0}} RESULTS</a>
+         </div>
 
         <!-- Filter Form -->
         <form action="{{ route('phone-finder') }}" method="GET" id="phone-finder-form"
@@ -158,16 +179,16 @@
                     <!-- Year -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Year</label>
-                        <div class="slider-container">
+                        <div class="slider-container" id="year-slider">
                             <div class="slider-track">
                                 <div class="slider-range" style="left: 0%; width: 100%;"></div>
                                 <div class="slider-handle" style="left: 0%;"></div>
                                 <div class="slider-handle" style="left: 100%;"></div>
                             </div>
-                            <div class="flex justify-between w-full mt-2">
-                                <span class="text-sm">2000</span>
-                                <span class="text-sm">2025</span>
-                            </div>
+                        </div>
+                        <div class="flex justify-between w-full mt-4 px-1">
+                            <span class="text-sm font-medium text-gray-700" data-min="2000" data-max="2025">2000</span>
+                            <span class="text-sm font-medium text-gray-700" data-min="2000" data-max="2025">2025</span>
                         </div>
                     </div>
 
@@ -175,15 +196,22 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Availability</label>
                         <div class="custom-select">
-                            <div class="select-selected">
-                                <span>Select availability</span>
+                            <div class="select-selected" data-target="release-status">
+                                <span id="availability-display">
+                                    @if(request('status') == 'available') Available
+                                    @elseif(request('status') == 'coming_soon') Coming soon
+                                    @elseif(request('status') == 'discontinued') Discontinued
+                                    @elseif(request('status') == 'rumored') Rumored
+                                    @else Select availability
+                                    @endif
+                                </span>
                                 <i class="fas fa-chevron-down"></i>
                             </div>
-                            <div class="select-items">
-                                <div>Available</div>
-                                <div>Coming soon</div>
-                                <div>Discontinued</div>
-                                <div>Rumored</div>
+                            <div class="select-items status-options">
+                                <div data-value="available">Available</div>
+                                <div data-value="coming_soon">Coming soon</div>
+                                <div data-value="discontinued">Discontinued</div>
+                                <div data-value="rumored">Rumored</div>
                             </div>
                         </div>
                     </div>
@@ -191,16 +219,16 @@
                     <!-- Price -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Price</label>
-                        <div class="slider-container">
+                        <div class="slider-container" id="price-slider">
                             <div class="slider-track">
                                 <div class="slider-range" style="left: 0%; width: 100%;"></div>
                                 <div class="slider-handle" style="left: 0%;"></div>
                                 <div class="slider-handle" style="left: 100%;"></div>
                             </div>
-                            <div class="flex justify-between w-full mt-2">
-                                <span class="text-sm">€50/$68</span>
-                                <span class="text-sm">€1200/$1200</span>
-                            </div>
+                        </div>
+                        <div class="flex justify-between w-full mt-4 px-1">
+                            <span class="text-sm font-medium text-gray-700" data-min="50" data-max="1200">€50/$68</span>
+                            <span class="text-sm font-medium text-gray-700" data-min="50" data-max="1200">€1200/$1200</span>
                         </div>
                     </div>
                 </div>
@@ -291,13 +319,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <!-- Dual SIM -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="dualsim" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="dualsim"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="dualsim" class="ml-2 block text-sm text-gray-700">Dual SIM</label>
                     </div>
 
                     <!-- eSIM -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="esim" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="esim"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="esim" class="ml-2 block text-sm text-gray-700">eSIM</label>
                     </div>
 
@@ -365,64 +395,64 @@
                         <!-- Height -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Height</label>
-                            <div class="slider-container">
+                            <div class="slider-container" id="height-slider">
                                 <div class="slider-track">
                                     <div class="slider-range" style="left: 0%; width: 100%;"></div>
                                     <div class="slider-handle" style="left: 0%;"></div>
                                     <div class="slider-handle" style="left: 100%;"></div>
                                 </div>
-                                <div class="flex justify-between w-full mt-2">
-                                    <span class="text-sm">90mm</span>
-                                    <span class="text-sm">180mm</span>
-                                </div>
+                            </div>
+                            <div class="flex justify-between w-full mt-4 px-1">
+                                <span class="text-sm font-medium text-gray-700" data-min="90" data-max="180">90mm</span>
+                                <span class="text-sm font-medium text-gray-700" data-min="90" data-max="180">180mm</span>
                             </div>
                         </div>
 
                         <!-- Width -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Width</label>
-                            <div class="slider-container">
+                            <div class="slider-container" id="width-slider">
                                 <div class="slider-track">
                                     <div class="slider-range" style="left: 0%; width: 100%;"></div>
                                     <div class="slider-handle" style="left: 0%;"></div>
                                     <div class="slider-handle" style="left: 100%;"></div>
                                 </div>
-                                <div class="flex justify-between w-full mt-2">
-                                    <span class="text-sm">40mm</span>
-                                    <span class="text-sm">80mm</span>
-                                </div>
+                            </div>
+                            <div class="flex justify-between w-full mt-4 px-1">
+                                <span class="text-sm font-medium text-gray-700" data-min="40" data-max="80">40mm</span>
+                                <span class="text-sm font-medium text-gray-700" data-min="40" data-max="80">80mm</span>
                             </div>
                         </div>
 
                         <!-- Thickness -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Thickness</label>
-                            <div class="slider-container">
+                            <div class="slider-container" id="thickness-slider">
                                 <div class="slider-track">
                                     <div class="slider-range" style="left: 0%; width: 100%;"></div>
                                     <div class="slider-handle" style="left: 0%;"></div>
                                     <div class="slider-handle" style="left: 100%;"></div>
                                 </div>
-                                <div class="flex justify-between w-full mt-2">
-                                    <span class="text-sm">5mm</span>
-                                    <span class="text-sm">20mm</span>
-                                </div>
+                            </div>
+                            <div class="flex justify-between w-full mt-4 px-1">
+                                <span class="text-sm font-medium text-gray-700" data-min="5" data-max="20">5mm</span>
+                                <span class="text-sm font-medium text-gray-700" data-min="5" data-max="20">20mm</span>
                             </div>
                         </div>
 
                         <!-- Weight -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Weight</label>
-                            <div class="slider-container">
+                            <div class="slider-container" id="weight-slider">
                                 <div class="slider-track">
                                     <div class="slider-range" style="left: 0%; width: 100%;"></div>
                                     <div class="slider-handle" style="left: 0%;"></div>
                                     <div class="slider-handle" style="left: 100%;"></div>
                                 </div>
-                                <div class="flex justify-between w-full mt-2">
-                                    <span class="text-sm">60g</span>
-                                    <span class="text-sm">230g</span>
-                                </div>
+                            </div>
+                            <div class="flex justify-between w-full mt-4 px-1">
+                                <span class="text-sm font-medium text-gray-700" data-min="60" data-max="230">60g</span>
+                                <span class="text-sm font-medium text-gray-700" data-min="60" data-max="230">230g</span>
                             </div>
                         </div>
                     </div>
@@ -455,7 +485,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Color</label>
                         <input type="text"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F9A13D]">
                     </div>
 
                     <!-- Back Material -->
@@ -561,16 +591,16 @@
                     <!-- CPU Cores -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">CPU Cores</label>
-                        <div class="slider-container">
+                        <div class="slider-container" id="cpu-cores-slider">
                             <div class="slider-track">
                                 <div class="slider-range" style="left: 0%; width: 100%;"></div>
                                 <div class="slider-handle" style="left: 0%;"></div>
                                 <div class="slider-handle" style="left: 100%;"></div>
                             </div>
-                            <div class="flex justify-between w-full mt-2">
-                                <span class="text-sm">1</span>
-                                <span class="text-sm">8</span>
-                            </div>
+                        </div>
+                        <div class="flex justify-between w-full mt-4 px-1">
+                            <span class="text-sm font-medium text-gray-700" data-min="1" data-max="8">1</span>
+                            <span class="text-sm font-medium text-gray-700" data-min="1" data-max="8">8</span>
                         </div>
                     </div>
                 </div>
@@ -637,48 +667,48 @@
                     <!-- Resolution -->
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Resolution</label>
-                        <div class="slider-container">
+                        <div class="slider-container" id="display-resolution-slider">
                             <div class="slider-track">
                                 <div class="slider-range" style="left: 0%; width: 100%;"></div>
                                 <div class="slider-handle" style="left: 0%;"></div>
                                 <div class="slider-handle" style="left: 100%;"></div>
                             </div>
-                            <div class="flex justify-between w-full mt-2">
-                                <span class="text-sm">QVGA</span>
-                                <span class="text-sm">4K</span>
-                            </div>
+                        </div>
+                        <div class="flex justify-between w-full mt-4 px-1">
+                            <span class="text-sm font-medium text-gray-700" data-min="0" data-max="2160">QVGA</span>
+                            <span class="text-sm font-medium text-gray-700" data-min="0" data-max="2160">4K</span>
                         </div>
                     </div>
 
                     <!-- Size -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Size</label>
-                        <div class="slider-container">
+                        <div class="slider-container" id="display-size-slider">
                             <div class="slider-track">
                                 <div class="slider-range" style="left: 0%; width: 100%;"></div>
                                 <div class="slider-handle" style="left: 0%;"></div>
                                 <div class="slider-handle" style="left: 100%;"></div>
                             </div>
-                            <div class="flex justify-between w-full mt-2">
-                                <span class="text-sm">3"</span>
-                                <span class="text-sm">7.2"</span>
-                            </div>
+                        </div>
+                        <div class="flex justify-between w-full mt-4 px-1">
+                            <span class="text-sm font-medium text-gray-700" data-min="3" data-max="7.2">3"</span>
+                            <span class="text-sm font-medium text-gray-700" data-min="3" data-max="7.2">7.2"</span>
                         </div>
                     </div>
 
                     <!-- Density -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Density</label>
-                        <div class="slider-container">
+                        <div class="slider-container" id="density-slider">
                             <div class="slider-track">
                                 <div class="slider-range" style="left: 0%; width: 100%;"></div>
                                 <div class="slider-handle" style="left: 0%;"></div>
                                 <div class="slider-handle" style="left: 100%;"></div>
                             </div>
-                            <div class="flex justify-between w-full mt-2">
-                                <span class="text-sm">100ppi</span>
-                                <span class="text-sm">550ppi</span>
-                            </div>
+                        </div>
+                        <div class="flex justify-between w-full mt-4 px-1">
+                            <span class="text-sm font-medium text-gray-700" data-min="100" data-max="550">100ppi</span>
+                            <span class="text-sm font-medium text-gray-700" data-min="100" data-max="550">550ppi</span>
                         </div>
                     </div>
 
@@ -717,27 +747,29 @@
                     <!-- Refresh Rate -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Refresh rate</label>
-                        <div class="slider-container">
+                        <div class="slider-container" id="refresh-rate-slider">
                             <div class="slider-track">
-                                <div class="slider-range" style="left: 0%; width: 100%;"></div>
+                                <div class="slider-range" style="left: 0%; width: 0%;"></div>
                                 <div class="slider-handle" style="left: 0%;"></div>
                             </div>
-                            <div class="flex justify-between w-full mt-2">
-                                <span class="text-sm">90Hz</span>
-                                <span class="text-sm">165Hz</span>
-                            </div>
+                        </div>
+                        <div class="flex justify-between w-full mt-4 px-1">
+                            <span class="text-sm font-medium text-gray-700" data-min="90" data-max="165">90Hz</span>
+                            <span class="text-sm font-medium text-gray-700" data-min="90" data-max="165">165Hz</span>
                         </div>
                     </div>
 
                     <!-- HDR -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="hdr" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="hdr"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="hdr" class="ml-2 block text-sm text-gray-700">HDR</label>
                     </div>
 
                     <!-- 1B+ Colors -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="colors" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="colors"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="colors" class="ml-2 block text-sm text-gray-700">1B+ colors</label>
                     </div>
                 </div>
@@ -751,15 +783,15 @@
                     <!-- Resolution -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Resolution</label>
-                        <div class="slider-container">
+                        <div class="slider-container" id="main-camera-resolution-slider">
                             <div class="slider-track">
-                                <div class="slider-range" style="left: 0%; width: 100%;"></div>
+                                <div class="slider-range" style="left: 0%; width: 0%;"></div>
                                 <div class="slider-handle" style="left: 0%;"></div>
                             </div>
-                            <div class="flex justify-between w-full mt-2">
-                                <span class="text-sm">No</span>
-                                <span class="text-sm">200MP</span>
-                            </div>
+                        </div>
+                        <div class="flex justify-between w-full mt-4 px-1">
+                            <span class="text-sm font-medium text-gray-700" data-min="0" data-max="200">No</span>
+                            <span class="text-sm font-medium text-gray-700" data-min="0" data-max="200">200MP</span>
                         </div>
                     </div>
 
@@ -782,50 +814,53 @@
 
                     <!-- OIS -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="cameraois" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="cameraois"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="cameraois" class="ml-2 block text-sm text-gray-700">OIS</label>
                     </div>
 
                     <!-- F-number -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">F-number</label>
-                        <div class="slider-container">
+                        <div class="slider-container" id="fnumber-slider">
                             <div class="slider-track">
                                 <div class="slider-range" style="left: 0%; width: 100%;"></div>
                                 <div class="slider-handle" style="left: 0%;"></div>
                                 <div class="slider-handle" style="left: 100%;"></div>
                             </div>
-                            <div class="flex justify-between w-full mt-2">
-                                <span class="text-sm">f/1.5</span>
-                                <span class="text-sm">f/2.8</span>
-                            </div>
+                        </div>
+                        <div class="flex justify-between w-full mt-4 px-1">
+                            <span class="text-sm font-medium text-gray-700" data-min="1.5" data-max="2.8">f/1.5</span>
+                            <span class="text-sm font-medium text-gray-700" data-min="1.5" data-max="2.8">f/2.8</span>
                         </div>
                     </div>
 
                     <!-- Telephoto -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="telephoto" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="telephoto"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="telephoto" class="ml-2 block text-sm text-gray-700">Telephoto</label>
                     </div>
 
                     <!-- Ultrawide -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="ultrawide" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="ultrawide"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="ultrawide" class="ml-2 block text-sm text-gray-700">Ultrawide</label>
                     </div>
 
                     <!-- Video -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Video</label>
-                        <div class="slider-container">
+                        <div class="slider-container" id="video-slider">
                             <div class="slider-track">
-                                <div class="slider-range" style="left: 0%; width: 100%;"></div>
+                                <div class="slider-range" style="left: 0%; width: 0%;"></div>
                                 <div class="slider-handle" style="left: 0%;"></div>
                             </div>
-                            <div class="flex justify-between w-full mt-2">
-                                <span class="text-sm">QVGA</span>
-                                <span class="text-sm">8K</span>
-                            </div>
+                        </div>
+                        <div class="flex justify-between w-full mt-4 px-1">
+                            <span class="text-sm font-medium text-gray-700" data-min="0" data-max="2160">QVGA</span>
+                            <span class="text-sm font-medium text-gray-700" data-min="0" data-max="2160">8K</span>
                         </div>
                     </div>
 
@@ -855,45 +890,50 @@
                     <!-- Resolution -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Resolution</label>
-                        <div class="slider-container">
+                        <div class="slider-container" id="selfie-camera-resolution-slider">
                             <div class="slider-track">
-                                <div class="slider-range" style="left: 0%; width: 100%;"></div>
+                                <div class="slider-range" style="left: 0%; width: 0%;"></div>
                                 <div class="slider-handle" style="left: 0%;"></div>
                             </div>
-                            <div class="flex justify-between w-full mt-2">
-                                <span class="text-sm">No</span>
-                                <span class="text-sm">48MP</span>
-                            </div>
+                        </div>
+                        <div class="flex justify-between w-full mt-4 px-1">
+                            <span class="text-sm font-medium text-gray-700" data-min="0" data-max="48">No</span>
+                            <span class="text-sm font-medium text-gray-700" data-min="0" data-max="48">48MP</span>
                         </div>
                     </div>
 
                     <!-- Dual Camera -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="dualcamera" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="dualcamera"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="dualcamera" class="ml-2 block text-sm text-gray-700">Dual camera</label>
                     </div>
 
                     <!-- OIS -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="selfieois" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="selfieois"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="selfieois" class="ml-2 block text-sm text-gray-700">OIS</label>
                     </div>
 
                     <!-- Front Flash -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="frontflash" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="frontflash"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="frontflash" class="ml-2 block text-sm text-gray-700">Front flash</label>
                     </div>
 
                     <!-- Pop-up Camera -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="popup" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="popup"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="popup" class="ml-2 block text-sm text-gray-700">Pop-up camera</label>
                     </div>
 
                     <!-- Under Display Camera -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="undercamera" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="undercamera"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="undercamera" class="ml-2 block text-sm text-gray-700">Under display camera</label>
                     </div>
                 </div>
@@ -906,13 +946,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- 3.5mm Jack -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="jack" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="jack"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="jack" class="ml-2 block text-sm text-gray-700">3.5mm jack</label>
                     </div>
 
                     <!-- Dual Speakers -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="stereo" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="stereo"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="stereo" class="ml-2 block text-sm text-gray-700">Dual speakers</label>
                     </div>
                 </div>
@@ -925,37 +967,43 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <!-- Accelerometer -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="accelerometer" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="accelerometer"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="accelerometer" class="ml-2 block text-sm text-gray-700">Accelerometer</label>
                     </div>
 
                     <!-- Gyro -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="gyro" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="gyro"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="gyro" class="ml-2 block text-sm text-gray-700">Gyro</label>
                     </div>
 
                     <!-- Compass -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="compass" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="compass"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="compass" class="ml-2 block text-sm text-gray-700">Compass</label>
                     </div>
 
                     <!-- Proximity -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="proximity" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="proximity"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="proximity" class="ml-2 block text-sm text-gray-700">Proximity</label>
                     </div>
 
                     <!-- Barometer -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="barometer" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="barometer"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="barometer" class="ml-2 block text-sm text-gray-700">Barometer</label>
                     </div>
 
                     <!-- Heart Rate -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="heartrate" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="heartrate"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="heartrate" class="ml-2 block text-sm text-gray-700">Heart rate</label>
                     </div>
 
@@ -1027,25 +1075,29 @@
 
                     <!-- GPS -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="gps" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="gps"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="gps" class="ml-2 block text-sm text-gray-700">GPS</label>
                     </div>
 
                     <!-- NFC -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="nfc" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="nfc"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="nfc" class="ml-2 block text-sm text-gray-700">NFC</label>
                     </div>
 
                     <!-- Infrared -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="infrared" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="infrared"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="infrared" class="ml-2 block text-sm text-gray-700">Infrared</label>
                     </div>
 
                     <!-- FM Radio -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="fmradio" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="fmradio"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="fmradio" class="ml-2 block text-sm text-gray-700">FM Radio</label>
                     </div>
 
@@ -1074,60 +1126,62 @@
                     <!-- Capacity -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Capacity</label>
-                        <div class="slider-container">
+                        <div class="slider-container" id="battery-capacity-slider">
                             <div class="slider-track">
                                 <div class="slider-range" style="left: 0%; width: 100%;"></div>
                                 <div class="slider-handle" style="left: 0%;"></div>
                                 <div class="slider-handle" style="left: 100%;"></div>
                             </div>
-                            <div class="flex justify-between w-full mt-2">
-                                <span class="text-sm">3000mAh</span>
-                                <span class="text-sm">8000mAh</span>
-                            </div>
+                        </div>
+                        <div class="flex justify-between w-full mt-4 px-1">
+                            <span class="text-sm font-medium text-gray-700" data-min="3000" data-max="8000">3000mAh</span>
+                            <span class="text-sm font-medium text-gray-700" data-min="3000" data-max="8000">8000mAh</span>
                         </div>
                     </div>
 
                     <!-- Si/C -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="sic" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="sic"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="sic" class="ml-2 block text-sm text-gray-700">Si/C</label>
                     </div>
 
                     <!-- Removable -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="removable" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="removable"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="removable" class="ml-2 block text-sm text-gray-700">Removable</label>
                     </div>
 
                     <!-- Wired Charging -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Wired Charging</label>
-                        <div class="slider-container">
+                        <div class="slider-container" id="wired-charging-slider">
                             <div class="slider-track">
                                 <div class="slider-range" style="left: 0%; width: 100%;"></div>
                                 <div class="slider-handle" style="left: 0%;"></div>
                                 <div class="slider-handle" style="left: 100%;"></div>
                             </div>
-                            <div class="flex justify-between w-full mt-2">
-                                <span class="text-sm">10W</span>
-                                <span class="text-sm">120W</span>
-                            </div>
+                        </div>
+                        <div class="flex justify-between w-full mt-4 px-1">
+                            <span class="text-sm font-medium text-gray-700" data-min="10" data-max="120">10W</span>
+                            <span class="text-sm font-medium text-gray-700" data-min="10" data-max="120">120W</span>
                         </div>
                     </div>
 
                     <!-- Wireless Charging -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Wireless Charging</label>
-                        <div class="slider-container">
+                        <div class="slider-container" id="wireless-charging-slider">
                             <div class="slider-track">
                                 <div class="slider-range" style="left: 0%; width: 100%;"></div>
                                 <div class="slider-handle" style="left: 0%;"></div>
                                 <div class="slider-handle" style="left: 100%;"></div>
                             </div>
-                            <div class="flex justify-between w-full mt-2">
-                                <span class="text-sm">5W</span>
-                                <span class="text-sm">65W</span>
-                            </div>
+                        </div>
+                        <div class="flex justify-between w-full mt-4 px-1">
+                            <span class="text-sm font-medium text-gray-700" data-min="5" data-max="65">5W</span>
+                            <span class="text-sm font-medium text-gray-700" data-min="5" data-max="65">65W</span>
                         </div>
                     </div>
                 </div>
@@ -1142,7 +1196,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Free text</label>
                         <input type="text"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F9A13D]">
                     </div>
 
                     <!-- Order -->
@@ -1165,7 +1219,8 @@
 
                     <!-- Reviewed Only -->
                     <div class="flex items-center">
-                        <input type="checkbox" id="reviewed" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <input type="checkbox" id="reviewed"
+                            class="h-4 w-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]">
                         <label for="reviewed" class="ml-2 block text-sm text-gray-700">Reviewed only</label>
                     </div>
                 </div>
@@ -1174,7 +1229,7 @@
             <!-- Submit Button -->
             <div class="flex justify-center mt-8">
                 <button type="submit"
-                    class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition font-medium">
+                    class="bg-[#F9A13D] text-white px-6 py-3 rounded-lg hover:bg-[#e89530] transition font-medium">
                     <i class="fas fa-filter mr-2"></i>Show Results
                 </button>
             </div>
@@ -1204,7 +1259,7 @@
                                     <img src="{{ $device->thumbnail_url }}" alt="{{ $device->name }}"
                                         class="max-h-full max-w-full object-contain">
                                 </div>
-                                <h3 class="font-bold text-[#1976d2] text-center mb-2">{{ $device->name }}</h3>
+                                <h3 class="font-bold text-[#F9A13D] text-center mb-2">{{ $device->name }}</h3>
                                 <div class="text-xs text-center text-gray-500 space-y-1">
                                     <p>{{ $device->os_short }}</p>
                                     <p>{{ $device->storage_short }} / {{ $device->ram_short }} RAM</p>
@@ -1229,142 +1284,285 @@
                     <h3 class="text-xl font-bold text-gray-400">No phones match your filters</h3>
                     <p class="text-gray-400 mt-2">Try adjusting your criteria or clearing some filters.</p>
                     <a href="{{ route('phone-finder') }}"
-                        class="inline-block mt-6 text-[#1976d2] font-bold hover:underline uppercase text-sm">Clear All
+                        class="inline-block mt-6 text-[#F9A13D] font-bold hover:underline uppercase text-sm">Clear All
                         Filters</a>
                 </div>
             @endif
         </div>
     </div>
 @endsection
-
 @push('scripts')
+    <style>
+        .select-items {
+            z-index: 50 !important;
+            display: none;
+        }
+
+        .select-items.block {
+            display: block !important;
+        }
+
+        .slider-container+div {
+            margin-top: 1.5rem !important;
+        }
+    </style>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Helper for query strings
-            window.updateQueryStringParameter = function (uri, key, value) {
-                var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-                var separator = uri.indexOf('?') !== -1 ? "&" : "?";
-                if (uri.match(re)) {
-                    return uri.replace(re, '$1' + key + "=" + value + '$2');
-                } else {
-                    return uri + separator + key + "=" + value;
-                }
-            }
-
-            // --- Custom Select (Multiple Brands) ---
-            const brandSelect = document.getElementById('brand-select');
-            const brandDisplay = document.getElementById('brand-display');
-            const selectedBrandsInput = document.getElementById('selected-brands');
-            const brandCheckboxes = document.querySelectorAll('.brand-checkbox');
-
-            if (brandSelect) {
-                const selected = brandSelect.querySelector('.select-selected');
-                const items = brandSelect.querySelector('.select-items');
-
-                selected.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    items.classList.toggle('hidden');
+            document.addEventListener('DOMContentLoaded',         function () {
+                // Force text overlap fix immediately
+                const textContainers = document.querySelectorAll('.slider-container + div');
+                textContainers.forEach(div => {
+                    div.classList.remove('mt-2');
+                    div.style.marginTop = '2.5rem';
                 });
 
-                document.addEventListener('click', () => items.classList.add('hidden'));
+                // --- BRAND SELECT FIX ---
+                const brandSelect = document.getElementById('brand-select');
+                if (brandSelect) {
+                    const selected = brandSelect.querySelector('.select-selected');
+                    const items = brandSelect.querySelector('.select-items');
 
-                brandCheckboxes.forEach(cb => {
-                    cb.addEventListener('change', () => {
-                        updateSelectedBrands();
+                    // Clone selected to strip old event listeners if any
+                    const newSelected = selected.cloneNode(true);
+                    selected.parentNode.replaceChild(newSelected, selected);
+
+                    newSelected.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+
+                        // Toggle visibility
+                        // Check if strictly hidden by class or style
+                        const isHidden = items.classList.contains('hidden') || items.style.display === 'none';
+
+                        if (isHidden) {
+                            items.classList.remove('hidden');
+                            items.style.display = 'block';
+                        } else {
+                            items.classList.add('hidden');
+                            items.style.display = 'none';
+                        }
+                    });
+
+                    // Prevent closing when clicking inside items (checkboxes)
+                    items.addEventListener('click', (e) => e.stopPropagation());
+
+                    // Start hidden
+                    items.classList.add('hidden');
+                    items.style.display = 'none';
+                }
+
+                // --- GENERIC CUSTOM SELECTS ---
+                const customSelects = document.querySelectorAll('.custom-select');
+                customSelects.forEach(select => {
+                    if (select.id === 'brand-select') return;
+
+                    // Check if it's the specific Status options select which has its own logic
+                    // if (select.querySelector('.status-options')) return; 
+                    // Actually, let's override generic logic for all to ensure they work.
+
+                    const selected = select.querySelector('.select-selected');
+                    const items = select.querySelector('.select-items');
+                    const displaySpan = selected ? selected.querySelector('span') : null;
+                    const inputId = selected ? selected.dataset.target : null;
+                    const hiddenInput = inputId ? document.getElementById(inputId) : null;
+
+                    if (!selected || !items) return;
+
+                    // Clone to remove old listeners
+                    const newSelected = selected.cloneNode(true);
+                    selected.parentNode.replaceChild(newSelected, selected);
+
+                    newSelected.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        // Close all others
+                        customSelects.forEach(s => {
+                            if (s !== select) {
+                                const i = s.querySelector('.select-items');
+                                if (i) {
+                                    i.classList.add('hidden');
+                                    i.style.display = 'none';
+                                }
+                            }
+                        });
+
+                        // Toggle current
+                        const isHidden = items.classList.contains('hidden') || items.style.display === 'none';
+                        if (isHidden) {
+                            items.classList.remove('hidden');
+                            items.style.display = 'block';
+                        } else {
+                            items.classList.add('hidden');
+                            items.style.display = 'none';
+                        }
+                    });
+
+                    // Re-bind click options
+                    items.querySelectorAll('div').forEach(div => {
+                        // Clone div? No, just add new listener. 
+                        // Duplicate listeners are harmless here as they just set value and close.
+                        div.addEventListener('click', (e) => {
+                             const val = div.dataset.value || div.textContent.trim();
+                             const text = div.textContent.trim();
+
+                             if (hiddenInput) hiddenInput.value = val;
+                             // Special case for brand display? No, brand is skipped.
+                             if (displaySpan) displaySpan.textContent = text;
+
+                             items.classList.add('hidden');
+                             items.style.display = 'none';
+                        });
                     });
                 });
 
-                function updateSelectedBrands() {
-                    const selected = Array.from(brandCheckboxes)
-                        .filter(cb => cb.checked)
-                        .map(cb => cb.value);
+                // Global Close
+                document.addEventListener('click', () => {
+                    customSelects.forEach(s => {
+                        // Don't auto-close brand-select items if we are clicking inside it? 
+                        // brand-select items click propagation is stopped above.
+                        // But if we click outside, we should close it?
+                        // Yes, close all.
+                        const i = s.querySelector('.select-items');
+                        if (i) {
+                            i.classList.add('hidden');
+                            i.style.display = 'none';
+                        }
+                    });
+                });
 
-                    selectedBrandsInput.value = selected.join(',');
-                    brandDisplay.textContent = selected.length > 0 ? `${selected.length} Brands Selected` : 'Select brands';
-                }
-            }
 
-            // --- Sliders (Year, Price, RAM, etc.) ---
-            function initSlider(container, minInputId, maxInputId, step = 1) {
-                const track = container.querySelector('.slider-track');
-                const range = track.querySelector('.slider-range');
-                const handles = track.querySelectorAll('.slider-handle');
-                const minValSpan = container.nextElementSibling.children[0];
-                const maxValSpan = container.nextElementSibling.children[1];
+                // --- GENERIC SLIDERS ---
+                const sliders = document.querySelectorAll('.slider-container');
+                sliders.forEach(container => {
+                    initGenericSlider(container);
+                });
 
-                let isDragging = null;
-                const minVal = parseInt(minValSpan.dataset.min || minValSpan.textContent);
-                const maxVal = parseInt(maxValSpan.dataset.max || maxValSpan.textContent);
+                function initGenericSlider(container) {
+                    const track = container.querySelector('.slider-track');
+                    let handles = Array.from(container.querySelectorAll('.slider-handle'));
+                    const range = container.querySelector('.slider-range');
+                    const textContainer = container.nextElementSibling;
 
-                const update = () => {
-                    const minP = parseFloat(handles[0].style.left);
-                    const maxP = maxInputId ? parseFloat(handles[1].style.left) : 100;
+                    if (!track || !handles.length || !textContainer) return;
 
-                    range.style.left = minP + '%';
-                    range.style.width = (maxP - minP) + '%';
+                    // Identify Inputs or Create Them
+                    let minInputId = null;
+                    let maxInputId = null;
 
-                    const calculatedMin = Math.round(minVal + (minP / 100) * (maxVal - minVal));
-                    minValSpan.textContent = calculatedMin;
-                    document.getElementById(minInputId).value = calculatedMin;
+                    if (container.id === 'ram-slider') minInputId = 'ram-min';
+                    else if (container.id === 'storage-slider') minInputId = 'storage-min';
+                    // Year falls through to dynamic creation
+                    else {
+                        // Create dynamic inputs
+                        const label = container.parentElement.querySelector('label');
+                        const nameBase = label ? label.textContent.trim().toLowerCase().replace(/[^a-z0-9]/g, '_') : 'slider_' + Math.random().toString(36).substr(2, 5);
 
-                    if (maxInputId) {
-                        const calculatedMax = Math.round(minVal + (maxP / 100) * (maxVal - minVal));
-                        maxValSpan.textContent = calculatedMax;
-                        document.getElementById(maxInputId).value = calculatedMax;
+                        // Create Min Input
+                        const minInp = document.createElement('input');
+                        minInp.type = 'hidden';
+                        minInp.name = nameBase + '_min';
+                        minInp.id = nameBase + '_min';
+                        container.appendChild(minInp);
+                        minInputId = minInp.id;
+
+                        // Create Max Input if 2 handles
+                        if (handles.length === 2) {
+                            const maxInp = document.createElement('input');
+                            maxInp.type = 'hidden';
+                            maxInp.name = nameBase + '_max';
+                            maxInp.id = nameBase + '_max';
+                            container.appendChild(maxInp);
+                            maxInputId = maxInp.id;
+                        }
                     }
-                };
 
-                handles.forEach((handle, i) => {
-                    handle.addEventListener('mousedown', () => isDragging = i);
+                    const minValSpan = textContainer.children[0];
+                    const maxValSpan = textContainer.children[1];
+                    const minLimit = parseInt(minValSpan.dataset.min || minValSpan.textContent.replace(/[^0-9]/g, '')) || 0;
+                    const maxLimit = parseInt(maxValSpan.dataset.max || maxValSpan.textContent.replace(/[^0-9]/g, '')) || 100;
 
-                    // Initial position (if needed)
-                    // handles[0].style.left = '0%';
-                    // if(handles[1]) handles[1].style.left = '100%';
-                });
+                    // Initialize positions from inputs if they have values (persistence)
+                    if (minInputId) {
+                         const inp = document.getElementById(minInputId);
+                         if (inp && inp.value !== '') {
+                             const val = parseFloat(inp.value);
+                             if (!isNaN(val) && (maxLimit - minLimit) !== 0) {
+                                 const p = ((val - minLimit) / (maxLimit - minLimit)) * 100;
+                                 handles[0].style.left = Math.max(0, Math.min(100, p)) + '%';
+                             }
+                         }
+                    }
+                    if (handles.length === 2 && maxInputId) {
+                         const inp = document.getElementById(maxInputId);
+                         if (inp && inp.value !== '') {
+                             const val = parseFloat(inp.value);
+                             if (!isNaN(val) && (maxLimit - minLimit) !== 0) {
+                                 const p = ((val - minLimit) / (maxLimit - minLimit)) * 100;
+                                 handles[1].style.left = Math.max(0, Math.min(100, p)) + '%';
+                             }
+                         }
+                    }
 
-                document.addEventListener('mousemove', (e) => {
-                    if (isDragging === null) return;
+                    let isDragging = null;
 
-                    const rect = track.getBoundingClientRect();
-                    let p = ((e.clientX - rect.left) / rect.width) * 100;
-                    p = Math.max(0, Math.min(100, p));
+                    const update = () => {
+                        const minP = parseFloat(handles[0].style.left) || 0;
+                        if (handles.length === 2) {
+                            const maxP = parseFloat(handles[1].style.left) || 100;
+                            range.style.left = minP + '%';
+                            range.style.width = (maxP - minP) + '%';
 
-                    if (isDragging === 0 && maxInputId && p >= parseFloat(handles[1].style.left)) return;
-                    if (isDragging === 1 && p <= parseFloat(handles[0].style.left)) return;
+                            const currMin = Math.round(minLimit + (minP/100)*(maxLimit-minLimit));
+                            const currMax = Math.round(minLimit + (maxP/100)*(maxLimit-minLimit));
 
-                    handles[isDragging].style.left = p + '%';
-                    update();
-                });
+                            updateText(minValSpan, currMin);
+                            updateText(maxValSpan, currMax);
 
-                document.addEventListener('mouseup', () => isDragging = null);
-                update();
-            }
+                            if(minInputId && document.getElementById(minInputId)) document.getElementById(minInputId).value = currMin;
+                            if(maxInputId && document.getElementById(maxInputId)) document.getElementById(maxInputId).value = currMax;
 
-            // Initialize Sliders
-            const yearSlider = document.querySelector('.slider-container'); // First one
-            if (yearSlider) {
-                const h = yearSlider.querySelectorAll('.slider-handle');
-                    const yMin = {{ request('year_min', 2000) }};
-                    const yMax = {{ request('year_max', 2025) }};
-                    h[0].style.left = ((yMin - 2000) / 25 * 100) + '%';
-                    h[1].style.left = ((yMax - 2000) / 25 * 100) + '%';
-                    initSlider(yearSlider, 'year-min', 'year-max');
-                }
+                        } else {
+                            range.style.left = '0%';
+                            range.style.width = minP + '%';
+                            const currMin = Math.round(minLimit + (minP/100)*(maxLimit-minLimit));
+                            updateText(minValSpan, currMin);
+                            if(minInputId && document.getElementById(minInputId)) document.getElementById(minInputId).value = currMin;
+                        }
+                    };
 
-                const ramSlider = document.getElementById('ram-slider');
-                if(ramSlider) {
-                    const h = ramSlider.querySelector('.slider-handle');
-                    const rMin = {{ request('ram_min', 0) }};
-                    h.style.left = (rMin / 24 * 100) + '%';
-                    initSlider(ramSlider, 'ram-min', null);
-                }
+                    function updateText(el, val) {
+                         const txt = el.textContent;
+                         const unit = txt.replace(/[0-9]/g, '').trim(); 
+                         el.textContent = val + (unit || '');
+                    }
 
-                const storageSlider = document.getElementById('storage-slider');
-                if(storageSlider) {
-                    const h = storageSlider.querySelector('.slider-handle');
-                    const sMin = {{ request('storage_min', 0) }};
-                    h.style.left = (sMin / 1024 * 100) + '%';
-                    initSlider(storageSlider, 'storage-min', null);
+                    handles.forEach((h, i) => {
+                         // Clone handle to remove old listeners (Reset)
+                         const newH = h.cloneNode(true);
+                         h.parentNode.replaceChild(newH, h);
+                         handles[i] = newH; // Update reference
+
+                         newH.addEventListener('mousedown', (e) => {
+                             isDragging = i;
+                             e.preventDefault();
+                         });
+                    });
+
+                    document.addEventListener('mousemove', (e) => {
+                        if (isDragging === null) return;
+                        e.preventDefault();
+                        const rect = track.getBoundingClientRect();
+                        let p = ((e.clientX - rect.left) / rect.width) * 100;
+                        p = Math.max(0, Math.min(100, p));
+
+                        if (handles.length === 2) {
+                           if (isDragging === 0 && p >= parseFloat(handles[1].style.left)) return;
+                           if (isDragging === 1 && p <= parseFloat(handles[0].style.left)) return;
+                        }
+
+                        handles[isDragging].style.left = p + '%';
+                        update();
+                    });
+
+                    document.addEventListener('mouseup', () => isDragging = null);
                 }
             });
         </script>
