@@ -1199,15 +1199,41 @@ if (setting('linkedin_url'))
         });
 
         // Global function to toggle reply forms
-        function toggleReplyForm(commentId) {
-            console.log('Toggling reply form for:', commentId);
-            const form = document.getElementById(`reply-form-${commentId}`);
+        function toggleReplyForm(element, commentId) {
+            // Handle optional element argument for backward compatibility
+            if (typeof element !== 'object' || element === null) {
+                commentId = element;
+                element = null;
+            }
+
+            console.log('Attempting to toggle reply form for ID:', commentId, 'with element:', element);
+            
+            let form;
+            if (element) {
+                // If element is provided, look for the form within the same container
+                // This solves issues where the same comment is rendered twice (e.g., Desktop/Mobile blocks)
+                const container = element.closest('.flex-1') || element.parentElement;
+                form = container.querySelector(`[id="reply-form-${commentId}"]`);
+                console.log('Searching for form relative to button:', form ? 'Found' : 'Not found');
+            }
+
+            // Fallback to global ID search if relative search failed or no element provided
+            if (!form) {
+                form = document.getElementById(`reply-form-${commentId}`);
+            }
 
             if (form) {
-                form.classList.toggle('hidden');
-                if (!form.classList.contains('hidden')) {
+                console.log('Form found. Current display:', window.getComputedStyle(form).display);
+                const isHidden = window.getComputedStyle(form).display === 'none';
+
+                if (isHidden) {
+                    form.style.setProperty('display', 'block', 'important');
+                    console.log('Form shown.');
                     const textarea = form.querySelector('textarea');
                     if (textarea) textarea.focus();
+                } else {
+                    form.style.setProperty('display', 'none', 'important');
+                    console.log('Form hidden.');
                 }
             } else {
                 // If form is missing, the user is likely a guest
@@ -1217,15 +1243,20 @@ if (setting('linkedin_url'))
                 const loginToggle = document.getElementById('login-toggle');
                 const loginToggleMobile = document.getElementById('login-toggle-mobile');
 
-                if (loginToggle && window.innerWidth >= 1024) {
+                console.log('Login toggles status:', {
+                    desktop: loginToggle ? 'present' : 'missing',
+                    mobile: loginToggleMobile ? 'present' : 'missing',
+                    width: window.innerWidth
+                });
+
+                if (window.innerWidth >= 1024 && loginToggle) {
                     loginToggle.click();
                 } else if (loginToggleMobile) {
                     loginToggleMobile.click();
                 } else if (loginToggle) {
                     loginToggle.click();
                 } else {
-                    // Fallback to login page if popup button not found
-                    console.log('Login toggle not found, redirecting to login page.');
+                    console.log('No login toggle found. Redirecting to login page...');
                     window.location.href = "{{ route('login') }}";
                 }
             }
