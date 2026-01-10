@@ -8,9 +8,7 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>
-        @yield('title', config('app.name', 'Laravel'))
-    </title>
+    @include('partials.seo-head')
 
     <!-- Favicon -->
     @if(setting('site_favicon'))
@@ -129,12 +127,17 @@
                     {{-- RIGHT SECTION --}}
                     <div class="flex items-center gap-3 flex-none">
                         <?php
-                            $desktopSocialsUnique = [];
-                            if(setting('facebook_url')) $desktopSocialsUnique[] = ['class' => 'fa-brands fa-facebook-f', 'url' => setting('facebook_url')];
-                            if(setting('instagram_url')) $desktopSocialsUnique[] = ['class' => 'fab fa-instagram', 'url' => setting('instagram_url')];
-                            if(setting('youtube_url')) $desktopSocialsUnique[] = ['class' => 'fab fa-youtube', 'url' => setting('youtube_url')];
-                            if(setting('twitter_url')) $desktopSocialsUnique[] = ['class' => 'fab fa-twitter', 'url' => setting('twitter_url')];
-                            if(setting('linkedin_url')) $desktopSocialsUnique[] = ['class' => 'fab fa-linkedin', 'url' => setting('linkedin_url')];
+$desktopSocialsUnique = [];
+if (setting('facebook_url'))
+    $desktopSocialsUnique[] = ['class' => 'fa-brands fa-facebook-f', 'url' => setting('facebook_url')];
+if (setting('instagram_url'))
+    $desktopSocialsUnique[] = ['class' => 'fab fa-instagram', 'url' => setting('instagram_url')];
+if (setting('youtube_url'))
+    $desktopSocialsUnique[] = ['class' => 'fab fa-youtube', 'url' => setting('youtube_url')];
+if (setting('twitter_url'))
+    $desktopSocialsUnique[] = ['class' => 'fab fa-twitter', 'url' => setting('twitter_url')];
+if (setting('linkedin_url'))
+    $desktopSocialsUnique[] = ['class' => 'fab fa-linkedin', 'url' => setting('linkedin_url')];
                         ?>
 
                         @foreach ($desktopSocialsUnique as $social)
@@ -277,7 +280,7 @@
                         {{-- AUTH ICONS --}}
                         @guest
                             {{-- Login --}}
-                            <a href="javascript:void(0)" id="login-toggle" title="Login"
+                            <a href="javascript:void(0)" id="login-toggle-mobile" title="Login"
                                 class="flex flex-col w-[31px] h-[31px] rounded-full items-center justify-center text-white text-[11px] bg-[#F9A13D]">
                                 <i class="fas fa-sign-in-alt text-[16px]"></i>
                             </a>
@@ -290,7 +293,7 @@
                         @endguest
 
                         @guest
-                            <span id="login-popup"
+                            <span id="login-popup-mobile"
                                 class="hidden absolute top-[60px] right-[40px] z-50 bg-white shadow-lg border rounded w-[260px] p-4">
 
                                 <form method="POST" action="{{ route('login') }}">
@@ -728,19 +731,26 @@ if (setting('linkedin_url'))
     {{-- Login popup toggle script --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const toggle = document.getElementById('login-toggle');
-            const popup = document.getElementById('login-popup');
+            const setups = [
+                { toggleId: 'login-toggle', popupId: 'login-popup' },
+                { toggleId: 'login-toggle-mobile', popupId: 'login-popup-mobile' }
+            ];
 
-            if (!toggle || !popup) return;
+            setups.forEach(setup => {
+                const toggle = document.getElementById(setup.toggleId);
+                const popup = document.getElementById(setup.popupId);
 
-            toggle.addEventListener('click', function (e) {
-                e.stopPropagation();
-                popup.classList.toggle('hidden');
-            });
+                if (toggle && popup) {
+                    toggle.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        popup.classList.toggle('hidden');
+                    });
 
-            document.addEventListener('click', function (e) {
-                if (!popup.contains(e.target) && e.target !== toggle) {
-                    popup.classList.add('hidden');
+                    document.addEventListener('click', function (e) {
+                        if (!popup.contains(e.target) && e.target !== toggle) {
+                            popup.classList.add('hidden');
+                        }
+                    });
                 }
             });
         });
@@ -1203,12 +1213,16 @@ if (setting('linkedin_url'))
                 // If form is missing, the user is likely a guest
                 console.log('Reply form not found. User might be guest. Initiating login flow.');
 
-                // Attempt to open the login popup
+                // Attempt to open the login popup (Desktop or Mobile)
                 const loginToggle = document.getElementById('login-toggle');
-                if (loginToggle) {
+                const loginToggleMobile = document.getElementById('login-toggle-mobile');
+
+                if (loginToggle && window.innerWidth >= 1024) {
                     loginToggle.click();
-                    // Scroll to top to ensure popup is seen if needed, though popup is fixed/absolute
-                    // window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else if (loginToggleMobile) {
+                    loginToggleMobile.click();
+                } else if (loginToggle) {
+                    loginToggle.click();
                 } else {
                     // Fallback to login page if popup button not found
                     console.log('Login toggle not found, redirecting to login page.');

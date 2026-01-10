@@ -118,28 +118,44 @@
 
 
     <div class="container mx-auto lg:px-4 lg:py-8 py-2">
-        <!-- PC & laptop Tabs -->
-        <div class="hidden lg:flex border-b-6 border-[#b5d779] mb-6 justify-end">
-            <button
-                class="px-4 py-2 font-medium bg-[rgba(118,177,208,.5)] text-white shadow hover:bg-[#F9A13D]">Tablets</button>
-            <button
-                class="px-4 py-2 font-medium bg-[rgba(118,177,208,.5)] text-white shadow hover:bg-[#F9A13D] tab-active active:bg-[#b5d779] active:text-white">Phones</button>
+        <!-- Device Type Tabs -->
+        <div class="mb-6">
+            <!-- Desktop Tabs -->
+            <div class="hidden lg:block">
+                <div class="flex border-b-2 border-gray-200">
+                    <button data-tab="phones" type="button"
+                        class="device-type-tab px-6 py-3 font-semibold text-gray-600 border-b-4 border-transparent hover:text-[#F9A13D] hover:border-[#F9A13D] transition-all duration-200 {{ request('device_type', 'phones') == 'phones' ? 'active-tab' : '' }}"
+                        style="{{ request('device_type', 'phones') == 'phones' ? 'border-bottom-color: #F9A13D;' : '' }}">
+                        <i class="fas fa-mobile-alt mr-2"></i>Phones
+                    </button>
+                    <button data-tab="tablets" type="button"
+                        class="device-type-tab px-6 py-3 font-semibold text-gray-600 border-b-4 border-transparent hover:text-[#F9A13D] hover:border-[#F9A13D] transition-all duration-200 {{ request('device_type') == 'tablets' ? 'active-tab' : '' }}"
+                        style="{{ request('device_type') == 'tablets' ? 'border-bottom-color: #F9A13D;' : '' }}">
+                        <i class="fas fa-tablet-alt mr-2"></i>Tablets
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Tabs -->
+            <div class="lg:hidden px-2 flex flex-col">
+                <h2 class="font-bold text-xl mb-4 text-gray-800">Phone Finder</h2>
+                <div class="flex gap-1 mb-6 border-b-2 border-gray-200">
+                    <button data-tab="phones" type="button"
+                        class="device-type-tab-mobile flex-1 py-3 px-4 font-bold text-center transition-all duration-200 {{ request('device_type', 'phones') == 'phones' ? 'active-tab' : 'text-gray-500 border-b-2 border-transparent' }}"
+                        style="{{ request('device_type', 'phones') == 'phones' ? 'color: #F9A13D; border-bottom: 3px solid #F9A13D;' : '' }}">
+                        <i class="fas fa-mobile-alt mr-1"></i>Phones
+                    </button>
+                    <button data-tab="tablets" type="button"
+                        class="device-type-tab-mobile flex-1 py-3 px-4 font-bold text-center transition-all duration-200 {{ request('device_type') == 'tablets' ? 'active-tab' : 'text-gray-500 border-b-2 border-transparent' }}"
+                        style="{{ request('device_type') == 'tablets' ? 'color: #F9A13D; border-bottom: 3px solid #F9A13D;' : '' }}">
+                        <i class="fas fa-tablet-alt mr-1"></i>Tablets
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <!-- Mobile and tablet tabs -->
-         <div class="lg:hidden px-2 flex flex-col">
-            <h2 class="font-bold text-lg ml-4">Phone Finder</h2>
-             <div class="flex gap-2 mb-6 justify-start border-b border-gray-300">
-                 <button
-                     class="px-4 py-2 font-bold text-[14px] text-[#F9A13D] border-b-4 border-[#F9A13D]">Phones</button>
-                 <button
-                     class="px-4 py-2 font-bold text-[14px] text-gray-500">Tablets</button>
-             </div>
-             <a href="{{route('phone-finder-results')}}" class="uppercase text-white bg-[#F9A13D] rounded-sm shadow text-center py-2 font-bold text-[23px]">SHOW {{ $results ?? 0}} RESULTS</a>
-         </div>
-
         <!-- Filter Form -->
-        <form action="{{ route('phone-finder') }}" method="GET" id="phone-finder-form"
+        <form action="{{ route('phone-finder-results') }}" method="GET" id="phone-finder-form"
             class="bg-white rounded-lg shadow-md p-6">
             <input type="hidden" name="brands" id="selected-brands" value="{{ request('brands') }}">
             <input type="hidden" name="year_min" id="year-min" value="{{ request('year_min', 2000) }}">
@@ -147,6 +163,7 @@
             <input type="hidden" name="ram_min" id="ram-min" value="{{ request('ram_min', 0) }}">
             <input type="hidden" name="storage_min" id="storage-min" value="{{ request('storage_min', 0) }}">
             <input type="hidden" name="status" id="release-status" value="{{ request('status', 'all') }}">
+            <input type="hidden" name="device_type" id="device-type" value="{{ request('device_type', 'phones') }}">
 
             <!-- General Section -->
             <div class="mb-8">
@@ -391,7 +408,7 @@
                     </div>
 
                     <!-- Dimensions and Weight -->
-                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-10">
                         <!-- Height -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Height</label>
@@ -663,7 +680,7 @@
             <div class="mb-8">
                 <h3 class="text-xl font-semibold mb-4 border-b pb-2">Display</h3>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <!-- Resolution -->
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Resolution</label>
@@ -1235,60 +1252,7 @@
             </div>
         </form>
 
-        <!-- Results Section -->
-        <div class="mt-12">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-800">Results ({{ $devices->total() }})</h2>
-                <div class="flex items-center gap-4">
-                    <span class="text-sm text-gray-500">Order by:</span>
-                    <select
-                        onchange="window.location.href = updateQueryStringParameter(window.location.href, 'order', this.value)"
-                        class="border border-gray-300 rounded px-3 py-1 text-sm outline-none">
-                        <option value="latest" @if(request('order') == 'latest') selected @endif>Latest</option>
-                        <option value="popular" @if(request('order') == 'popular') selected @endif>Popularity</option>
-                    </select>
-                </div>
-            </div>
 
-            @if($devices->count() > 0)
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    @foreach($devices as $device)
-                        <div class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden flex flex-col">
-                            <a href="{{ route('device-detail', $device->slug) }}" class="p-4 flex-grow flex flex-col items-center">
-                                <div class="w-full h-48 bg-white flex items-center justify-center mb-4">
-                                    <img src="{{ $device->thumbnail_url }}" alt="{{ $device->name }}"
-                                        class="max-h-full max-w-full object-contain">
-                                </div>
-                                <h3 class="font-bold text-[#F9A13D] text-center mb-2">{{ $device->name }}</h3>
-                                <div class="text-xs text-center text-gray-500 space-y-1">
-                                    <p>{{ $device->os_short }}</p>
-                                    <p>{{ $device->storage_short }} / {{ $device->ram_short }} RAM</p>
-                                    <p>{{ $device->battery_short }}</p>
-                                </div>
-                            </a>
-                            <div
-                                class="bg-gray-50 px-4 py-2 border-t flex justify-between items-center text-[10px] font-bold uppercase text-gray-400">
-                                <span>{{ $device->brand->name }}</span>
-                                <span class="text-[#F9A13D]">{{ $device->released_at->format('M Y') }}</span>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-
-                <div class="mt-10 flex justify-center">
-                    {{ $devices->links() }}
-                </div>
-            @else
-                <div class="bg-white p-20 rounded-lg shadow-sm text-center">
-                    <i class="fa-solid fa-mobile-screen-button text-5xl text-gray-200 mb-4 block"></i>
-                    <h3 class="text-xl font-bold text-gray-400">No phones match your filters</h3>
-                    <p class="text-gray-400 mt-2">Try adjusting your criteria or clearing some filters.</p>
-                    <a href="{{ route('phone-finder') }}"
-                        class="inline-block mt-6 text-[#F9A13D] font-bold hover:underline uppercase text-sm">Clear All
-                        Filters</a>
-                </div>
-            @endif
-        </div>
     </div>
 @endsection
 @push('scripts')
@@ -1305,265 +1269,310 @@
         .slider-container+div {
             margin-top: 1.5rem !important;
         }
+
+        /* Tab styling */
+        .device-type-tab,
+        .device-type-tab-mobile {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .device-type-tab.active-tab {
+            color: #F9A13D;
+            border-bottom-color: #F9A13D;
+        }
+
+        .device-type-tab-mobile.active-tab {
+            color: #F9A13D;
+            border-bottom-color: #F9A13D;
+        }
     </style>
     <script>
-            document.addEventListener('DOMContentLoaded',         function () {
-                // Force text overlap fix immediately
-                const textContainers = document.querySelectorAll('.slider-container + div');
-                textContainers.forEach(div => {
-                    div.classList.remove('mt-2');
-                    div.style.marginTop = '2.5rem';
-                });
+        // Device Type Tab Switching
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize tab switching
+            const desktopTabs = document.querySelectorAll('.device-type-tab');
+            const mobileTabs = document.querySelectorAll('.device-type-tab-mobile');
 
-                // --- BRAND SELECT FIX ---
-                const brandSelect = document.getElementById('brand-select');
-                if (brandSelect) {
-                    const selected = brandSelect.querySelector('.select-selected');
-                    const items = brandSelect.querySelector('.select-items');
+            function handleTabClick(e) {
+                const tabType = e.target.closest('[data-tab]')?.dataset.tab;
+                if (!tabType) return;
 
-                    // Clone selected to strip old event listeners if any
-                    const newSelected = selected.cloneNode(true);
-                    selected.parentNode.replaceChild(newSelected, selected);
-
-                    newSelected.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-
-                        // Toggle visibility
-                        // Check if strictly hidden by class or style
-                        const isHidden = items.classList.contains('hidden') || items.style.display === 'none';
-
-                        if (isHidden) {
-                            items.classList.remove('hidden');
-                            items.style.display = 'block';
-                        } else {
-                            items.classList.add('hidden');
-                            items.style.display = 'none';
-                        }
-                    });
-
-                    // Prevent closing when clicking inside items (checkboxes)
-                    items.addEventListener('click', (e) => e.stopPropagation());
-
-                    // Start hidden
-                    items.classList.add('hidden');
-                    items.style.display = 'none';
+                // Update hidden input
+                const deviceTypeInput = document.getElementById('device-type');
+                if (deviceTypeInput) {
+                    deviceTypeInput.value = tabType;
                 }
 
-                // --- GENERIC CUSTOM SELECTS ---
-                const customSelects = document.querySelectorAll('.custom-select');
-                customSelects.forEach(select => {
-                    if (select.id === 'brand-select') return;
-
-                    // Check if it's the specific Status options select which has its own logic
-                    // if (select.querySelector('.status-options')) return; 
-                    // Actually, let's override generic logic for all to ensure they work.
-
-                    const selected = select.querySelector('.select-selected');
-                    const items = select.querySelector('.select-items');
-                    const displaySpan = selected ? selected.querySelector('span') : null;
-                    const inputId = selected ? selected.dataset.target : null;
-                    const hiddenInput = inputId ? document.getElementById(inputId) : null;
-
-                    if (!selected || !items) return;
-
-                    // Clone to remove old listeners
-                    const newSelected = selected.cloneNode(true);
-                    selected.parentNode.replaceChild(newSelected, selected);
-
-                    newSelected.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        // Close all others
-                        customSelects.forEach(s => {
-                            if (s !== select) {
-                                const i = s.querySelector('.select-items');
-                                if (i) {
-                                    i.classList.add('hidden');
-                                    i.style.display = 'none';
-                                }
-                            }
-                        });
-
-                        // Toggle current
-                        const isHidden = items.classList.contains('hidden') || items.style.display === 'none';
-                        if (isHidden) {
-                            items.classList.remove('hidden');
-                            items.style.display = 'block';
-                        } else {
-                            items.classList.add('hidden');
-                            items.style.display = 'none';
-                        }
-                    });
-
-                    // Re-bind click options
-                    items.querySelectorAll('div').forEach(div => {
-                        // Clone div? No, just add new listener. 
-                        // Duplicate listeners are harmless here as they just set value and close.
-                        div.addEventListener('click', (e) => {
-                             const val = div.dataset.value || div.textContent.trim();
-                             const text = div.textContent.trim();
-
-                             if (hiddenInput) hiddenInput.value = val;
-                             // Special case for brand display? No, brand is skipped.
-                             if (displaySpan) displaySpan.textContent = text;
-
-                             items.classList.add('hidden');
-                             items.style.display = 'none';
-                        });
-                    });
-                });
-
-                // Global Close
-                document.addEventListener('click', () => {
-                    customSelects.forEach(s => {
-                        // Don't auto-close brand-select items if we are clicking inside it? 
-                        // brand-select items click propagation is stopped above.
-                        // But if we click outside, we should close it?
-                        // Yes, close all.
-                        const i = s.querySelector('.select-items');
-                        if (i) {
-                            i.classList.add('hidden');
-                            i.style.display = 'none';
-                        }
-                    });
-                });
-
-
-                // --- GENERIC SLIDERS ---
-                const sliders = document.querySelectorAll('.slider-container');
-                sliders.forEach(container => {
-                    initGenericSlider(container);
-                });
-
-                function initGenericSlider(container) {
-                    const track = container.querySelector('.slider-track');
-                    let handles = Array.from(container.querySelectorAll('.slider-handle'));
-                    const range = container.querySelector('.slider-range');
-                    const textContainer = container.nextElementSibling;
-
-                    if (!track || !handles.length || !textContainer) return;
-
-                    // Identify Inputs or Create Them
-                    let minInputId = null;
-                    let maxInputId = null;
-
-                    if (container.id === 'ram-slider') minInputId = 'ram-min';
-                    else if (container.id === 'storage-slider') minInputId = 'storage-min';
-                    // Year falls through to dynamic creation
-                    else {
-                        // Create dynamic inputs
-                        const label = container.parentElement.querySelector('label');
-                        const nameBase = label ? label.textContent.trim().toLowerCase().replace(/[^a-z0-9]/g, '_') : 'slider_' + Math.random().toString(36).substr(2, 5);
-
-                        // Create Min Input
-                        const minInp = document.createElement('input');
-                        minInp.type = 'hidden';
-                        minInp.name = nameBase + '_min';
-                        minInp.id = nameBase + '_min';
-                        container.appendChild(minInp);
-                        minInputId = minInp.id;
-
-                        // Create Max Input if 2 handles
-                        if (handles.length === 2) {
-                            const maxInp = document.createElement('input');
-                            maxInp.type = 'hidden';
-                            maxInp.name = nameBase + '_max';
-                            maxInp.id = nameBase + '_max';
-                            container.appendChild(maxInp);
-                            maxInputId = maxInp.id;
-                        }
-                    }
-
-                    const minValSpan = textContainer.children[0];
-                    const maxValSpan = textContainer.children[1];
-                    const minLimit = parseInt(minValSpan.dataset.min || minValSpan.textContent.replace(/[^0-9]/g, '')) || 0;
-                    const maxLimit = parseInt(maxValSpan.dataset.max || maxValSpan.textContent.replace(/[^0-9]/g, '')) || 100;
-
-                    // Initialize positions from inputs if they have values (persistence)
-                    if (minInputId) {
-                         const inp = document.getElementById(minInputId);
-                         if (inp && inp.value !== '') {
-                             const val = parseFloat(inp.value);
-                             if (!isNaN(val) && (maxLimit - minLimit) !== 0) {
-                                 const p = ((val - minLimit) / (maxLimit - minLimit)) * 100;
-                                 handles[0].style.left = Math.max(0, Math.min(100, p)) + '%';
-                             }
-                         }
-                    }
-                    if (handles.length === 2 && maxInputId) {
-                         const inp = document.getElementById(maxInputId);
-                         if (inp && inp.value !== '') {
-                             const val = parseFloat(inp.value);
-                             if (!isNaN(val) && (maxLimit - minLimit) !== 0) {
-                                 const p = ((val - minLimit) / (maxLimit - minLimit)) * 100;
-                                 handles[1].style.left = Math.max(0, Math.min(100, p)) + '%';
-                             }
-                         }
-                    }
-
-                    let isDragging = null;
-
-                    const update = () => {
-                        const minP = parseFloat(handles[0].style.left) || 0;
-                        if (handles.length === 2) {
-                            const maxP = parseFloat(handles[1].style.left) || 100;
-                            range.style.left = minP + '%';
-                            range.style.width = (maxP - minP) + '%';
-
-                            const currMin = Math.round(minLimit + (minP/100)*(maxLimit-minLimit));
-                            const currMax = Math.round(minLimit + (maxP/100)*(maxLimit-minLimit));
-
-                            updateText(minValSpan, currMin);
-                            updateText(maxValSpan, currMax);
-
-                            if(minInputId && document.getElementById(minInputId)) document.getElementById(minInputId).value = currMin;
-                            if(maxInputId && document.getElementById(maxInputId)) document.getElementById(maxInputId).value = currMax;
-
-                        } else {
-                            range.style.left = '0%';
-                            range.style.width = minP + '%';
-                            const currMin = Math.round(minLimit + (minP/100)*(maxLimit-minLimit));
-                            updateText(minValSpan, currMin);
-                            if(minInputId && document.getElementById(minInputId)) document.getElementById(minInputId).value = currMin;
-                        }
-                    };
-
-                    function updateText(el, val) {
-                         const txt = el.textContent;
-                         const unit = txt.replace(/[0-9]/g, '').trim(); 
-                         el.textContent = val + (unit || '');
-                    }
-
-                    handles.forEach((h, i) => {
-                         // Clone handle to remove old listeners (Reset)
-                         const newH = h.cloneNode(true);
-                         h.parentNode.replaceChild(newH, h);
-                         handles[i] = newH; // Update reference
-
-                         newH.addEventListener('mousedown', (e) => {
-                             isDragging = i;
-                             e.preventDefault();
-                         });
-                    });
-
-                    document.addEventListener('mousemove', (e) => {
-                        if (isDragging === null) return;
-                        e.preventDefault();
-                        const rect = track.getBoundingClientRect();
-                        let p = ((e.clientX - rect.left) / rect.width) * 100;
-                        p = Math.max(0, Math.min(100, p));
-
-                        if (handles.length === 2) {
-                           if (isDragging === 0 && p >= parseFloat(handles[1].style.left)) return;
-                           if (isDragging === 1 && p <= parseFloat(handles[0].style.left)) return;
-                        }
-
-                        handles[isDragging].style.left = p + '%';
-                        update();
-                    });
-
-                    document.addEventListener('mouseup', () => isDragging = null);
+                // Submit form immediately
+                const form = document.getElementById('phone-finder-form');
+                if (form) {
+                    form.submit();
                 }
+            }
+
+            desktopTabs.forEach(tab => tab.addEventListener('click', handleTabClick));
+            mobileTabs.forEach(tab => tab.addEventListener('click', handleTabClick));
+        });
+
+        // Original slider and form functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            // Force text overlap fix immediately
+            const textContainers = document.querySelectorAll('.slider-container + div');
+            textContainers.forEach(div => {
+                div.classList.remove('mt-2');
+                div.style.marginTop = '2.5rem';
             });
-        </script>
+
+            // --- BRAND SELECT FIX ---
+            const brandSelect = document.getElementById('brand-select');
+            if (brandSelect) {
+                const selected = brandSelect.querySelector('.select-selected');
+                const items = brandSelect.querySelector('.select-items');
+
+                // Clone selected to strip old event listeners if any
+                const newSelected = selected.cloneNode(true);
+                selected.parentNode.replaceChild(newSelected, selected);
+
+                newSelected.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    // Toggle visibility
+                    // Check if strictly hidden by class or style
+                    const isHidden = items.classList.contains('hidden') || items.style.display === 'none';
+
+                    if (isHidden) {
+                        items.classList.remove('hidden');
+                        items.style.display = 'block';
+                    } else {
+                        items.classList.add('hidden');
+                        items.style.display = 'none';
+                    }
+                });
+
+                // Prevent closing when clicking inside items (checkboxes)
+                items.addEventListener('click', (e) => e.stopPropagation());
+
+                // Start hidden
+                items.classList.add('hidden');
+                items.style.display = 'none';
+            }
+
+            // --- GENERIC CUSTOM SELECTS ---
+            const customSelects = document.querySelectorAll('.custom-select');
+            customSelects.forEach(select => {
+                if (select.id === 'brand-select') return;
+
+                // Check if it's the specific Status options select which has its own logic
+                // if (select.querySelector('.status-options')) return; 
+                // Actually, let's override generic logic for all to ensure they work.
+
+                const selected = select.querySelector('.select-selected');
+                const items = select.querySelector('.select-items');
+                const displaySpan = selected ? selected.querySelector('span') : null;
+                const inputId = selected ? selected.dataset.target : null;
+                const hiddenInput = inputId ? document.getElementById(inputId) : null;
+
+                if (!selected || !items) return;
+
+                // Clone to remove old listeners
+                const newSelected = selected.cloneNode(true);
+                selected.parentNode.replaceChild(newSelected, selected);
+
+                newSelected.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    // Close all others
+                    customSelects.forEach(s => {
+                        if (s !== select) {
+                            const i = s.querySelector('.select-items');
+                            if (i) {
+                                i.classList.add('hidden');
+                                i.style.display = 'none';
+                            }
+                        }
+                    });
+
+                    // Toggle current
+                    const isHidden = items.classList.contains('hidden') || items.style.display === 'none';
+                    if (isHidden) {
+                        items.classList.remove('hidden');
+                        items.style.display = 'block';
+                    } else {
+                        items.classList.add('hidden');
+                        items.style.display = 'none';
+                    }
+                });
+
+                // Re-bind click options
+                items.querySelectorAll('div').forEach(div => {
+                    // Clone div? No, just add new listener. 
+                    // Duplicate listeners are harmless here as they just set value and close.
+                    div.addEventListener('click', (e) => {
+                        const val = div.dataset.value || div.textContent.trim();
+                        const text = div.textContent.trim();
+
+                        if (hiddenInput) hiddenInput.value = val;
+                        // Special case for brand display? No, brand is skipped.
+                        if (displaySpan) displaySpan.textContent = text;
+
+                        items.classList.add('hidden');
+                        items.style.display = 'none';
+                    });
+                });
+            });
+
+            // Global Close
+            document.addEventListener('click', () => {
+                customSelects.forEach(s => {
+                    // Don't auto-close brand-select items if we are clicking inside it? 
+                    // brand-select items click propagation is stopped above.
+                    // But if we click outside, we should close it?
+                    // Yes, close all.
+                    const i = s.querySelector('.select-items');
+                    if (i) {
+                        i.classList.add('hidden');
+                        i.style.display = 'none';
+                    }
+                });
+            });
+
+
+            // --- GENERIC SLIDERS ---
+            const sliders = document.querySelectorAll('.slider-container');
+            sliders.forEach(container => {
+                initGenericSlider(container);
+            });
+
+            function initGenericSlider(container) {
+                const track = container.querySelector('.slider-track');
+                let handles = Array.from(container.querySelectorAll('.slider-handle'));
+                const range = container.querySelector('.slider-range');
+                const textContainer = container.nextElementSibling;
+
+                if (!track || !handles.length || !textContainer) return;
+
+                // Identify Inputs or Create Them
+                let minInputId = null;
+                let maxInputId = null;
+
+                if (container.id === 'ram-slider') minInputId = 'ram-min';
+                else if (container.id === 'storage-slider') minInputId = 'storage-min';
+                // Year falls through to dynamic creation
+                else {
+                    // Create dynamic inputs
+                    const label = container.parentElement.querySelector('label');
+                    const nameBase = label ? label.textContent.trim().toLowerCase().replace(/[^a-z0-9]/g, '_') : 'slider_' + Math.random().toString(36).substr(2, 5);
+
+                    // Create Min Input
+                    const minInp = document.createElement('input');
+                    minInp.type = 'hidden';
+                    minInp.name = nameBase + '_min';
+                    minInp.id = nameBase + '_min';
+                    container.appendChild(minInp);
+                    minInputId = minInp.id;
+
+                    // Create Max Input if 2 handles
+                    if (handles.length === 2) {
+                        const maxInp = document.createElement('input');
+                        maxInp.type = 'hidden';
+                        maxInp.name = nameBase + '_max';
+                        maxInp.id = nameBase + '_max';
+                        container.appendChild(maxInp);
+                        maxInputId = maxInp.id;
+                    }
+                }
+
+                const minValSpan = textContainer.children[0];
+                const maxValSpan = textContainer.children[1];
+                const minLimit = parseInt(minValSpan.dataset.min || minValSpan.textContent.replace(/[^0-9]/g, '')) || 0;
+                const maxLimit = parseInt(maxValSpan.dataset.max || maxValSpan.textContent.replace(/[^0-9]/g, '')) || 100;
+
+                // Initialize positions from inputs if they have values (persistence)
+                if (minInputId) {
+                    const inp = document.getElementById(minInputId);
+                    if (inp && inp.value !== '') {
+                        const val = parseFloat(inp.value);
+                        if (!isNaN(val) && (maxLimit - minLimit) !== 0) {
+                            const p = ((val - minLimit) / (maxLimit - minLimit)) * 100;
+                            handles[0].style.left = Math.max(0, Math.min(100, p)) + '%';
+                        }
+                    }
+                }
+                if (handles.length === 2 && maxInputId) {
+                    const inp = document.getElementById(maxInputId);
+                    if (inp && inp.value !== '') {
+                        const val = parseFloat(inp.value);
+                        if (!isNaN(val) && (maxLimit - minLimit) !== 0) {
+                            const p = ((val - minLimit) / (maxLimit - minLimit)) * 100;
+                            handles[1].style.left = Math.max(0, Math.min(100, p)) + '%';
+                        }
+                    }
+                }
+
+                let isDragging = null;
+
+                const update = () => {
+                    const minP = parseFloat(handles[0].style.left) || 0;
+                    if (handles.length === 2) {
+                        const maxP = parseFloat(handles[1].style.left) || 100;
+                        range.style.left = minP + '%';
+                        range.style.width = (maxP - minP) + '%';
+
+                        const currMin = Math.round(minLimit + (minP / 100) * (maxLimit - minLimit));
+                        const currMax = Math.round(minLimit + (maxP / 100) * (maxLimit - minLimit));
+
+                        updateText(minValSpan, currMin);
+                        updateText(maxValSpan, currMax);
+
+                        if (minInputId && document.getElementById(minInputId)) document.getElementById(minInputId).value = currMin;
+                        if (maxInputId && document.getElementById(maxInputId)) document.getElementById(maxInputId).value = currMax;
+
+                    } else {
+                        range.style.left = '0%';
+                        range.style.width = minP + '%';
+                        const currMin = Math.round(minLimit + (minP / 100) * (maxLimit - minLimit));
+                        updateText(minValSpan, currMin);
+                        if (minInputId && document.getElementById(minInputId)) document.getElementById(minInputId).value = currMin;
+                    }
+                };
+
+                function updateText(el, val) {
+                    const txt = el.textContent;
+                    const unit = txt.replace(/[0-9]/g, '').trim();
+                    el.textContent = val + (unit || '');
+                }
+
+                handles.forEach((h, i) => {
+                    // Clone handle to remove old listeners (Reset)
+                    const newH = h.cloneNode(true);
+                    h.parentNode.replaceChild(newH, h);
+                    handles[i] = newH; // Update reference
+
+                    newH.addEventListener('mousedown', (e) => {
+                        isDragging = i;
+                        e.preventDefault();
+                    });
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (isDragging === null) return;
+                    e.preventDefault();
+                    const rect = track.getBoundingClientRect();
+                    let p = ((e.clientX - rect.left) / rect.width) * 100;
+                    p = Math.max(0, Math.min(100, p));
+
+                    if (handles.length === 2) {
+                        if (isDragging === 0 && p >= parseFloat(handles[1].style.left)) return;
+                        if (isDragging === 1 && p <= parseFloat(handles[0].style.left)) return;
+                    }
+
+                    handles[isDragging].style.left = p + '%';
+                    update();
+                });
+
+                document.addEventListener('mouseup', () => isDragging = null);
+            }
+        });
+    </script>
 @endpush

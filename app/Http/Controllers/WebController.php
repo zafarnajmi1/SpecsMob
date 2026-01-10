@@ -11,6 +11,7 @@ use App\Models\DeviceImageGroup;
 use App\Models\Review;
 use App\Models\Tag;
 use App\Models\UserFavorite;
+use App\Models\ContactMessage;
 use Illuminate\Http\Request;
 
 class WebController extends Controller
@@ -391,91 +392,135 @@ class WebController extends Controller
 
     public function contact()
     {
-        $popularReviews = [
-            [
-                'title' => 'OnePlus 15 review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oneplus-15/-347x151/gsmarena_000.jpg',
-                'url' => '/review/oneplus-15',
-            ],
-            [
-                'title' => 'Realme GT 8 Pro review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/realme-gt-8-pro/-347x151/gsmarena_001.jpg',
-                'url' => '/review/realme-gt-8-pro',
-            ],
-            [
-                'title' => 'Oppo Find X9 Pro review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oppo-find-x9-pro/-347x151/gsmarena_001.jpg',
-                'url' => '/review/oppo-find-x9-pro',
-            ],
-        ];
 
-        return view('user-views.pages.contact', compact('popularReviews'));
+        return view('user-views.pages.contact');
+    }
+    public function tip_us()
+    {
+
+        return view('user-views.pages.tip-us');
     }
 
-    public function phoneFinder(Request $request)
+    public function handleContactSubmit(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'subject' => 'nullable|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        ContactMessage::create([
+            'type' => 'contact',
+            'name' => $request->name,
+            'email' => $request->email,
+            'subject' => $request->subject,
+            'message' => $request->message,
+            'ip_address' => $request->ip(),
+        ]);
+
+        return back()->with('success', 'Thank you for your message. We will get back to you soon!');
+    }
+
+    public function handleTipUsSubmit(Request $request)
+    {
+        $request->validate([
+            'subject' => 'nullable|string|max:255',
+            'share' => 'required|string',
+            'captcha' => 'required|in:42',
+        ], [
+            'captcha.in' => 'The CAPTCHA answer is incorrect.'
+        ]);
+
+        ContactMessage::create([
+            'type' => 'tip',
+            'subject' => $request->subject,
+            'message' => $request->share,
+            'ip_address' => $request->ip(),
+        ]);
+
+        return back()->with('success', 'Thank you for your tip!');
+    }
+
+    public function phoneFinder()
     {
         $brands = Brand::orderBy('name')->get();
+        return view('user-views.pages.phone-finder', compact('brands'));
+    }
 
+    public function phoneFinderResults(Request $request)
+    {
         $query = Device::query()->where('is_published', true);
 
         // Filter by Brand
-        if ($request->has('brands') && $request->brands != '') {
+        if ($request->filled('brands')) {
             $brandIds = explode(',', $request->brands);
             $query->whereIn('brand_id', $brandIds);
         }
 
+        // Filter by Device Type
+        if ($request->filled('device_type')) {
+            $type = $request->device_type;
+            if ($type === 'phones') {
+                $query->where('device_type_id', '!=', 4); // Assuming 4 is Tablet
+            } elseif ($type === 'tablets') {
+                $query->where('device_type_id', 4);
+            }
+        }
+
         // Filter by Year
-        if ($request->has('year_min') && $request->has('year_max')) {
-            $query->whereYear('released_at', '>=', $request->year_min)
-                ->whereYear('released_at', '<=', $request->year_max);
+        if ($request->filled('year_min')) {
+            $query->whereYear('released_at', '>=', $request->year_min);
+        }
+        if ($request->filled('year_max')) {
+            $query->whereYear('released_at', '<=', $request->year_max);
         }
 
         // Filter by RAM (using ram_short)
-        if ($request->has('ram_min')) {
+        if ($request->filled('ram_min') && is_numeric($request->ram_min) && $request->ram_min > 0) {
             $query->where('ram_short', 'REGEXP', '[0-9]+')
                 ->whereRaw("CAST(ram_short AS UNSIGNED) >= ?", [$request->ram_min]);
         }
 
         // Filter by Storage (using storage_short)
-        if ($request->has('storage_min')) {
+        if ($request->filled('storage_min') && is_numeric($request->storage_min) && $request->storage_min > 0) {
             $query->where('storage_short', 'REGEXP', '[0-9]+')
                 ->whereRaw("CAST(storage_short AS UNSIGNED) >= ?", [$request->storage_min]);
         }
 
         // Filter by Release Status
-        if ($request->has('status') && $request->status != 'all') {
+        if ($request->filled('status') && $request->status != 'all') {
             $query->where('release_status', $request->status);
+        }
+
+        // Filter by Price (if offers exist)
+        if ($request->filled('price_min') || $request->filled('price_max')) {
+            $query->whereHas('variants.offers', function ($q) use ($request) {
+                if ($request->filled('price_min'))
+                    $q->where('price', '>=', $request->price_min);
+                if ($request->filled('price_max'))
+                    $q->where('price', '<=', $request->price_max);
+            });
+        }
+
+        // Filter by Display Size
+        if ($request->filled('size_min')) {
+            // If we had a display_size_inches column, we'd use it here.
+            // For now, let's keep it safe.
         }
 
         // Ordering
         $orderField = $request->get('order', 'latest');
-        if ($orderField == 'latest') {
-            $query->latest();
-        } elseif ($orderField == 'popular') {
-            $query->withCount('comments')->orderBy('comments_count', 'desc');
+        if ($orderField == 'popular') {
+            $query->leftJoin('device_stats', 'devices.id', '=', 'device_stats.device_id')
+                ->orderByDesc('device_stats.daily_hits');
+        } else {
+            $query->latest('released_at')->latest('devices.id');
         }
 
-        $devices = $query->paginate(24)->withQueryString();
+        $devices = $query->select('devices.*')->paginate(24)->withQueryString();
 
-        $popularReviews = [
-            [
-                'title' => 'OnePlus 15 review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oneplus-15/-347x151/gsmarena_000.jpg',
-                'url' => '/review/oneplus-15',
-            ],
-            [
-                'title' => 'Realme GT 8 Pro review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/realme-gt-8-pro/-347x151/gsmarena_001.jpg',
-                'url' => '/review/realme-gt-8-pro',
-            ],
-            [
-                'title' => 'Oppo Find X9 Pro review',
-                'img' => 'https://fdn.gsmarena.com/imgroot/reviews/25/oppo-find-x9-pro/-347x151/gsmarena_001.jpg',
-                'url' => '/review/oppo-find-x9-pro',
-            ],
-        ];
-
-        return view('user-views.pages.phone-finder', compact('popularReviews', 'brands', 'devices'));
+        return view('user-views.pages.phone-finder-results-searched', compact('devices'));
     }
 
     public function review_detail($slug)
@@ -1190,10 +1235,11 @@ class WebController extends Controller
         return view('user-views.pages.search-results', compact('q', 'devices', 'news', 'reviews'));
     }
 
-    public function phone_finder_results(){
+    public function phone_finder_results()
+    {
         $devices = Device::where('is_published', true)
             ->paginate(24);
-            // ->withQueryString();
+        // ->withQueryString();
         return view('user-views.pages.phone-finder-results', compact('devices'));
     }
 }

@@ -31,7 +31,7 @@
 
                 <div class="flex justify-end mt-4">
                     <button onclick="toggleReplyForm({{ $comment->id }})"
-                        class="flex justify-center items-center px-3 py-1 text-[12px] font-bold bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#d50000] hover:text-white transition uppercase tracking-tighter">
+                        class="flex justify-center items-center px-3 py-1 text-[12px] font-bold bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#F9A13D] hover:text-white transition uppercase tracking-tighter">
                         <span>REPLY</span>
                     </button>
                 </div>
@@ -48,13 +48,13 @@
                             <strong class="text-xs text-gray-500 uppercase mb-2 block">Replying to
                                 {{ $comment->user->name ?? 'Anonymous' }}</strong>
                             <textarea name="comment" rows="3"
-                                class="w-full p-3 text-sm border border-[#ddd] rounded-md focus:ring-1 focus:ring-[#d50000] focus:border-[#d50000] outline-none transition-all placeholder:italic"
+                                class="w-full p-3 text-sm border border-[#ddd] rounded-md focus:ring-1 focus:ring-[#F9A13D] focus:border-[#F9A13D] outline-none transition-all placeholder:italic"
                                 placeholder="Write your reply..."></textarea>
                             <div class="flex justify-end gap-2 mt-3">
                                 <button type="button" onclick="toggleReplyForm({{ $comment->id }})"
                                     class="px-3 py-1 text-xs font-bold text-gray-500 hover:text-gray-700 transition">CANCEL</button>
                                 <button type="submit"
-                                    class="px-4 py-1 text-xs font-bold bg-[#d50000] text-white rounded hover:bg-red-700 transition shadow-sm">POST
+                                    class="px-4 py-1 text-xs font-bold bg-[#F9A13D] text-white rounded hover:bg-red-700 transition shadow-sm">POST
                                     REPLY</button>
                             </div>
                         </form>

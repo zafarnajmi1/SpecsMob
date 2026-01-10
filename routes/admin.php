@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\RatingController;
 use App\Http\Controllers\Admin\VideoController;
 use App\Http\Controllers\Admin\TagController;
+use App\Http\Controllers\Admin\ContactMessageController;
 use App\Models\Brand;
 use App\Http\Controllers\Admin\HomeReviewSliderController;
 
@@ -155,6 +156,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin.access'])->gr
         Route::delete('/{comment}', [ArticleCommentController::class, 'destroy'])->name('destroy');
     });
 
+    // ==================== MESSAGES & ENQUIRIES ====================
+    Route::prefix('messages')->name('messages.')->group(function () {
+        Route::get('/', [ContactMessageController::class, 'index'])->name('index');
+        // Route::get('/{message}', [ContactMessageController::class, 'show'])->name('show');
+        Route::get('/show/{id}', [ContactMessageController::class, 'show'])->name('show');
+        Route::delete('/{id}', [ContactMessageController::class, 'destroy'])->name('destroy');
+        Route::patch('/{id}/read', [ContactMessageController::class, 'markAsRead'])->name('mark-as-read');
+    });
+
     // ==================== DEALS & OFFERS ====================
     Route::middleware(['permission:deal_view|deal_create|deal_edit|deal_delete'])->group(function () {
         Route::resource('deals', DealController::class);
@@ -187,6 +197,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin.access'])->gr
         Route::get('/social', [SettingsController::class, 'social'])->name('social');
         Route::get('/ads', [SettingsController::class, 'ads'])->name('ads');
         Route::get('/mail', [SettingsController::class, 'mail'])->name('mail');
+        Route::get('/pages', [SettingsController::class, 'pages'])->name('pages');
 
         Route::post('/update', [SettingsController::class, 'update'])->name('update');
 
