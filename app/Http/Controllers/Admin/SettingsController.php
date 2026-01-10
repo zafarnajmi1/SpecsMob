@@ -34,6 +34,12 @@ class SettingsController extends Controller
         return view('admin-views.settings.mail', compact('settings'));
     }
 
+    public function pages()
+    {
+        $settings = SystemSetting::firstOrCreate(['id' => 1]);
+        return view('admin-views.settings.pages', compact('settings'));
+    }
+
     public function update(Request $request)
     {
         $settings = SystemSetting::firstOrCreate(['id' => 1]);
@@ -53,6 +59,20 @@ class SettingsController extends Controller
                 Storage::disk('public')->delete($settings->site_favicon);
             }
             $data['site_favicon'] = $request->file('site_favicon')->store('settings', 'public');
+        }
+
+        if ($request->hasFile('contact_page_image')) {
+            if ($settings->contact_page_image) {
+                Storage::disk('public')->delete($settings->contact_page_image);
+            }
+            $data['contact_page_image'] = $request->file('contact_page_image')->store('settings', 'public');
+        }
+
+        if ($request->hasFile('tip_us_page_image')) {
+            if ($settings->tip_us_page_image) {
+                Storage::disk('public')->delete($settings->tip_us_page_image);
+            }
+            $data['tip_us_page_image'] = $request->file('tip_us_page_image')->store('settings', 'public');
         }
 
         $settings->update($data);

@@ -31,7 +31,7 @@
                                 <div class="form-group mb-3">
                                     <label for="site_name" class="form-label">Site Name</label>
                                     <input type="text" name="site_name" id="site_name" class="form-control"
-                                        value="{{ $settings->site_name }}" placeholder="e.g. GSMArena Clone">
+                                        value="{{ $settings->site_name }}" placeholder="e.g. SpecMob.com">
                                 </div>
 
                                 <div class="row">

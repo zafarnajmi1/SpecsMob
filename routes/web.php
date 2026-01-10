@@ -28,7 +28,9 @@ Route::controller(WebController::class)
         Route::get('/merch', 'merch')->name('merch');
         Route::get('/coverage', 'coverage')->name('coverage');
         Route::get('/contact', 'contact')->name('contact');
-        Route::get('/contact-submit', 'contact')->name('contact.submit');
+        Route::get('/tip-us', 'tip_us')->name('tip-us');
+        Route::post('/contact-submit', 'handleContactSubmit')->name('contact.submit');
+        Route::post('/tip-us-submit', 'handleTipUsSubmit')->name('tip-us.submit');
         // Route::get('/reviews', 'review_detail')->name('reviews'); //dummy
     
         Route::get('/reviews/show/{slug}', 'review_detail')->name('review-detail');

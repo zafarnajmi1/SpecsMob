@@ -39,7 +39,7 @@
                             <i class="bi bi-newspaper"></i>
                             <span>Content Management</span>
                         </a>
-                        <ul class="submenu">
+                        <ul class="submenu {{ request()->routeIs('admin.articles.*', 'admin.tags.*') ? 'active' : '' }}">
                             {{-- Articles --}}
                             @can('article_view')
                                 <li class="submenu-item {{ request()->routeIs('admin.articles.index') ? 'active' : '' }}">
@@ -80,7 +80,7 @@
                             <i class="bi bi-search"></i>
                             <span>SEO Management</span>
                         </a>
-                        <ul class="submenu">
+                        <ul class="submenu {{ request()->routeIs('admin.seo.*') ? 'active' : '' }}">
                             <li class="submenu-item {{ request()->routeIs('admin.seo.global') ? 'active' : '' }}">
                                 <a href="{{ route('admin.seo.global') }}">Global SEO Settings</a>
                             </li>
@@ -102,7 +102,7 @@
                             <i class="bi bi-phone-fill"></i>
                             <span>Review Management</span>
                         </a>
-                        <ul class="submenu">
+                        <ul class="submenu {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
                             @can('review_view')
                                 <li class="submenu-item {{ request()->routeIs('admin.reviews.index') ? 'active' : '' }}">
                                     <a href="{{ route('admin.reviews.index') }}">All Reviews</a>
@@ -126,7 +126,7 @@
                             <i class="bi bi-play-btn-fill"></i>
                             <span>Video Management</span>
                         </a>
-                        <ul class="submenu">
+                        <ul class="submenu {{ request()->routeIs('admin.videos.*') ? 'active' : '' }}">
                             @can('video_view')
                                 <li class="submenu-item {{ request()->routeIs('admin.videos.index') ? 'active' : '' }}">
                                     <a href="{{ route('admin.videos.index') }}">All Videos</a>
@@ -148,7 +148,7 @@
                             <i class="bi bi-tags-fill"></i>
                             <span>Brand Management</span>
                         </a>
-                        <ul class="submenu">
+                        <ul class="submenu {{ request()->routeIs('admin.brands.*') ? 'active' : '' }}">
                             @can('brand_view')
                                 <li class="submenu-item {{ request()->routeIs('admin.brands.index') ? 'active' : '' }}">
                                     <a href="{{ route('admin.brands.index') }}">All Brands</a>
@@ -170,7 +170,7 @@
                             <i class="bi bi-images"></i>
                             <span>Home Review Slider</span>
                         </a>
-                        <ul class="submenu">
+                        <ul class="submenu {{ request()->routeIs('admin.homereview-slider.*') ? 'active' : '' }}">
                             @can('homereview_slider_view')
                                 <li
                                     class="submenu-item {{ request()->routeIs('admin.homereview-slider.index') ? 'active' : '' }}">
@@ -190,12 +190,13 @@
                 {{-- Device Management --}}
                 @canany(['device_view', 'device_create', 'device_edit', 'device_delete', 'devicetype_view', 'devicetype_create'])
                     <li
-                        class="sidebar-item has-sub {{ request()->routeIs('admin.devices.', 'admin.devicetypes.') ? 'active' : '' }}">
+                        class="sidebar-item has-sub {{ request()->routeIs('admin.devices.*', 'admin.devicetypes.*') ? 'active' : '' }}">
                         <a href="#" class='sidebar-link'>
                             <i class="bi bi-phone-fill"></i>
                             <span>Device Management</span>
                         </a>
-                        <ul class="submenu">
+                        <ul
+                            class="submenu {{ request()->routeIs('admin.devices.*', 'admin.devicetypes.*') ? 'active' : '' }}">
                             {{-- Device Types --}}
                             @can('devicetype_view')
                                 <li class="submenu-item {{ request()->routeIs('admin.devicetypes.*') ? 'active' : '' }}">
@@ -228,7 +229,8 @@
                             <i class="bi bi-cash-stack"></i>
                             <span>Pricing Setup</span>
                         </a>
-                        <ul class="submenu">
+                        <ul
+                            class="submenu {{ request()->routeIs('admin.countries.*', 'admin.currencies.*', 'admin.stores.*') ? 'active' : '' }}">
                             @can('country_view')
                                 <li class="submenu-item {{ request()->routeIs('admin.countries.*') ? 'active' : '' }}">
                                     <a href="{{ route('admin.countries.index') }}">Countries</a>
@@ -256,7 +258,8 @@
                             <i class="bi bi-chat-left-text-fill"></i>
                             <span>Reviews & Comments</span>
                         </a>
-                        <ul class="submenu">
+                        <ul
+                            class="submenu {{ request()->routeIs('admin.opinions.*', 'admin.comments.*', 'admin.article-comments.*', 'admin.reviews.*') ? 'active' : '' }}">
                             {{-- Professional Reviews --}}
                             @can('review_manage')
                                 <li class="submenu-item {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
@@ -286,14 +289,20 @@
                     </li>
                 @endcanany
 
-                {{-- Deals & Offers --}}
+                {{-- Messages & Enquiries --}}
+                <li class="sidebar-item {{ request()->routeIs('admin.messages.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.messages.index') }}" class='sidebar-link'>
+                        <i class="bi bi-envelope-fill"></i>
+                        <span>Messages & Enquiries</span>
+                    </a>
+                </li>
                 @canany(['deal_view', 'deal_create', 'deal_edit', 'deal_delete'])
                     <li class="sidebar-item has-sub {{ request()->routeIs('admin.deals.*') ? 'active' : '' }}">
                         <a href="#" class='sidebar-link'>
                             <i class="bi bi-percent"></i>
                             <span>Deals & Offers</span>
                         </a>
-                        <ul class="submenu">
+                        <ul class="submenu {{ request()->routeIs('admin.deals.*') ? 'active' : '' }}">
                             @can('deal_view')
                                 <li class="submenu-item {{ request()->routeIs('admin.deals.index') ? 'active' : '' }}">
                                     <a href="{{ route('admin.deals.index') }}">All Deals</a>
@@ -319,7 +328,8 @@
                             <i class="bi bi-graph-up"></i>
                             <span>Analytics</span>
                         </a>
-                        <ul class="submenu">
+                        <ul
+                            class="submenu {{ request()->routeIs('admin.analytics.*', 'admin.reports.*') ? 'active' : '' }}">
                             <li class="submenu-item {{ request()->routeIs('admin.analytics.overview') ? 'active' : '' }}">
                                 <a href="{{ route('admin.analytics.overview') }}">Overview</a>
                             </li>
@@ -343,7 +353,7 @@
                             <i class="bi bi-people-fill"></i>
                             <span>User Management</span>
                         </a>
-                        <ul class="submenu">
+                        <ul class="submenu {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                             @can('user_view')
                                 <li class="submenu-item {{ request()->routeIs('admin.users.index') ? 'active' : '' }}">
                                     <a href="{{ route('admin.users.index') }}">All Users</a>
@@ -360,13 +370,12 @@
 
                 {{-- Settings (Admin Only) --}}
                 @can('settings_manage')
-                    <li
-                        class="sidebar-item has-sub {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+                    <li class="sidebar-item has-sub {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
                         <a href="#" class='sidebar-link'>
                             <i class="bi bi-gear-fill"></i>
                             <span>Settings</span>
                         </a>
-                        <ul class="submenu">
+                        <ul class="submenu {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
                             <li class="submenu-item {{ request()->routeIs('admin.settings.general') ? 'active' : '' }}">
                                 <a href="{{ route('admin.settings.general') }}">General Settings</a>
                             </li>
@@ -378,6 +387,9 @@
                             </li>
                             <li class="submenu-item {{ request()->routeIs('admin.settings.mail') ? 'active' : '' }}">
                                 <a href="{{ route('admin.settings.mail') }}">Mail Configuration</a>
+                            </li>
+                            <li class="submenu-item {{ request()->routeIs('admin.settings.pages') ? 'active' : '' }}">
+                                <a href="{{ route('admin.settings.pages') }}">Page Settings</a>
                             </li>
                         </ul>
                     </li>
@@ -398,7 +410,8 @@
                 <li class="sidebar-item has-sub user-menu mt-auto">
                     <div class="sidebar-link user-info">
                         <div class="d-flex align-items-center">
-                            <div class="avatar avatar-sm bg-primary text-white d-flex align-items-center justify-content-center overflow-hidden flex-shrink-0" style="width: 32px; height: 32px; border-radius: 50%;">
+                            <div class="avatar avatar-sm bg-primary text-white d-flex align-items-center justify-content-center overflow-hidden flex-shrink-0"
+                                style="width: 32px; height: 32px; border-radius: 50%;">
                                 @php
                                     $sidebarImage = auth()->user()->image;
                                     $isSidebarImageExists = $sidebarImage && (str_starts_with($sidebarImage, 'http') || Storage::disk('public')->exists($sidebarImage));

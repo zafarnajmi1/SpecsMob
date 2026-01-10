@@ -212,6 +212,7 @@
         class="form-select brand-select"
         name="brand_id"
         id="brand_id"
+        required
         {{-- Make it optional since validation allows nullable --}}
     >
         <option value="">Select Brand</option>
@@ -337,12 +338,11 @@
     document.addEventListener('DOMContentLoaded', function () {
         const brandSelect = document.querySelector('.brand-select');
         const deviceSelect = document.querySelector('.device-select');
+        const currentDeviceId = '{{ $article->device_id ?? "" }}';
 
         if (!brandSelect || !deviceSelect) return;
 
-        brandSelect.addEventListener('change', function () {
-            const brandId = this.value;
-
+        function loadDevices(brandId, selectDeviceId = null) {
             deviceSelect.innerHTML = '<option value="">Select Device</option>';
 
             if (!brandId) {
@@ -364,6 +364,12 @@
                             const option = document.createElement('option');
                             option.value = device.id;
                             option.textContent = device.name;
+                            
+                            // If this device matches the one we want to select, mark it
+                            if (selectDeviceId && device.id == selectDeviceId) {
+                                option.selected = true;
+                            }
+                            
                             deviceSelect.appendChild(option);
                         });
                     } else {
@@ -375,6 +381,17 @@
                     deviceSelect.disabled = false;
                     deviceSelect.innerHTML = '<option value="">Error loading devices</option>';
                 });
+        }
+
+        // Load devices on page load if brand is already selected (edit mode)
+        if (brandSelect.value) {
+            loadDevices(brandSelect.value, currentDeviceId);
+        }
+
+        // Handle brand change
+        brandSelect.addEventListener('change', function () {
+            const brandId = this.value;
+            loadDevices(brandId);
         });
     });
 </script>
