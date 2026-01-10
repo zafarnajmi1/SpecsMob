@@ -1158,7 +1158,7 @@ class WebController extends Controller
 
     public function search_devices(Request $request)
     {
-        $query = $request->get('q');
+        $query = trim($request->get('q'));
         if (!$query) {
             return response()->json([]);
         }
