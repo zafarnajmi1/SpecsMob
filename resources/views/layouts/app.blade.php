@@ -12,10 +12,17 @@
         @yield('title', config('app.name', 'Laravel'))
     </title>
 
+    <!-- Favicon -->
+    @if(setting('site_favicon'))
+        <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . setting('site_favicon')) }}">
+    @endif
 
     {!! ToastMagic::styles() !!}
     <!-- Tailwind CSS (Browser CDN v4) -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <!-- Icons & Fonts -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
@@ -43,8 +50,13 @@
                             <i id="menu-icon" class="fa-solid fa-bars"></i>
                         </button>
 
-                        <a href="#" class="text-white text-3xl w-[130px] font-black tracking-tight">
-                            <img src="{{ asset('logo.png') }}" alt="">
+                        <a href="/" class="text-white text-3xl w-[130px] font-black tracking-tight">
+                            @if(setting('site_logo'))
+                                <img src="{{ asset('storage/' . setting('site_logo')) }}" style="width:100%; height:auto;"
+                                    alt="{{ setting('site_name', 'Logo') }}">
+                            @else
+                                <span style="font-weight: bold;">{{ setting('site_name', 'Admin') }}</span>
+                            @endif
                         </a>
                     </div>
 
@@ -61,7 +73,7 @@
 
                             {{-- Search Dropdown --}}
                             <div id="search-dropdown"
-                                class="hidden absolute top-[100%] left-0 w-[600px] md:w-[800px] bg-white shadow-2xl z-[100] border-t-2 border-[#d50000] -translate-x-1/4 md:-translate-x-1/3 mt-1">
+                                class="hidden absolute top-[100%] left-0 w-[600px] md:w-[800px] bg-white shadow-2xl z-[100] border-t-2 border-[#F9A13D] -translate-x-1/4 md:-translate-x-1/3 mt-1">
                                 <div class="p-4">
                                     {{-- Recently Viewed (Initial State) --}}
                                     <div id="recently-viewed-section" class="hidden">
@@ -76,7 +88,7 @@
                                             {{-- Column 1: Reviews --}}
                                             <div>
                                                 <h3
-                                                    class="text-xs font-bold text-[#d50000] uppercase mb-2 flex items-center gap-2">
+                                                    class="text-xs font-bold text-[#F9A13D] uppercase mb-2 flex items-center gap-2">
                                                     <i class="fas fa-star-half-alt"></i> Reviews
                                                 </h3>
                                                 <div id="results-reviews" class="flex flex-col gap-2"></div>
@@ -85,7 +97,7 @@
                                             {{-- Column 2: Devices --}}
                                             <div>
                                                 <h3
-                                                    class="text-xs font-bold text-[#d50000] uppercase mb-2 flex items-center gap-2">
+                                                    class="text-xs font-bold text-[#F9A13D] uppercase mb-2 flex items-center gap-2">
                                                     <i class="fas fa-mobile-alt"></i> Devices
                                                 </h3>
                                                 <div id="results-devices" class="flex flex-col gap-2"></div>
@@ -94,7 +106,7 @@
                                             {{-- Column 3: News --}}
                                             <div>
                                                 <h3
-                                                    class="text-xs font-bold text-[#d50000] uppercase mb-2 flex items-center gap-2">
+                                                    class="text-xs font-bold text-[#F9A13D] uppercase mb-2 flex items-center gap-2">
                                                     <i class="fas fa-newspaper"></i> News
                                                 </h3>
                                                 <div id="results-news" class="flex flex-col gap-2"></div>
@@ -116,19 +128,19 @@
 
                     {{-- RIGHT SECTION --}}
                     <div class="flex items-center gap-3 flex-none">
-                        @php
-                            $icons = [
-                                'fa-brands fa-facebook-f',
-                                'fab fa-instagram',
-                                'fab fa-youtube',
-                                'fa-brands fa-tiktok',
-                            ];
-                        @endphp
+                        <?php
+                            $desktopSocialsUnique = [];
+                            if(setting('facebook_url')) $desktopSocialsUnique[] = ['class' => 'fa-brands fa-facebook-f', 'url' => setting('facebook_url')];
+                            if(setting('instagram_url')) $desktopSocialsUnique[] = ['class' => 'fab fa-instagram', 'url' => setting('instagram_url')];
+                            if(setting('youtube_url')) $desktopSocialsUnique[] = ['class' => 'fab fa-youtube', 'url' => setting('youtube_url')];
+                            if(setting('twitter_url')) $desktopSocialsUnique[] = ['class' => 'fab fa-twitter', 'url' => setting('twitter_url')];
+                            if(setting('linkedin_url')) $desktopSocialsUnique[] = ['class' => 'fab fa-linkedin', 'url' => setting('linkedin_url')];
+                        ?>
 
-                        @foreach ($icons as $icon)
-                            <a href="#"
+                        @foreach ($desktopSocialsUnique as $social)
+                            <a href="{{ $social['url'] }}"
                                 class="flex flex-col w-[31px] h-[31px] rounded-full items-center justify-center text-white text-[11px] transition-all bg-[#F9A13D]">
-                                <i class="{{ $icon }} text-[16px]"></i>
+                                <i class="{{ $social['class'] }} text-[16px]"></i>
                             </a>
                         @endforeach
                         {{-- AUTH ICONS --}}
@@ -162,7 +174,7 @@
                                         class="w-full border px-3 py-2 text-sm mb-3 rounded">
 
                                     <button type="submit"
-                                        class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded text-sm font-semibold">
+                                        class="w-full bg-[#F9A13D] hover:bg-[#e89530] text-white py-2 rounded text-sm font-semibold">
                                         Log in
                                     </button>
                                 </form>
@@ -207,7 +219,6 @@
                             'featured' => 'FEATURED',
                             'phone-finder' => 'PHONE FINDER',
                             'deals' => 'DEALS',
-                            'merch' => 'MERCH',
                             'coverage' => 'COVERAGE',
                             'contact' => 'CONTACT',
                         ];
@@ -218,12 +229,6 @@
                             <a href="{{ route($key) }}"
                                 class="relative block py-3 px-2 font-bold uppercase text-[12px] hover:text-[#F9A13D]">
                                 {{ $item }}
-                                @if ($item === 'MERCH')
-                                    <span
-                                        class="absolute top-0.5 right-1 bg-[#ff6b6b] text-white text-[8px] px-1 py-[1px] rounded">
-                                        NEW
-                                    </span>
-                                @endif
                             </a>
                         </li>
                     @endforeach
@@ -242,8 +247,13 @@
                             <i id="mobile-menu-icon" class="fa-solid fa-bars"></i>
                         </button>
 
-                        <a href="#" class="text-white text-3xl w-[130px] font-black tracking-tight">
-                            <img src="{{ asset('logo.png') }}" alt="">
+                        <a href="/" class="text-white text-3xl w-[130px] font-black tracking-tight">
+                            @if(setting('site_logo'))
+                                <img src="{{ asset('storage/' . setting('site_logo')) }}" style="width:100%; height:auto;"
+                                    alt="{{ setting('site_name', 'Logo') }}">
+                            @else
+                                <span style="font-weight: bold;">{{ setting('site_name', 'Admin') }}</span>
+                            @endif
                         </a>
                     </div>
                     <!-- Right section -->
@@ -251,7 +261,7 @@
                         @auth
                             {{-- User Account --}}
                             <a href="{{ route('user.account') }}" title="Sign Up"
-                                class="text-white px-4 text-[11px] rounded-sm bg-[#F9A13D]">
+                                class="flex justify-center items-center text-white px-4 text-[11px] rounded-sm bg-[#F9A13D]">
                                 {{ Auth::user()->name }}
                             </a>
                             {{-- Logout (POST required) --}}
@@ -295,7 +305,7 @@
                                         class="w-full border px-3 py-2 text-sm mb-3 rounded">
 
                                     <button type="submit"
-                                        class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded text-sm font-semibold">
+                                        class="w-full bg-[#F9A13D] hover:bg-[#e89530] text-white py-2 rounded text-sm font-semibold">
                                         Log in
                                     </button>
                                 </form>
@@ -324,7 +334,7 @@
 
                         {{-- Search Dropdown --}}
                         <div id="mobile-search-dropdown"
-                            class="hidden absolute left-0 w-full bg-white shadow-2xl z-[100] border-t-2 border-[#d50000] mt-1">
+                            class="hidden absolute left-0 w-full bg-white shadow-2xl z-[100] border-t-2 border-[#F9A13D] mt-1">
                             <div class="w-full">
                                 {{-- Recently Viewed (Initial State) --}}
                                 <div id="mobile-recently-viewed-section" class="hidden p-3 bg-gray-50">
@@ -388,19 +398,23 @@
             <div id="mobile-dropdown" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
                 <div class="bg-[#033d7c] px-5">
                     <div class="flex items-center justify-center gap-7 pt-5">
-                        @php
-                            $icons = [
-                                'fa-brands fa-facebook-f',
-                                'fab fa-instagram',
-                                'fab fa-youtube',
-                                'fa-brands fa-tiktok',
-                            ];
-                        @endphp
+                        <?php
+$mobileIconsUnique = [];
+if (setting('facebook_url'))
+    $mobileIconsUnique[] = ['icon' => 'fa-facebook-f', 'url' => setting('facebook_url')];
+if (setting('instagram_url'))
+    $mobileIconsUnique[] = ['icon' => 'fa-instagram', 'url' => setting('instagram_url')];
+if (setting('twitter_url'))
+    $mobileIconsUnique[] = ['icon' => 'fa-twitter', 'url' => setting('twitter_url')];
+if (setting('youtube_url'))
+    $mobileIconsUnique[] = ['icon' => 'fa-youtube', 'url' => setting('youtube_url')];
+                        ?>
+                        <!-- Debug: Mobile Socials Count: {{ count($mobileIconsUnique) }} -->
 
-                        @foreach ($icons as $icon)
-                            <a href="#"
-                                class="flex flex-col w-[31px] h-[31px] rounded-full items-center justify-center text-white text-[11px] transition-all bg-[#F9A13D]">
-                                <i class="{{ $icon }} text-[16px]"></i>
+                        @foreach ($mobileIconsUnique as $icon)
+                            <a href="{{ $icon['url'] }}" target="_blank"
+                                class="flex flex-col w-[31px] h-[31px] rounded-full items-center justify-center text-white text-[11px] transition-all bg-[#F9A13D] hover:bg-orange-600">
+                                <i class="fa-brands {{ $icon['icon'] }} text-[16px]"></i>
                             </a>
                         @endforeach
                     </div>
@@ -442,6 +456,11 @@
                         @endforeach
                     </div>
 
+                    <div class="flex justify-center items-center mt-1">
+                        <a href="{{ route('phone-finder') }}"
+                            class="bg-[#F9A13D] text-white px-4 py-2 rounded-sm font-bold mb-4"><i
+                                class="fas fa-search"></i> PHONE FINDER</a>
+                    </div>
                 </div>
             </div>
 
@@ -460,7 +479,7 @@
                         class="relative block py-3 px-2 font-bold uppercase text-[12px] hover:text-[#F9A13D]">
                         {{ $item }}
                         @if ($item === 'MERCH')
-                            <span class="absolute top-0.5 right-1 bg-[#ff6b6b] text-white text-[8px] px-1 py-[1px] rounded">
+                            <span class="absolute top-0.5 right-1 bg-[#F9A13D] text-white text-[8px] px-1 py-[1px] rounded">
                                 NEW
                             </span>
                         @endif
@@ -490,6 +509,11 @@
         {{-- Tablets & Mobile CONTENT & FOOTER --}}
         <div class="lg:hidden">
             @yield('news_content')
+            @yield('reviews_content')
+            @yield('videos_mobile_content')
+            @yield('brand_devices_content')
+            @yield('mobile-screen-phone-comparison')
+
 
             @if(View::hasSection('mobile-home-section'))
                 @yield('mobile-home-section')
@@ -498,9 +522,38 @@
                     @yield('content')
                 </div>
             @endif
+        </div>
 
-            {{-- Tablets & Mobile FOOTER --}}
+        {{-- MAIN WRAPPER --}}
+        <div class="max-w-[1060px] hidden lg:flex mx-auto flex-col md:flex-row gap-5 pt-5 bg-white">
+            {{-- SIDEBAR --}}
+            <aside class="w-full md:w-[30%] px-4 md:px-0">
+                {{-- ✅ COMMON SIDEBAR (shared on all pages) --}}
+                @include('partials.sidebar-common')
 
+                {{-- ✅ PAGE-SPECIFIC SIDEBAR (different per page) --}}
+                @yield('sidebar')
+            </aside>
+
+            {{-- MAIN CONTENT --}}
+            <main class="w-full md:w-[70%] overflow-x-auto lg:overflow-visible">
+                @yield('content')
+            </main>
+        </div>
+
+
+        <!-- <div class="max-w-[1060px] hidden lg:flex mx-auto flex-col md:flex-row gap-5 pt-5 bg-white"> -->
+        <div class="max-w-[1060px] flex mx-auto flex-col md:flex-row gap-5 pt-5 bg-white">
+            {{-- PHONE FINDER SECTION --}}
+            @yield('phone-finder')
+        </div>
+
+        <div class="max-w-[1060px] hidden lg:block mx-auto pt-5 bg-white">
+            {{-- PHONE COMPARISON SECTION --}}
+            @yield('phone-comparison')
+        </div>
+
+        <div class="lg:hidden">
             <footer class="mt-8 text-white">
                 <div class="bg-[#cfcfcf] text-[#757575] flex items-center justify-between px-14 py-1">
                     <a href="{{ route('home') }}"
@@ -523,15 +576,21 @@
                 <div class="bg-black py-4">
                     <!-- Social Links -->
                     <div class="flex justify-center flex-wrap gap-6 mb-8">
-                        @php(
-                            $socials = [
-                                ['icon' => 'fa-facebook-f', 'prefix' => 'fa-brands', 'url' => "https://www.facebook.com/profile.php?id=61573093576333"],
-                                ['icon' => 'fa-instagram', 'prefix' => 'fa-brands', 'url' => "https://www.instagram.com/specs_mob/"],
-                                ['icon' => 'fa-tiktok', 'prefix' => 'fa-brands', 'url' => "https://www.tiktok.com/@specs.mob?_t=ZS-8vTFUJxpFTO&_r=1"],
-                                ['icon' => 'fa-youtube', 'prefix' => 'fa-brands', 'url' => "https://www.youtube.com/@SpecsMob"]
-                            ]
-                        )
-                        @foreach ($socials as $social)
+                        <?php
+$footerSocialsUnique = [];
+if (setting('facebook_url'))
+    $footerSocialsUnique[] = ['icon' => 'fa-facebook-f', 'prefix' => 'fa-brands', 'url' => setting('facebook_url')];
+if (setting('instagram_url'))
+    $footerSocialsUnique[] = ['icon' => 'fa-instagram', 'prefix' => 'fa-brands', 'url' => setting('instagram_url')];
+if (setting('twitter_url'))
+    $footerSocialsUnique[] = ['icon' => 'fa-twitter', 'prefix' => 'fa-brands', 'url' => setting('twitter_url')];
+if (setting('youtube_url'))
+    $footerSocialsUnique[] = ['icon' => 'fa-youtube', 'prefix' => 'fa-brands', 'url' => setting('youtube_url')];
+if (setting('linkedin_url'))
+    $footerSocialsUnique[] = ['icon' => 'fa-linkedin-in', 'prefix' => 'fa-brands', 'url' => setting('linkedin_url')];
+                        ?>
+                        <!-- Debug: Footer Socials Count: {{ count($footerSocialsUnique) }} -->
+                        @foreach ($footerSocialsUnique as $social)
                             <a href="{{ $social['url'] }}"
                                 class="w-10 h-10 rounded-full bg-[#F9A13D] flex items-center justify-center text-white text-lg">
                                 <i class="{{ $social['prefix'] }} {{ $social['icon'] }}"></i>
@@ -542,7 +601,7 @@
                     <!-- Final info bar -->
                     <div class=" mt-4 text-center">
                         <p class="text-[11px] text-gray-300 mb-2">
-                            © 2000-2026 SpecMob. All rights reserved.
+                            {{ setting('footer_text', '© 2000-2026 SpecMob. All rights reserved.') }}
                         </p>
                         <div class="flex justify-center gap-4 text-[10px] font-bold uppercase">
                             <a href="#" class="hover:text-white font-bold text-[14px]">Privacy</a>
@@ -550,30 +609,23 @@
                             <a href="#" class="hover:text-white font-bold text-[14px]">Glossary</a>
                             <a href="#" class="hover:text-white font-bold text-[14px]">Contact Us</a>
                         </div>
+                        <div class="mt-3 text-center text-[10px] text-gray-400 space-y-1">
+                            @if(setting('contact_email'))
+                                <p>Email: <a href="mailto:{{ setting('contact_email') }}"
+                                        class="text-[#F9A13D] hover:underline">{{ setting('contact_email') }}</a></p>
+                            @endif
+                            @if(setting('contact_phone'))
+                                <p>Phone: <a href="tel:{{ setting('contact_phone') }}"
+                                        class="text-[#F9A13D] hover:underline">{{ setting('contact_phone') }}</a></p>
+                            @endif
+                            @if(setting('address'))
+                                <p>Address: <span class="text-gray-300">{{ setting('address') }}</span></p>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </footer>
         </div>
-
-        {{-- MAIN WRAPPER --}}
-        <div class="max-w-[1060px] hidden lg:flex mx-auto flex-col md:flex-row gap-5 pt-5 bg-white">
-            {{-- SIDEBAR --}}
-            <aside class="w-full md:w-[30%] px-4 md:px-0">
-                {{-- ✅ COMMON SIDEBAR (shared on all pages) --}}
-                @include('partials.sidebar-common')
-
-                {{-- ✅ PAGE-SPECIFIC SIDEBAR (different per page) --}}
-                @yield('sidebar')
-            </aside>
-
-            {{-- MAIN CONTENT --}}
-            <main class="w-full md:w-[70%] overflow-x-auto">
-                @yield('content')
-            </main>
-        </div>
-
-
-
     </div>
 
 
@@ -764,10 +816,10 @@
                             'flex flex-col items-center min-w-[70px] w-[70px] cursor-pointer group';
                         div.onclick = () => window.location.href = `/devices/show/${device.slug}`;
                         div.innerHTML = `
-                            <div class="h-16 w-16 flex items-center justify-center p-1 bg-white border border-gray-200 rounded-lg shadow-sm group-hover:border-[#d50000] transition-colors">
+                            <div class="h-16 w-16 flex items-center justify-center p-1 bg-white border border-gray-200 rounded-lg shadow-sm group-hover:border-[#F9A13D] transition-colors">
                                 <img src="${device.img}" class="max-h-full max-w-full object-contain">
                             </div>
-                            <span class="text-[9px] font-bold text-gray-600 mt-1 line-clamp-2 text-center leading-tight group-hover:text-[#d50000]">${device.name}</span>
+                            <span class="text-[9px] font-bold text-gray-600 mt-1 line-clamp-2 text-center leading-tight group-hover:text-[#F9A13D]">${device.name}</span>
                         `;
                         mobileRecentList.appendChild(div);
                     });
@@ -1051,7 +1103,7 @@
                             <div class="h-20 w-full flex items-center justify-center p-2 bg-gray-50 rounded group-hover:bg-gray-100 transition-all">
                                 <img src="${device.img}" class="max-h-full object-contain">
                             </div>
-                            <span class="text-[10px] font-bold text-gray-600 mt-1 line-clamp-1 group-hover:text-[#d50000]">${device.name}</span>
+                            <span class="text-[10px] font-bold text-gray-600 mt-1 line-clamp-1 group-hover:text-[#F9A13D]">${device.name}</span>
                         `;
                         recentList.appendChild(div);
                     });
@@ -1093,7 +1145,7 @@
                         resultsReviews.innerHTML += `
                             <a href="/reviews/show/${review.slug}" class="flex items-center gap-2 p-1 hover:bg-gray-50 rounded group border-b border-gray-50 last:border-0 pb-2">
                                 <div class="w-10 h-10 bg-gray-100 rounded flex-none"><img src="${review.cover_image_url}" class="w-full h-full object-cover rounded"></div>
-                                <span class="text-[11px] font-bold text-gray-700 line-clamp-2 group-hover:text-[#d50000]">${review.title}</span>
+                                <span class="text-[11px] font-bold text-gray-700 line-clamp-2 group-hover:text-[#F9A13D]">${review.title}</span>
                             </a>
                         `;
                     });
@@ -1105,7 +1157,7 @@
                         resultsDevices.innerHTML += `
                             <a href="/devices/show/${device.slug}" class="flex items-center gap-2 p-1 hover:bg-gray-50 rounded group border-b border-gray-50 last:border-0 pb-2">
                                 <div class="w-10 h-12 flex items-center justify-center p-1 bg-white border border-gray-100 rounded flex-none"><img src="${device.thumbnail_url}" class="max-h-full object-contain"></div>
-                                <span class="text-[11px] font-bold text-gray-700 group-hover:text-[#d50000]">${device.name}</span>
+                                <span class="text-[11px] font-bold text-gray-700 group-hover:text-[#F9A13D]">${device.name}</span>
                             </a>
                         `;
                     });
@@ -1117,7 +1169,7 @@
                         resultsNews.innerHTML += `
                             <a href="/articles/show/${article.slug}/${article.type}" class="flex items-center gap-2 p-1 hover:bg-gray-50 rounded group border-b border-gray-50 last:border-0 pb-2">
                                 <div class="w-10 h-10 bg-gray-100 rounded flex-none"><img src="${article.thumbnail_url}" class="w-full h-full object-cover rounded"></div>
-                                <span class="text-[11px] font-bold text-gray-700 line-clamp-2 group-hover:text-[#d50000]">${article.title}</span>
+                                <span class="text-[11px] font-bold text-gray-700 line-clamp-2 group-hover:text-[#F9A13D]">${article.title}</span>
                             </a>
                         `;
                     });

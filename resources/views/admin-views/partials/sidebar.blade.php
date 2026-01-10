@@ -4,8 +4,12 @@
             <div class="d-flex justify-content-between">
                 <div class="logo">
                     <a href="{{ route('admin.dashboard') }}">
-                        <img src="{{ asset('logo.png') }}" style="width:70%; height:auto;"
-                            alt="Logo">
+                        @if(setting('site_logo'))
+                            <img src="{{ asset('storage/' . setting('site_logo')) }}" style="width:70%; height:auto;"
+                                alt="{{ setting('site_name', 'Logo') }}">
+                        @else
+                            <span style="font-weight: bold;">{{ setting('site_name', 'Admin') }}</span>
+                        @endif
                     </a>
                 </div>
                 <div class="toggler">

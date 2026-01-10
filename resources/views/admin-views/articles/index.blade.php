@@ -57,8 +57,8 @@
                         <div class="col-md-3">
                             <select class="form-select" id="statusFilter">
                                 <option value="">All Status</option>
-                                <option value="published">Published</option>
-                                <option value="draft">Draft</option>
+                                <option value="published" {{ request('status') == 'published' ? 'selected' : '' }}>Published</option>
+                                <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -202,11 +202,15 @@
             if (typeFilter) {
                 typeFilter.addEventListener('change', function () {
                     const type = this.value;
+                    const url = new URL(window.location.href);
+                    
                     if (type) {
-                        window.location.href = '{{ route("admin.articles.index") }}?type=' + type;
+                        url.searchParams.set('type', type);
                     } else {
-                        window.location.href = '{{ route("admin.articles.index") }}';
+                        url.searchParams.delete('type');
                     }
+                    url.searchParams.delete('page');
+                    window.location.href = url.toString();
                 });
             }
 
@@ -215,9 +219,15 @@
             if (statusFilter) {
                 statusFilter.addEventListener('change', function () {
                     const status = this.value;
-                    // You can implement client-side filtering or server-side
-                    // For now, we'll do client-side filtering
-                    filterTableByStatus(status);
+                    const url = new URL(window.location.href);
+                    
+                    if (status) {
+                        url.searchParams.set('status', status);
+                    } else {
+                        url.searchParams.delete('status');
+                    }
+                    url.searchParams.delete('page');
+                    window.location.href = url.toString();
                 });
             }
 
@@ -237,31 +247,7 @@
                 });
             }
 
-            // Client-side status filtering function
-            function filterTableByStatus(status) {
-                const rows = table1.querySelectorAll('tbody tr');
 
-                rows.forEach(row => {
-                    let statusBadge = row.querySelector('.badge');
-                    let rowStatus = '';
-
-                    if (statusBadge) {
-                        if (statusBadge.classList.contains('bg-success')) {
-                            rowStatus = 'published';
-                        } else if (statusBadge.classList.contains('bg-secondary')) {
-                            rowStatus = 'draft';
-                        } else if (statusBadge.classList.contains('bg-warning')) {
-                            rowStatus = 'published'; // Scheduled is also considered published
-                        }
-                    }
-
-                    if (status === '' || rowStatus === status) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-            }
 
             // Add custom styling for DataTable
             const style = document.createElement('style');

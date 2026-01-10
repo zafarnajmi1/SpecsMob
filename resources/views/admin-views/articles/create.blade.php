@@ -156,16 +156,26 @@
                                 <h5 class="card-title">Featured Image</h5>
                             </div>
                             <div class="card-body">
+                                <div class="mb-3 text-center">
+                                    <div class="bg-light p-4 rounded" style="border: 2px dashed #dee2e6;">
+                                        <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                        <p class="text-muted mt-2">No image selected</p>
+                                    </div>
+                                </div>
+                                
                                 <div class="mb-3">
                                     <label for="thumbnail" class="form-label">Upload Thumbnail</label>
                                     <input type="file" class="form-control @error('thumbnail_url') is-invalid @enderror" 
-                                           id="thumbnail" name="thumbnail_url" accept="image/*">
+                                           id="thumbnail" name="thumbnail_url" accept="image/*"
+                                           onchange="handleImagePreview(event)">
+                                    <small class="form-text text-muted d-block mt-2">Recommended size: 800x450px. Max file size: 2MB</small>
                                     @error('thumbnail_url')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div id="imagePreview" class="mt-2 text-center" style="display: none;">
-                                    <img id="previewImage" class="img-fluid rounded" style="max-height: 200px;">
+                                <div id="imagePreview" class="mt-3 text-center" style="display: none;">
+                                    <p class="text-muted small">Preview:</p>
+                                    <img id="previewImage" class="img-fluid rounded border" style="max-height: 150px;">
                                 </div>
                             </div>
                         </div>
@@ -266,7 +276,6 @@
             allowClear: true
         });
 
-
         // Character counters
         $('#meta_title').on('input', function() {
             updateCharacterCount('#meta_title', '#metaTitleCount');
@@ -275,20 +284,6 @@
         $('#meta_description').on('input', function() {
             updateCharacterCount('#meta_description', '#metaDescCount');
         });
-
-        // Image preview
-        $('#thumbnail').change(function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#previewImage').attr('src', e.target.result);
-                    $('#imagePreview').show();
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
 
         function updateCharacterCount(inputSelector, countSelector) {
             const text = $(inputSelector).val();
@@ -299,6 +294,19 @@
         updateCharacterCount('#meta_title', '#metaTitleCount');
         updateCharacterCount('#meta_description', '#metaDescCount');
     });
+
+    // Image preview handler
+    function handleImagePreview(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#previewImage').attr('src', e.target.result);
+                $('#imagePreview').show();
+            }
+            reader.readAsDataURL(file);
+        }
+    }
 </script>
 
 <script>

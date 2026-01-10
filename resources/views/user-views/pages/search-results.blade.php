@@ -2,6 +2,10 @@
 
 @section('title', 'Search Results for: ' . $q)
 
+@section('sidebar')
+    @include('partials.aside')
+@endsection
+
 @section('content')
     {{-- Hero / Header --}}
     <div class="overflow-hidden w-full md:h-[310px]">

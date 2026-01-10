@@ -1,6 +1,48 @@
 @extends('admin-views.layouts.admin')
 @section('title', 'Add New Review')
 
+@push('styles')
+    <style>
+        .card {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            background: #fff;
+            border-bottom: 1px solid #f1f1f1;
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-weight: 700;
+            color: #435ebe !important;
+            margin: 0;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        .btn-primary {
+            background-color: #435ebe;
+            border-color: #435ebe;
+            padding: 0.6rem 1.5rem;
+            font-weight: 600;
+            border-radius: 8px;
+        }
+
+        .btn-light-secondary {
+            padding: 0.6rem 1.5rem;
+            font-weight: 600;
+            border-radius: 8px;
+        }
+    </style>
+@endpush
+
 @section('content')
     <div class="page-heading">
         <div class="page-title">
@@ -31,27 +73,24 @@
                             <form class="form" action="{{ route('admin.reviews.store') }}" method="POST"
                                 enctype="multipart/form-data" id="reviewForm">
                                 @csrf
-                                
+
                                 @include('admin-views.reviews.partials._form')
 
-
-
                                 <!-- Include SEO Fields -->
-                                 <div class="row mb-4">
+                                <div class="row mb-4">
                                     <div class="col-12">
-                                         @include('components.seo-fields', ['model' => null])
+                                        @include('components.seo-fields', ['model' => null])
                                     </div>
                                 </div>
 
-
                                 <div class="row">
-                                    <div class="col-12 d-flex justify-content-end mt-3">
-                                        <button type="submit" class="btn btn-primary me-2">
-                                            <i class="bi bi-check-lg"></i> Create Review
-                                        </button>
+                                    <div class="col-12 d-flex justify-content-end mt-3 gap-2">
                                         <a href="{{ route('admin.reviews.index') }}" class="btn btn-light-secondary">
                                             <i class="bi bi-arrow-left"></i> Cancel
                                         </a>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-check-lg"></i> Create Review
+                                        </button>
                                     </div>
                                 </div>
                             </form>

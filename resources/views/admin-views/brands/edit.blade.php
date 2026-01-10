@@ -53,9 +53,11 @@
                                             <label for="status" class="form-label">Status</label>
                                             <select class="form-select @error('status') is-invalid @enderror" id="status"
                                                 name="status">
-                                                <option value="1" {{ old('status', $brand->status) == 1 ? 'selected' : '' }}>Active
+                                                <option value="1" {{ old('status', $brand->status) == 1 ? 'selected' : '' }}>
+                                                    Active
                                                 </option>
-                                                <option value="0" {{ old('status', $brand->status) == 0 ? 'selected' : '' }}>Inactive</option>
+                                                <option value="0" {{ old('status', $brand->status) == 0 ? 'selected' : '' }}>
+                                                    Inactive</option>
                                             </select>
                                             @error('status')
                                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -65,11 +67,11 @@
 
                                     <!-- Image Upload (Logo and Cover) -->
                                     <div class="col-md-6 col-12">
-                                        <x-image-upload fieldName="logo" :existingImage="$brand->logo ?? null" />
-                                       </div>
+                                        <x-image-upload fieldName="logo" :existingImage="$brand->logo ? asset('storage/' . $brand->logo) : null" />
+                                    </div>
 
                                     <div class="col-md-6 col-12">
-                                          <x-image-upload fieldName="cover_image" :existingImage="$brand->cover_img ?? null" />
+                                        <x-image-upload fieldName="cover_image" :existingImage="$brand->cover_img ? asset('storage/' . $brand->cover_img) : null" />
                                     </div>
 
                                     <!-- Description Field -->

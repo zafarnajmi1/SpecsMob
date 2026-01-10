@@ -58,7 +58,8 @@
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <div
-                                                    class="avatar avatar-md bg-primary text-white d-flex align-items-center justify-content-center me-2">
+                                                    class="avatar avatar-md bg-primary text-white d-flex align-items-center justify-content-center me-2 flex-shrink-0"
+                                                    style="width: 2.5rem; height: 2.5rem;">
                                                     {{ strtoupper(substr($opinion->user->name ?? 'G', 0, 1)) }}
                                                 </div>
                                                 <div>

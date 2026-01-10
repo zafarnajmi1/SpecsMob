@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Services\SettingsService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -11,7 +12,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Register the SettingsService as a singleton
+        $this->app->singleton('settings', function ($app) {
+            return new SettingsService();
+        });
     }
 
     /**
@@ -19,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Load the settings helper
+        require_once app_path('Helpers/SettingsHelper.php');
     }
 }

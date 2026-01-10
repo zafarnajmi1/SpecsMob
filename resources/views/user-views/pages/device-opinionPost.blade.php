@@ -8,6 +8,7 @@
 
 @section('content')
     <x-device-header :device="$device" activeTab="opinions" />
+    <x-device-mobile-header :device="$device" activeTab="opinions" />
 
     <!-- Opinions Section -->
     <div class="bg-[#f0f0f0]">

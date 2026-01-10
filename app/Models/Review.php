@@ -13,6 +13,7 @@ class Review extends Model
 
     protected $fillable = [
         'device_id',
+        'brand_id',
         'title',
         'slug',
         'cover_image_url',
@@ -59,7 +60,7 @@ class Review extends Model
     // ✅ Get brand through device (remove direct brand relationship)
     public function brand()
     {
-        return $this->through('device')->has('brand');
+        return $this->belongsTo(Brand::class);
     }
 
     public function author()
