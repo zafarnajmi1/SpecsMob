@@ -8,7 +8,13 @@
             style="background-image: url('{{ $article->thumbnail_url }}');">
             <!-- Top Bar -->
             <div
-                class="absolute top-0 left-0 w-full flex justify-between items-center md:px-4 py-2 z-10 text-white text-xs md:text-sm opacity-90">
+                class="absolute top-0 left-0 w-full flex justify-between items-center md:px-4 py-2 z-10 text-white text-xs md:text-sm opacity-90 shadow-sm bg-black/10">
+                <div class="flex items-center gap-2">
+                    <i class="far fa-clock"></i> {{ $article->published_at->diffForHumans() }}
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-regular fa-message"></i> {{ $article->comments_count }}
+                </div>
             </div>
 
             <!-- Bottom Title & Info -->
@@ -24,9 +30,9 @@
                         <a href="{{ route('article.comments', ['slug' => $article->slug, 'id' => $article->id]) }}"
                             class="flex items-center gap-1 h-full hover:bg-[#F9A13D] transition-colors px-2 transition">
                             <i class="fa-regular fa-comment"></i> COMMENTS ({{ $article->comments_count ?? 0
-                                }})
+                                    }})
                         </a>
-                        <a href="#comments"
+                        <a href="{{ route('comment.post', ['slug' => $article->slug, 'id' => $article->id, 'type' => 'article']) }}"
                             class="flex items-center gap-1 h-full hover:bg-[#F9A13D] transition-colors px-2 transition">
                             <i class="fa-regular fa-message"></i> POST YOUR COMMENTS
                         </a>
@@ -111,9 +117,9 @@
                                         class="w-full h-full object-cover" />
                                     <div
                                         class="absolute top-2 right-2 px-2 py-1 text-xs font-semibold text-white rounded 
-                                                                                    {{ $related->type == 'news' ? 'bg-blue-600' : '' }}
-                                                                                    {{ $related->type == 'article' ? 'bg-green-600' : '' }}
-                                                                                    {{ $related->type == 'featured' ? 'bg-purple-600' : '' }}">
+                                                                                                {{ $related->type == 'news' ? 'bg-blue-600' : '' }}
+                                                                                                {{ $related->type == 'article' ? 'bg-green-600' : '' }}
+                                                                                                {{ $related->type == 'featured' ? 'bg-purple-600' : '' }}">
                                         {{ ucfirst($related->type) }}
                                     </div>
                                 </div>
@@ -136,7 +142,7 @@
         <!-- Comments Section -->
         <div class="bg-[#f0f0f0]">
             <h2 class="bg-white pl-[10px] pt-[10px] pr-[5px] mt-2 text-[#555] border-b border-[#ddd]">
-                <a href="#" class="hover:text-[#F9A13D] font-bold text-lg transition hover:underline uppercase">Reader
+                <a href="{{ route('article.comments', ['slug' => $article->slug, 'id' => $article->id]) }}" class="hover:text-[#F9A13D] font-bold text-lg transition hover:underline uppercase">Reader
                     Comments</a>
             </h2>
 
@@ -156,6 +162,10 @@
                 <a href="{{ route('article.comments', ['slug' => $article->slug, 'id' => $article->id]) }}"
                     class="flex justify-center items-center px-3 py-1 font-bold text-[12px] bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#F9A13D] hover:text-white transition uppercase tracking-tighter shadow-sm">
                     <span>READ ALL COMMENTS</span>
+                </a>
+                <a href="{{ route('comment.post', ['slug' => $article->slug, 'id' => $article->id, 'type' => 'article']) }}"
+                    class="flex justify-center items-center px-3 py-1 font-bold text-[12px] bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#F9A13D] hover:text-white transition uppercase tracking-tighter shadow-sm">
+                    <span>POST YOUR COMMENT</span>
                 </a>
             </div>
             <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">

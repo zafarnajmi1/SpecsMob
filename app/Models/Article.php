@@ -93,7 +93,7 @@ class Article extends Model
 
     public function comments()
     {
-        return $this->hasMany(ArticleComment::class)
+        return $this->morphMany(Comment::class, 'commentable')
             ->where('is_approved', true)
             ->latest();
     }

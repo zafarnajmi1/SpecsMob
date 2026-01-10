@@ -85,11 +85,7 @@ class CommentController extends Controller
         ToastMagic::success('Your comment has been posted.');
 
         // Redirect to the respective page
-        return redirect()->route("comment.post", [
-            'slug' => $item->slug,
-            'id' => $item->id,
-            'type' => $type,
-        ]);
+        return back();
     }
 
     /**
