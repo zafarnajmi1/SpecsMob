@@ -1264,6 +1264,9 @@ if (setting('linkedin_url'))
     </script>
 
     @stack('scripts')
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+        @csrf
+    </form>
     {!! ToastMagic::scripts() !!}
 </body>
 

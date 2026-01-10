@@ -3,9 +3,13 @@
 @if(!$isReply)
     <div class="flex flex-col gap-4 bg-white px-4 py-3 mb-3">
         <div class="flex flex-col md:flex-row gap-4">
-            <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center text-white text-xl font-bold rounded shadow-sm"
+            <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center text-white text-xl font-bold rounded shadow-sm overflow-hidden"
                 style="background-color: {{ '#' . substr(md5($comment->user->name ?? 'Anon'), 0, 6) }}">
-                {{ strtoupper(substr($comment->user->name ?? 'A', 0, 1)) }}
+                @if($comment->user && $comment->user->image)
+                    <img src="{{ asset('storage/' . $comment->user->image) }}" class="w-full h-full object-cover">
+                @else
+                    {{ strtoupper(substr($comment->user->name ?? 'A', 0, 1)) }}
+                @endif
             </div>
             <div class="flex-1 flex flex-col">
                 <div>
@@ -74,9 +78,13 @@
     </div>
 @else
     <div class="flex flex-col md:flex-row gap-4 bg-white px-4 py-3 ml-8 md:ml-16 border-l-4 border-gray-100 my-2">
-        <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center text-white text-lg font-bold"
+        <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center text-white text-lg font-bold overflow-hidden"
             style="background-color: {{ '#' . substr(md5($reply->user->name ?? 'Anonymous'), 0, 6) }}">
-            {{ strtoupper(substr($reply->user->name ?? 'A', 0, 1)) }}
+            @if($reply->user && $reply->user->image)
+                <img src="{{ asset('storage/' . $reply->user->image) }}" class="w-full h-full object-cover">
+            @else
+                {{ strtoupper(substr($reply->user->name ?? 'A', 0, 1)) }}
+            @endif
         </div>
 
         <div class="flex-1 flex flex-col">
