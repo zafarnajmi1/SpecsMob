@@ -47,7 +47,7 @@
                                 <input type="text" placeholder="Search device..."
                                     class="w-full px-3 py-2 border rounded-full text-sm focus:ring-2 focus:ring-[#F9A13D] outline-none search-device"
                                     data-index="1">
-                                <div class="absolute left-0 right-0 mt-1 bg-white shadow-xl z-50 rounded-lg hidden search-results"
+                                <div class="absolute left-0 right-0 mt-1 bg-white shadow-xl z-50 rounded-lg hidden search-results max-h-[300px] overflow-y-auto border border-gray-100"
                                     data-index="1"></div>
                             </div>
                         </div>
@@ -76,7 +76,7 @@
                                 <input type="text" placeholder="Search device..."
                                     class="w-full px-3 py-2 border rounded-full text-sm focus:ring-2 focus:ring-[#F9A13D] outline-none search-device"
                                     data-index="2">
-                                <div class="absolute left-0 right-0 mt-1 bg-white shadow-xl z-50 rounded-lg hidden search-results"
+                                <div class="absolute left-0 right-0 mt-1 bg-white shadow-xl z-50 rounded-lg hidden search-results max-h-[300px] overflow-y-auto border border-gray-100"
                                     data-index="2"></div>
                             </div>
                         </div>
@@ -105,7 +105,7 @@
                                 <input type="text" placeholder="Search device..."
                                     class="w-full px-3 py-2 border rounded-full text-sm focus:ring-2 focus:ring-[#F9A13D] outline-none search-device"
                                     data-index="3">
-                                <div class="absolute left-0 right-0 mt-1 bg-white shadow-xl z-50 rounded-lg hidden search-results"
+                                <div class="absolute left-0 right-0 mt-1 bg-white shadow-xl z-50 rounded-lg hidden search-results max-h-[300px] overflow-y-auto border border-gray-100"
                                     data-index="3"></div>
                             </div>
                         </div>
@@ -206,10 +206,10 @@
 
 @section('mobile-screen-phone-comparison')
 
-<div class="px-4 py-1">
-    <h3 class="text-[15px] font-bold">Compare</h3>
-<p class="text-gray-600">SPECIFICATIONS</p>
-</div>
+    <div class="px-4 py-1">
+        <h3 class="text-[15px] font-bold">Compare</h3>
+        <p class="text-gray-600">SPECIFICATIONS</p>
+    </div>
     <div class="bg-[#f6f6f6] border-b border-[#ddd] mb-8">
         <div class="max-w-[1200px] mx-auto px-4 py-10">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -236,7 +236,7 @@
                                 <input type="text" placeholder="Search device..."
                                     class="w-full px-3 py-2 border rounded-full text-sm focus:ring-2 focus:ring-[#F9A13D] outline-none search-device"
                                     data-index="1">
-                                <div class="absolute left-0 right-0 mt-1 bg-white shadow-xl z-50 rounded-lg hidden search-results"
+                                <div class="absolute left-0 right-0 mt-1 bg-white shadow-xl z-50 rounded-lg hidden search-results max-h-[300px] overflow-y-auto border border-gray-100"
                                     data-index="1"></div>
                             </div>
                         </div>
@@ -265,7 +265,7 @@
                                 <input type="text" placeholder="Search device..."
                                     class="w-full px-3 py-2 border rounded-full text-sm focus:ring-2 focus:ring-[#F9A13D] outline-none search-device"
                                     data-index="2">
-                                <div class="absolute left-0 right-0 mt-1 bg-white shadow-xl z-50 rounded-lg hidden search-results"
+                                <div class="absolute left-0 right-0 mt-1 bg-white shadow-xl z-50 rounded-lg hidden search-results max-h-[300px] overflow-y-auto border border-gray-100"
                                     data-index="2"></div>
                             </div>
                         </div>
@@ -294,7 +294,7 @@
                                 <input type="text" placeholder="Search device..."
                                     class="w-full px-3 py-2 border rounded-full text-sm focus:ring-2 focus:ring-[#F9A13D] outline-none search-device"
                                     data-index="3">
-                                <div class="absolute left-0 right-0 mt-1 bg-white shadow-xl z-50 rounded-lg hidden search-results"
+                                <div class="absolute left-0 right-0 mt-1 bg-white shadow-xl z-50 rounded-lg hidden search-results max-h-[300px] overflow-y-auto border border-gray-100"
                                     data-index="3"></div>
                             </div>
                         </div>
@@ -393,73 +393,102 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const searchInputs = document.querySelectorAll('.search-device');
+            console.log('Found search inputs:', searchInputs.length);
 
-            searchInputs.forEach(input => {
+            searchInputs.forEach((input, idx) => {
                 let debounceTimer;
                 const index = input.dataset.index;
-                const resultsContainer = document.querySelector(`.search-results[data-index="${index}"]`);
+                const resultsContainer = input.closest('.relative').querySelector('.search-results');
+
+                console.log(`Input ${idx + 1}:`, { index, hasResultsContainer: !!resultsContainer });
 
                 input.addEventListener('input', function () {
                     clearTimeout(debounceTimer);
                     const query = this.value.trim();
 
-                    if (query.length < 2) {
+                    console.log(`Input ${index}: query = "${query}" (length: ${query.length})`);
+
+                    if (query.length < 1) {
                         resultsContainer.classList.add('hidden');
                         return;
                     }
 
                     debounceTimer = setTimeout(async () => {
-                        try {
-                            const response = await fetch(`{{ route('device.search') }}?q=${encodeURIComponent(query)}`);
-                            const devices = await response.json();
+                        resultsContainer.innerHTML = '<div class="p-4 text-sm text-gray-500 flex items-center gap-2"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+                        resultsContainer.classList.remove('hidden');
 
-                            resultsContainer.innerHTML = '';
-                            resultsContainer.classList.remove('hidden');
+                        try {
+                            console.log('Fetching from:', `{{ route('device.search') }}?q=${encodeURIComponent(query)}`);
+                            const response = await fetch(`{{ route('device.search') }}?q=${encodeURIComponent(query)}`);
+
+                            if (!response.ok) throw new Error(`Network response was not ok: ${response.status}`);
+
+                            const devices = await response.json();
+                            console.log('Search results:', devices);
 
                             if (devices.length === 0) {
-                                resultsContainer.innerHTML = '<div class="p-4 text-sm text-gray-500 italic">No devices found.</div>';
+                                resultsContainer.innerHTML = '<div class="p-4 text-sm text-gray-500 italic text-center">No devices found matching "' + query + '"</div>';
                                 return;
                             }
 
+                            resultsContainer.innerHTML = '';
                             devices.forEach(device => {
                                 const div = document.createElement('div');
-                                div.className = 'p-3 hover:bg-gray-100 cursor-pointer flex items-center gap-3 border-b border-gray-50 last:border-0';
+                                div.className = 'p-3 hover:bg-orange-50 cursor-pointer flex items-center gap-3 border-b border-gray-50 last:border-0 transition-colors group';
                                 div.innerHTML = `
-                                        <img src="${device.thumbnail_url}" class="w-8 h-10 object-contain">
-                                        <span class="text-sm font-semibold">${device.name}</span>
-                                    `;
+                                    <div class="w-10 h-12 flex-shrink-0 bg-gray-50 rounded p-1 flex items-center justify-center">
+                                        <img src="${device.thumbnail_url}" class="max-h-full max-w-full object-contain" alt="${device.name}">
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="text-sm font-semibold group-hover:text-[#F9A13D]">${device.name}</div>
+                                        <div class="text-xs text-gray-400 capitalize">${device.slug.split('-')[0]}</div>
+                                    </div>
+                                `;
                                 div.onclick = () => {
-                                    const url = new URL(window.location.href);
-                                    const currentDevices = url.searchParams.get('devices') ? url.searchParams.get('devices').split(',') : [];
+                                    let newDevices = [
+                                        @if($device1) '{{ $device1->slug }}' @else null @endif,
+                                        @if($device2) '{{ $device2->slug }}' @else null @endif,
+                                        @if($device3) '{{ $device3->slug }}' @else null @endif
+                                    ];
 
-                                    // We use slugs for currentDevices
-                                    // If index - 1 exists in the array, replace it. Otherwise push.
-                                    // But usually, easier is to just rebuild from current state
-                                    // For simplicity, let's just use IDs/slugs based on what's already there
+                                    console.log('Current devices before update:', newDevices);
+                                    console.log('Selected device:', device.slug);
+                                    console.log('Target index:', parseInt(index) - 1);
 
-                                    // Actually, let's just append or replace
-                                    let newDevices = [];
-                                        @if($device1) newDevices.push('{{ $device1->slug }}'); @elsenewDevices.push(null); @endif
-                                    @if($device2) newDevices.push('{{ $device2->slug }}'); @elsenewDevices.push(null); @endif
-                                    @if($device3) newDevices.push('{{ $device3->slug }}'); @elsenewDevices.push(null); @endif
+                                    const targetIdx = parseInt(index) - 1;
+                                    newDevices[targetIdx] = device.slug;
 
-                                    newDevices[index - 1] = device.slug;
+                                    console.log('New devices array:', newDevices);
 
-                                    // Filter out nulls and join
-                                    const devicesString = newDevices.filter(d => d !== null).join(',');
-                                    window.location.href = `{{ route('device-comparison') }}?devices=${devicesString}`;
+                                    // Build devices string from non-null values
+                                    const devicesString = newDevices
+                                        .filter(d => d !== null && d !== undefined)
+                                        .join(',');
+                                    
+                                    const baseUrl = "{{ route('device-comparison') }}";
+                                    const url = devicesString ? `${baseUrl}?devices=${devicesString}` : baseUrl;
+                                    console.log('Final URL:', url);
+                                    window.location.href = url;
                                 };
                                 resultsContainer.appendChild(div);
                             });
                         } catch (error) {
                             console.error('Search error:', error);
+                            resultsContainer.innerHTML = '<div class="p-4 text-sm text-red-500 italic text-center">Error: ' + error.message + '</div>';
                         }
                     }, 300);
+                });
+
+                // Open dropdown on focus
+                input.addEventListener('focus', function () {
+                    if (this.value.trim().length > 0) {
+                        resultsContainer.classList.remove('hidden');
+                    }
                 });
             });
 
             document.addEventListener('click', function (e) {
-                if (!e.target.closest('.search-device') && !e.target.closest('.search-results')) {
+                if (!e.target.closest('.relative') || (!e.target.closest('.search-device') && !e.target.closest('.search-results'))) {
                     document.querySelectorAll('.search-results').forEach(r => r.classList.add('hidden'));
                 }
             });
