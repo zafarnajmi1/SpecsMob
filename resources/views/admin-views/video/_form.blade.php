@@ -23,7 +23,7 @@
                         <div class="video-item card mb-3">
                             <div class="card-body">
                                 <div class="row">
-                                    <input type="hidden" name="videos[{{$videoIndex}}][id]" value="{{ $video->id }}">
+                                    <input type="hidden" name="videos[{{$videoIndex}}][id]" value="{{ $videoItem->id }}">
                                     <div class="col-md-6 col-12">
                                         <div class="form-group mb-3">
                                             <label class="form-label">Brand <span class="text-danger">*</span></label>

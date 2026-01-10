@@ -36,9 +36,9 @@
                         @endif
                     </h4>
                     @can('article_create')
-                    <a href="{{ route('admin.articles.create') }}" class="btn btn-primary">
-                        <i class="bi bi-plus-circle me-1"></i> Add New Article
-                    </a>
+                        <a href="{{ route('admin.articles.create') }}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-1"></i> Add New Article
+                        </a>
                     @endcan
                 </div>
                 <div class="card-body">
@@ -48,8 +48,10 @@
                             <select class="form-select" id="typeFilter">
                                 <option value="">All Types</option>
                                 <option value="news" {{ request('type') == 'news' ? 'selected' : '' }}>News</option>
-                                <option value="article" {{ request('type') == 'article' ? 'selected' : '' }}>Blog Posts</option>
-                                <option value="featured" {{ request('type') == 'featured' ? 'selected' : '' }}>Featured</option>
+                                <option value="article" {{ request('type') == 'article' ? 'selected' : '' }}>Blog Posts
+                                </option>
+                                <option value="featured" {{ request('type') == 'featured' ? 'selected' : '' }}>Featured
+                                </option>
                             </select>
                         </div>
                         <div class="col-md-3">
@@ -87,100 +89,94 @@
                             </thead>
                             <tbody>
                                 @forelse($articles as $article)
-                                <tr>
-                                    <td>
-                                        @if($article->thumbnail_url)
-                                        <img src="{{ $article->thumbnail_url }}" 
-                                             alt="{{ $article->title }}" 
-                                             class="rounded" 
-                                             width="60" height="60" style="object-fit: cover;">
-                                        @else
-                                        <div class="bg-light rounded d-flex align-items-center justify-content-center" 
-                                             style="width: 60px; height: 40px;">
-                                            <i class="bi bi-image text-muted"></i>
-                                        </div>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <h6 class="mb-0">{{ Str::limit($article->title, 50) }}</h6>
-                                            <small class="text-muted">{{ $article->slug }}</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge 
-                                            @if($article->type == 'news') bg-info
-                                            @elseif($article->type == 'article') bg-success
-                                            @elseif($article->type == 'featured') bg-warning
-                                            @endif">
-                                            {{ ucfirst($article->type) }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $article->author->name }}</td>
-                                    <td>
-                                        @if($article->is_published && $article->published_at <= now())
-                                            <span class="badge bg-success">Published</span>
-                                        @elseif($article->is_published && $article->published_at > now())
-                                            <span class="badge bg-warning">Scheduled</span>
-                                        @else
-                                            <span class="badge bg-secondary">Draft</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($article->is_featured)
-                                            <i class="bi bi-star-fill text-warning"></i>
-                                        @else
-                                            <i class="bi bi-star text-muted"></i>
-                                        @endif
-                                    </td>
-                                    <td>{{ number_format($article->views_count) }}</td>
-                                    <td>
-                                        @if($article->published_at)
-                                            {{ $article->published_at->format('M j, Y') }}
-                                        @else
-                                            <span class="text-muted">Not published</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div class="btn-group">
-                                            @can('article_edit')
-                                            <a href="{{ route('admin.articles.edit', $article->id) }}" 
-                                               class="btn btn-sm btn-outline-primary" 
-                                               title="Edit">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                            @endcan
-                                            
-                                            @can('article_delete')
-                                            <form action="{{ route('admin.articles.destroy', $article->id) }}" 
-                                                  method="POST" 
-                                                  class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="btn btn-sm btn-danger confirm-delete">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
-                                            @endcan
-                                        </div>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td>
+                                            <img src="{{ $article->thumbnail_url }}" alt="{{ $article->title }}" class="rounded"
+                                                width="60" height="60" style="object-fit: cover;">
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <h6 class="mb-0">{{ Str::limit($article->title, 50) }}</h6>
+                                                <small class="text-muted">{{ $article->slug }}</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge 
+                                                    @if($article->type == 'news') bg-info
+                                                    @elseif($article->type == 'article') bg-success
+                                                    @elseif($article->type == 'featured') bg-warning
+                                                    @endif">
+                                                {{ ucfirst($article->type) }}
+                                            </span>
+                                        </td>
+                                        <td>{{ $article->author->name ?? 'System' }}</td>
+                                        <td>
+                                            @if(!$article->is_published)
+                                                <span class="badge bg-secondary">Draft</span>
+                                            @elseif($article->published_at && $article->published_at > now())
+                                                <span class="badge bg-warning">Scheduled</span>
+                                            @else
+                                                <span class="badge bg-success">Published</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($article->is_featured)
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                            @else
+                                                <i class="bi bi-star text-muted"></i>
+                                            @endif
+                                        </td>
+                                        <td>{{ number_format($article->views_count) }}</td>
+                                        <td>
+                                            @if($article->published_at)
+                                                {{ $article->published_at->format('M j, Y') }}
+                                            @else
+                                                <span class="text-muted">No date</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                @can('article_edit')
+                                                    <a href="{{ route('admin.articles.edit', $article->id) }}"
+                                                        class="btn btn-sm btn-outline-primary" title="Edit">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                @endcan
+
+                                                @can('article_delete')
+                                                    <form action="{{ route('admin.articles.destroy', $article->id) }}" method="POST"
+                                                        class="d-inline" id="delete-form-{{ $article->id }}">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-danger confirm-delete"
+                                                            onclick="return confirm('Are you sure you want to delete this article?')">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                @endcan
+                                            </div>
+                                        </td>
+                                    </tr>
                                 @empty
-                                <tr>
-                                    <td colspan="9" class="text-center py-4">
-                                        <i class="bi bi-newspaper display-4 text-muted"></i>
-                                        <p class="mt-2 mb-0">No articles found</p>
-                                        <p class="text-muted">Get started by creating your first article</p>
-                                        @can('article_create')
-                                        <a href="{{ route('admin.articles.create') }}" class="btn btn-primary mt-2">
-                                            <i class="bi bi-plus-circle me-1"></i> Create Article
-                                        </a>
-                                        @endcan
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td colspan="9" class="text-center py-4">
+                                            <i class="bi bi-newspaper display-4 text-muted"></i>
+                                            <p class="mt-2 mb-0">No articles found</p>
+                                            <p class="text-muted">Get started by creating your first article</p>
+                                            @can('article_create')
+                                                <a href="{{ route('admin.articles.create') }}" class="btn btn-primary mt-2">
+                                                    <i class="bi bi-plus-circle me-1"></i> Create Article
+                                                </a>
+                                            @endcan
+                                        </td>
+                                    </tr>
                                 @endforelse
                             </tbody>
                         </table>
+                    </div>
+
+                    <div class="mt-4">
+                        {{ $articles->links() }}
                     </div>
                 </div>
             </div>
@@ -191,7 +187,7 @@
 @push('scripts')
     <script src="{{ asset('admin/assets/vendors/simple-datatables/simple-datatables.js') }}"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Initialize Simple DataTable
             let table1 = document.querySelector('#articlesTable');
             let dataTable = new simpleDatatables.DataTable(table1, {
@@ -204,7 +200,7 @@
             // Filter by type
             const typeFilter = document.getElementById('typeFilter');
             if (typeFilter) {
-                typeFilter.addEventListener('change', function() {
+                typeFilter.addEventListener('change', function () {
                     const type = this.value;
                     if (type) {
                         window.location.href = '{{ route("admin.articles.index") }}?type=' + type;
@@ -217,7 +213,7 @@
             // Status filter functionality
             const statusFilter = document.getElementById('statusFilter');
             if (statusFilter) {
-                statusFilter.addEventListener('change', function() {
+                statusFilter.addEventListener('change', function () {
                     const status = this.value;
                     // You can implement client-side filtering or server-side
                     // For now, we'll do client-side filtering
@@ -228,13 +224,13 @@
             // Search functionality integrated with DataTable
             const searchInput = document.getElementById('searchInput');
             const searchButton = document.getElementById('searchButton');
-            
+
             if (searchInput && searchButton) {
-                searchButton.addEventListener('click', function() {
+                searchButton.addEventListener('click', function () {
                     dataTable.search(searchInput.value);
                 });
 
-                searchInput.addEventListener('keypress', function(e) {
+                searchInput.addEventListener('keypress', function (e) {
                     if (e.which === 13) {
                         dataTable.search(this.value);
                     }
@@ -244,11 +240,11 @@
             // Client-side status filtering function
             function filterTableByStatus(status) {
                 const rows = table1.querySelectorAll('tbody tr');
-                
+
                 rows.forEach(row => {
                     let statusBadge = row.querySelector('.badge');
                     let rowStatus = '';
-                    
+
                     if (statusBadge) {
                         if (statusBadge.classList.contains('bg-success')) {
                             rowStatus = 'published';
@@ -258,7 +254,7 @@
                             rowStatus = 'published'; // Scheduled is also considered published
                         }
                     }
-                    
+
                     if (status === '' || rowStatus === status) {
                         row.style.display = '';
                     } else {
@@ -270,39 +266,39 @@
             // Add custom styling for DataTable
             const style = document.createElement('style');
             style.textContent = `
-                .datatable-wrapper .datatable-container {
-                    font-size: 0.875rem;
-                }
-                .datatable-top {
-                    padding: 1rem 0;
-                }
-                .datatable-search input {
-                    border: 1px solid #dee2e6;
-                    border-radius: 0.375rem;
-                    padding: 0.375rem 0.75rem;
-                }
-                .datatable-selector {
-                    border: 1px solid #dee2e6;
-                    border-radius: 0.375rem;
-                    padding: 0.375rem 2.25rem 0.375rem 0.75rem;
-                }
-                .datatable-pagination-list {
-                    flex-wrap: wrap;
-                }
-                .datatable-pagination-list-item {
-                    margin: 0.125rem;
-                }
-                .datatable-pagination-list-item .datatable-pagination-list-item-link {
-                    border: 1px solid #dee2e6;
-                    border-radius: 0.375rem;
-                    padding: 0.375rem 0.75rem;
-                }
-                .datatable-pagination-list-item.active .datatable-pagination-list-item-link {
-                    background-color: #0d6efd;
-                    border-color: #0d6efd;
-                    color: white;
-                }
-            `;
+                    .datatable-wrapper .datatable-container {
+                        font-size: 0.875rem;
+                    }
+                    .datatable-top {
+                        padding: 1rem 0;
+                    }
+                    .datatable-search input {
+                        border: 1px solid #dee2e6;
+                        border-radius: 0.375rem;
+                        padding: 0.375rem 0.75rem;
+                    }
+                    .datatable-selector {
+                        border: 1px solid #dee2e6;
+                        border-radius: 0.375rem;
+                        padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+                    }
+                    .datatable-pagination-list {
+                        flex-wrap: wrap;
+                    }
+                    .datatable-pagination-list-item {
+                        margin: 0.125rem;
+                    }
+                    .datatable-pagination-list-item .datatable-pagination-list-item-link {
+                        border: 1px solid #dee2e6;
+                        border-radius: 0.375rem;
+                        padding: 0.375rem 0.75rem;
+                    }
+                    .datatable-pagination-list-item.active .datatable-pagination-list-item-link {
+                        background-color: #0d6efd;
+                        border-color: #0d6efd;
+                        color: white;
+                    }
+                `;
             document.head.appendChild(style);
         });
     </script>

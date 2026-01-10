@@ -158,14 +158,15 @@
                             <div class="card-body">
                                 @if($article->thumbnail_url)
                                 <div class="mb-3 text-center">
-                                    <img src="{{ Storage::url($article->thumbnail_url) }}" 
+                                    <p class="text-muted small">Current Thumbnail:</p>
+                                    <img src="{{ $article->thumbnail_url }}" 
                                          alt="{{ $article->title }}" 
-                                         class="img-fluid rounded mb-2" 
-                                         style="max-height: 200px;">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" 
+                                         class="img-fluid rounded mb-2 border" 
+                                         style="max-height: 150px;">
+                                    <div class="form-check d-flex justify-content-center">
+                                        <input class="form-check-input me-2" type="checkbox" 
                                                id="remove_thumbnail" name="remove_thumbnail" value="1">
-                                        <label class="form-check-label" for="remove_thumbnail">
+                                        <label class="form-check-label text-danger" for="remove_thumbnail">
                                             Remove current image
                                         </label>
                                     </div>
@@ -181,7 +182,8 @@
                                     @enderror
                                 </div>
                                 <div id="imagePreview" class="mt-2 text-center" style="display: none;">
-                                    <img id="previewImage" class="img-fluid rounded" style="max-height: 200px;">
+                                    <p class="text-muted small">New Preview:</p>
+                                    <img id="previewImage" class="img-fluid rounded" style="max-height: 150px;">
                                 </div>
                             </div>
                         </div>

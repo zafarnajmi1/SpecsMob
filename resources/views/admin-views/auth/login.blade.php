@@ -135,7 +135,7 @@
             <div class="col-lg-5 col-12">
                 <div id="auth-left">
                     <div class="auth-logo">
-                        <a href="index.html"><img src="{{ asset('admin/assets/images/logo/logo.png') }}" class="w-25 h-25" alt="Logo"></a>
+                        <a href="index.html"><img src="{{ asset('logo.png') }}" class="w-50 h-50" alt="Logo"></a>
                     </div>
                     <h1 class="auth-title">Welcome Back</h1>
                     <p class="auth-subtitle mb-5">Sign in to access your admin dashboard</p>

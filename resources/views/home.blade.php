@@ -6,38 +6,34 @@
 @endsection
 
 @section('mobile-home-section')
-    <div class="bg-white rounded shadow mb-4">
-        <h4 class="uppercase text-[#F9A13D] px-5 py-1 font-bold text-lg mb-3 border-b">
-            Featured
-        </h4>
+    @if ($featuredArticles->isNotEmpty())
+        <div class="bg-white rounded shadow mb-4">
+            <h4 class="uppercase text-[#F9A13D] px-5 py-1 font-bold text-lg mb-3 border-b">
+                Featured
+            </h4>
 
-        <!-- Horizontal slider-->
-        <div class="swiper featuredNewsSwiper px-4">
-            <div class="swiper-wrapper px-3 pb-5">
-                @foreach ([1, 2, 3, 4] as $i)
-                    <a href="#" class="swiper-slide group bg-transparent !p-0">
-                        <div class="max-w-[176px] h-auto overflow-hidden relative shadow-sm">
-                            <img src="{{ asset("user/images/Homereview-slider/review$i.jpg") }}"
-                                class="w-[100%] h-full object-cover block">
-                        </div>
+            <!-- Horizontal slider-->
+            <div class="swiper featuredNewsSwiper px-4">
+                <div class="swiper-wrapper px-3 pb-5">
+                    @foreach ($featuredArticles as $article)
+                        <a href="{{ route('article-detail', ['slug' => $article->slug, 'type' => $article->type]) }}" class="swiper-slide group bg-transparent !p-0">
+                            <div class="max-w-[176px] h-[120px] overflow-hidden relative shadow-sm">
+                                <img src="{{ $article->thumbnail_url }}"
+                                    class="w-full h-full object-cover block">
+                            </div>
 
-                        <h5
-                            class="font-bold text-[14px] leading-tight mt-3 text-gray-800 group-hover:text-[#F9A13D] line-clamp-2">
-                            Samsung Galaxy S26 Ultra dummy units star in live images
-                        </h5>
-                    </a>
-                @endforeach
-
-                        <h5
-                            class="font-bold text-[14px] leading-tight mt-3 text-gray-800 group-hover:text-[#F9A13D] line-clamp-2">
-                            Samsung Galaxy S26 Ultra dummy units star in live images
-                        </h5>
-                    </a>
+                            <h5
+                                class="font-bold text-[14px] leading-tight mt-3 text-gray-800 group-hover:text-[#F9A13D] line-clamp-2">
+                                {{ $article->title }}
+                            </h5>
+                        </a>
+                    @endforeach
+                </div>
+                <div class="swiper-scrollbar"></div>
             </div>
-            <div class="swiper-scrollbar"></div>
-        </div>
 
-    </div>
+        </div>
+    @endif
 
     @if ($featuredReviews->isNotEmpty())
         <div class="bg-white rounded shadow mb-4">
@@ -46,7 +42,7 @@
             </h4>
             <a href="#" class="flex flex-col w-full items-start justify-start group pb-3 px-4">
                 <div class="w-full h-[370px] shadow-sm ">
-                    <img src="{{ asset($featuredReviews[0]->cover_image_url) }}" class="w-full h-full object-cover block">
+                    <img src="{{ $featuredReviews[0]->cover_image_url }}" class="w-full h-full object-cover block">
                 </div>
                 <h5
                     class="font-bold text-[14px] mt-3 text-gray-800 group-hover:text-[#F9A13D] line-clamp-2 text-left w-full">
@@ -59,7 +55,7 @@
                     @foreach ($featuredReviews->skip(1) as $review)
                         <a href="#" class="swiper-slide group bg-transparent !p-0">
                             <div class="w-full h-[120px] overflow-hidden rounded relative shadow-sm">
-                                <img src="{{ asset($review->cover_image_url) }}" class="w-full h-full object-cover block">
+                                <img src="{{ $review->cover_image_url }}" class="w-full h-full object-cover block">
                             </div>
 
                             <h5
@@ -103,8 +99,8 @@
         <div class="swiper featuredNewsSwiper px-4">
             <div class="swiper-wrapper px-3 pb-5">
                 @foreach ($latestDevices as $device)
-                    <a href="#" class="swiper-slide group bg-transparent !p-0">
-                            <img src="{{ asset($device->thumbnail_url) }}"
+                    <a href="{{ route('device-detail', $device->slug) }}" class="swiper-slide group bg-transparent !p-0">
+                            <img src="{{ $device->thumbnail_url }}"
                                 class="w-[100px] h-full object-cover block">
 
                         <h5
@@ -119,30 +115,32 @@
 
     </div>
 
-    <div class="bg-white rounded shadow mb-4">
-        <h4 class="uppercase text-[#F9A13D] px-5 py-1 font-bold text-lg mb-3 border-b">
-            In stores Now
-        </h4>
+    @if ($inStoreDevices->isNotEmpty())
+        <div class="bg-white rounded shadow mb-4">
+            <h4 class="uppercase text-[#F9A13D] px-5 py-1 font-bold text-lg mb-3 border-b">
+                In stores Now
+            </h4>
 
-        <!-- Horizontal slider-->
-        <div class="swiper featuredNewsSwiper px-4">
-            <div class="swiper-wrapper px-3 pb-5">
-                @foreach ($latestDevices as $device)
-                    <a href="#" class="swiper-slide group bg-transparent !p-0">
-                            <img src="{{ asset($device->thumbnail_url) }}"
+            <!-- Horizontal slider-->
+            <div class="swiper featuredNewsSwiper px-4">
+                <div class="swiper-wrapper px-3 pb-5">
+                    @foreach ($inStoreDevices as $device)
+                        <a href="{{ route('device-detail', $device->slug) }}" class="swiper-slide group bg-transparent !p-0">
+                            <img src="{{ $device->thumbnail_url }}"
                                 class="w-[100px] h-full object-cover block">
 
-                        <h5
-                            class="font-bold text-[14px] leading-tight mt-3 text-gray-800 group-hover:text-[#F9A13D] line-clamp-2">
-                            {{ $device->name }}
-                        </h5>
-                    </a>
-                @endforeach
+                            <h5
+                                class="font-bold text-[14px] leading-tight mt-3 text-gray-800 group-hover:text-[#F9A13D] line-clamp-2">
+                                {{ $device->name }}
+                            </h5>
+                        </a>
+                    @endforeach
+                </div>
+                <div class="swiper-scrollbar"></div>
             </div>
-            <div class="swiper-scrollbar"></div>
-        </div>
 
-    </div>
+        </div>
+    @endif
 
         <div class="bg-white shadow mb-4">
         <h4 class="uppercase text-[#F9A13D] px-5 py-1 font-bold text-lg mb-3 border-b">
