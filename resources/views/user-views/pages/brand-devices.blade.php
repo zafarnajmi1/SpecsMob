@@ -73,23 +73,37 @@
         @if($devices->count() > 0)
             <div class="flex flex-col gap-1">
                 @foreach($devices as $device)
-                    <a href="{{ route('device-detail', $device->slug) }}" 
-                       class="bg-white border flex border-gray-200 rounded overflow-hidden hover:shadow-md transition">
-                        {{-- Device Image --}}
-                        <div class="h-32 flex items-center justify-center p-3 bg-gray-50">
-                            <img src="{{ $device->thumbnail_url }}" 
-                                 alt="{{ $device->name }}"
-                                 class="max-h-full max-w-full object-contain"
-                                 onerror="this.src='{{ asset('images/default-device.png') }}'">
+                    <div class="relative flex items-center bg-white border border-gray-200 rounded overflow-hidden hover:shadow-md transition">
+                        <div class="mobile-checkbox-container hidden p-3 border-r border-gray-100">
+                            <label class="relative flex items-center justify-center cursor-pointer">
+                                <input type="checkbox" class="device-checkbox sr-only peer" 
+                                    data-device-id="{{ $device->id }}"
+                                    data-device-name="{{ $device->name }}" 
+                                    data-device-slug="{{ $device->slug }}"
+                                    data-device-img="{{ $device->thumbnail_url }}">
+                                <span class="w-6 h-6 bg-white border-[3px] border-[#F9A13D] rounded transition-all duration-200"></span>
+                                <i class="fa-solid fa-check text-xs text-[#F9A13D] opacity-0 peer-checked:opacity-100 transition-opacity absolute"></i>
+                            </label>
                         </div>
-                        
-                        {{-- Device Name --}}
-                        <div class="flex items-center p-2 text-center bg-white hover:bg-[#F9A13D] transition group">
-                            <strong class="text-sm text-gray-800 group-hover:text-white">
-                                {{ $device->name }}
-                            </strong>
-                        </div>
-                    </a>
+
+                        <a href="{{ route('device-detail', $device->slug) }}" class="flex flex-1 items-center device-link">
+                            {{-- Device Image --}}
+                            <div class="h-24 w-24 flex-shrink-0 flex items-center justify-center p-2 bg-gray-50">
+                                <img src="{{ $device->thumbnail_url }}" 
+                                     alt="{{ $device->name }}"
+                                     class="max-h-full max-w-full object-contain"
+                                     onerror="this.src='{{ asset('images/default-device.png') }}'">
+                            </div>
+                            
+                            {{-- Device Name --}}
+                            <div class="flex-1 p-3">
+                                <strong class="text-sm text-gray-800">
+                                    {{ $device->name }}
+                                </strong>
+                                <p class="text-xs text-gray-400 mt-1">View specifications</p>
+                            </div>
+                        </a>
+                    </div>
                 @endforeach
             </div>
 
@@ -276,10 +290,10 @@
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     @foreach($devices as $device)
                         <a href="{{ route('device-detail', $device->slug) }}"
-                            class="relative bg-white overflow-hidden group cursor-pointer transition-all duration-200 text-center h-[180px] block">
+                            class="desktop-device-card relative bg-white overflow-hidden group cursor-pointer transition-all duration-200 text-center h-[180px] block">
 
                             {{-- Compare Checkbox --}}
-                            <div class="absolute top-2 right-2 z-10 hidden">
+                            <div class="desktop-checkbox-container absolute top-2 right-2 z-10 hidden">
                                 <label class="flex items-center cursor-pointer compare-checkbox-label">
                                     <input type="checkbox" class="device-checkbox sr-only peer" data-device-id="{{ $device->id }}"
                                         data-device-name="{{ $device->name }}" data-device-slug="{{ $device->slug }}"
@@ -392,23 +406,23 @@
             });
 
             function setupEventListeners() {
-                // Compare tab click - Toggle compare mode
-                document.getElementById('compare-tab').addEventListener('click', function (e) {
+                // Compare buttons handles (Desktop & Mobile)
+                const compareHandler = (e) => {
                     e.preventDefault();
-
                     if (!compareModeActive) {
-                        // First click: Activate compare mode (show checkboxes)
                         activateCompareMode();
                     } else {
-                        // Second click: Check if we can go to compare page
                         if (selectedDevices.length >= 1) {
-                            // Go to compare page
                             goToComparePage();
                         } else {
-                            // Show message if less than 1 devices selected
                             alert('Please select at least 1 device to compare.');
                         }
                     }
+                };
+
+                // Use querySelectorAll to handle potential duplicate IDs from layout yields
+                document.querySelectorAll('#compare-tab, #mobile-compare-btn, .compare-btn-trigger').forEach(btn => {
+                    btn.addEventListener('click', compareHandler);
                 });
 
                 // Device checkbox changes
@@ -452,16 +466,27 @@
             function activateCompareMode() {
                 compareModeActive = true;
 
-                // Show all checkboxes
-                document.querySelectorAll('.absolute.top-2.right-2.z-10').forEach(checkboxContainer => {
+                // Show all checkboxes (Desktop)
+                document.querySelectorAll('.desktop-checkbox-container').forEach(checkboxContainer => {
                     checkboxContainer.classList.remove('hidden');
                 });
 
-                // Update compare tab appearance
-                const compareTab = document.getElementById('compare-tab');
-                const compareText = document.querySelector('.compare-text');
-                compareTab.classList.add('bg-[#F9A13D]');
-                compareText.textContent = 'GO TO COMPARE';
+                // Show all checkboxes (Mobile)
+                document.querySelectorAll('.mobile-checkbox-container').forEach(container => {
+                    container.classList.remove('hidden');
+                });
+
+                // Update desktop compare tabs appearance
+                document.querySelectorAll('#compare-tab').forEach(compareTab => {
+                    compareTab.classList.add('bg-[#F9A13D]');
+                    const compareText = compareTab.querySelector('.compare-text');
+                    if (compareText) compareText.textContent = 'GO TO COMPARE';
+                });
+
+                // Update mobile compare buttons appearance
+                document.querySelectorAll('#mobile-compare-btn').forEach(mobileBtn => {
+                    mobileBtn.classList.add('bg-[#F9A13D]');
+                });
 
                 // Show instruction message
                 showInstructionMessage();
@@ -470,16 +495,27 @@
             function deactivateCompareMode() {
                 compareModeActive = false;
 
-                // Hide all checkboxes
-                document.querySelectorAll('.absolute.top-2.right-2.z-10').forEach(checkboxContainer => {
+                // Hide all checkboxes (Desktop)
+                document.querySelectorAll('.desktop-checkbox-container').forEach(checkboxContainer => {
                     checkboxContainer.classList.add('hidden');
                 });
 
-                // Update compare tab appearance
-                const compareTab = document.getElementById('compare-tab');
-                const compareText = document.querySelector('.compare-text');
-                compareTab.classList.remove('bg-[#F9A13D]');
-                compareText.textContent = 'COMPARE';
+                // Hide all checkboxes (Mobile)
+                document.querySelectorAll('.mobile-checkbox-container').forEach(container => {
+                    container.classList.add('hidden');
+                });
+
+                // Update desktop compare tabs appearance
+                document.querySelectorAll('#compare-tab').forEach(compareTab => {
+                    compareTab.classList.remove('bg-[#F9A13D]');
+                    const compareText = compareTab.querySelector('.compare-text');
+                    if (compareText) compareText.textContent = 'COMPARE';
+                });
+
+                // Update mobile buttons appearance
+                document.querySelectorAll('#mobile-compare-btn').forEach(mobileBtn => {
+                    mobileBtn.classList.remove('bg-[#F9A13D]');
+                });
 
                 // Hide instruction message
                 hideInstructionMessage();
@@ -487,30 +523,43 @@
 
             function updateUI() {
                 const count = selectedDevices.length;
-                const compareCount = document.getElementById('compare-count');
-                const compareTab = document.getElementById('compare-tab');
-                const compareText = document.querySelector('.compare-text');
+                
+                // Update all desktop counts
+                document.querySelectorAll('#compare-count').forEach(badge => {
+                    badge.textContent = count;
+                    count > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
+                });
 
-                // Update count badge
-                compareCount.textContent = count;
+                // Update all mobile counts
+                document.querySelectorAll('#mobile-compare-count').forEach(badge => {
+                    badge.textContent = count;
+                    count > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
+                });
 
-                // Show/hide count badge
-                if (count > 0) {
-                    compareCount.classList.remove('hidden');
-                } else {
-                    compareCount.classList.add('hidden');
-                }
-
-                // Update compare tab text based on mode
+                // Update overall mode text/colors
                 if (compareModeActive) {
-                    compareText.textContent = 'GO TO COMPARE';
-                    compareTab.classList.add('bg-[#F9A13D]');
+                    document.querySelectorAll('#compare-tab').forEach(tab => {
+                        tab.classList.add('bg-[#F9A13D]');
+                        const txt = tab.querySelector('.compare-text');
+                        if (txt) txt.textContent = 'GO TO COMPARE';
+                    });
+                    document.querySelectorAll('#mobile-compare-btn').forEach(btn => {
+                        btn.classList.add('bg-[#F9A13D]');
+                        if (btn.childNodes[0]) btn.childNodes[0].textContent = 'GO TO COMPARE ';
+                    });
                 } else {
-                    compareText.textContent = 'COMPARE';
-                    compareTab.classList.remove('bg-[#F9A13D]');
+                    document.querySelectorAll('#compare-tab').forEach(tab => {
+                        tab.classList.remove('bg-[#F9A13D]');
+                        const txt = tab.querySelector('.compare-text');
+                        if (txt) txt.textContent = 'COMPARE';
+                    });
+                    document.querySelectorAll('#mobile-compare-btn').forEach(btn => {
+                        btn.classList.remove('bg-[#F9A13D]');
+                        if (btn.childNodes[0]) btn.childNodes[0].textContent = 'COMPARE ';
+                    });
                 }
 
-                // Update checkboxes
+                // Update all checkboxes
                 document.querySelectorAll('.device-checkbox').forEach(checkbox => {
                     const deviceId = parseInt(checkbox.dataset.deviceId);
                     checkbox.checked = selectedDevices.some(d => d.id === deviceId);
@@ -568,16 +617,32 @@
                 if (message) message.remove();
             }
 
-            // Handle device selection from anywhere on the card (only in compare mode)
-            document.querySelectorAll('a.relative.bg-white').forEach(card => {
+            // Handle device selection from anywhere on the card (Desktop)
+            document.querySelectorAll('.desktop-device-card').forEach(card => {
                 card.addEventListener('click', function (e) {
-                    // Only work in compare mode
                     if (!compareModeActive) return;
-
-                    // Prevent navigation
                     e.preventDefault();
-
                     const checkbox = this.querySelector('.device-checkbox');
+                    if (checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                        checkbox.dispatchEvent(new Event('change'));
+                    }
+                });
+            });
+
+            // Handle device selection for mobile layout
+            document.querySelectorAll('.mobile-checkbox-container').forEach(container => {
+                container.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            });
+
+            document.querySelectorAll('.device-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (!compareModeActive) return;
+                    e.preventDefault();
+                    const container = this.closest('.relative');
+                    const checkbox = container.querySelector('.device-checkbox');
                     if (checkbox) {
                         checkbox.checked = !checkbox.checked;
                         checkbox.dispatchEvent(new Event('change'));
