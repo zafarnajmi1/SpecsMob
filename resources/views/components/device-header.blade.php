@@ -1,7 +1,7 @@
 @props(['device', 'activeTab' => 'detail'])
 
 <!-- Device Header -->
-<div class="mb-6 bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
+<div class="hidden lg:block mb-6 bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
     <div class="p-4 md:p-6">
         <!-- Main Content Area -->
         <div class="flex flex-col lg:flex-row gap-6">

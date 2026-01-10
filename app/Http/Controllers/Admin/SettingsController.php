@@ -57,6 +57,9 @@ class SettingsController extends Controller
 
         $settings->update($data);
 
+        // Clear the settings cache so changes are immediately reflected
+        app('settings')->clearCache();
+
         ToastMagic::success('Settings updated successfully.');
         return back();
     }

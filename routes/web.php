@@ -23,6 +23,7 @@ Route::controller(WebController::class)
         Route::get('/videos', 'videos')->name('videos');
         Route::get('/featured', 'featured')->name('featured');
         Route::get('/phone-finder', 'phoneFinder')->name('phone-finder');
+        Route::get('/phone-finder-results', 'phoneFinderResults')->name('phone-finder-results');
         Route::get('/deals', 'deals')->name('deals');
         Route::get('/merch', 'merch')->name('merch');
         Route::get('/coverage', 'coverage')->name('coverage');

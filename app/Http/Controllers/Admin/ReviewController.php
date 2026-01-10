@@ -85,9 +85,15 @@ class ReviewController extends Controller
             }
 
             // ----- Cover image upload -----
-            if ($request->hasFile('review.cover_image')) {
+            if ($request->hasFile('cover_image')) {
+                // Delete old image if exists during update
+                $oldImage = $review->getRawOriginal('cover_image_url');
+                if ($oldImage) {
+                    Storage::disk('public')->delete($oldImage);
+                }
+
                 $coverPath = $request
-                    ->file('review.cover_image')
+                    ->file('cover_image')
                     ->store('reviews', 'public');
 
                 $review->cover_image_url = $coverPath;
@@ -147,7 +153,7 @@ class ReviewController extends Controller
             'review.slug' => ['nullable', 'string', 'max:255'],
             'review.body' => ['required', 'string'],
             'review.published_at' => ['nullable', 'date'],
-            'review.cover_image' => ['nullable', 'image', 'max:2048'],
+            'cover_image' => ['nullable', 'image', 'max:2048'],
         ]);
 
         if ($validator->fails()) {
@@ -198,7 +204,21 @@ class ReviewController extends Controller
     public function update(Request $request, $id)
     {
         $review = Review::findOrFail($id);
-        // (optionally validate here – you can reuse same rules)
+
+        $validator = Validator::make($request->all(), [
+            'review.brand_id' => ['required', 'exists:brands,id'],
+            'review.device_id' => ['required', 'exists:devices,id'],
+            'review.title' => ['required', 'string', 'max:255'],
+            'review.slug' => ['nullable', 'string', 'max:255'],
+            'review.body' => ['required', 'string'],
+            'review.published_at' => ['nullable', 'date'],
+            'cover_image' => ['nullable', 'image', 'max:2048'],
+        ]);
+
+        if ($validator->fails()) {
+            ToastMagic::error($validator->errors()->first());
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
         try {
             $this->saveReview($request, $review);

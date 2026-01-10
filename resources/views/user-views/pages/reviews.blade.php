@@ -2,75 +2,123 @@
 @section('title', 'Reviews')
 
 @section('sidebar')
-    <x-popular-review :reviews="$popularReviews" />
+    @include('partials.aside')
+@endsection
 
-    @php
-        $topDailyInterest = [
-            ['name' => 'Xiaomi Poco F8 Ultra', 'value' => '35,721', 'url' => '#'],
-            ['name' => 'OnePlus 15', 'value' => '24,173', 'url' => '#'],
-            ['name' => 'Samsung Galaxy A56', 'value' => '23,603', 'url' => '#'],
-            ['name' => 'Samsung Galaxy S25 Ultra', 'value' => '23,102', 'url' => '#'],
-            ['name' => 'Apple iPhone 17 Pro Max', 'value' => '22,020', 'url' => '#'],
-            ['name' => 'Xiaomi Poco F8 Pro', 'value' => '21,829', 'url' => '#'],
-            ['name' => 'Xiaomi 17 Pro Max', 'value' => '17,405', 'url' => '#'],
-            ['name' => 'Samsung Galaxy A17', 'value' => '16,797', 'url' => '#'],
-            ['name' => 'Samsung Galaxy S25', 'value' => '14,365', 'url' => '#'],
-            ['name' => 'Xiaomi Poco X7 Pro', 'value' => '14,085', 'url' => '#'],
-        ];
+@section('reviews_content')
+    <div class="bg-white rounded shadow mb-4 lg:hidden">
+        <h4 class="uppercase text-[#F9A13D] px-5 py-1 font-bold text-lg mb-3 border-b">
+            Reviews
+        </h4>
 
-        $topByFans = [
-            ['name' => 'Xiaomi Poco F8 Ultra', 'value' => '18,421', 'url' => '#'],
-            ['name' => 'Samsung Galaxy A56', 'value' => '15,603', 'url' => '#'],
-            ['name' => 'Samsung Galaxy S25 Ultra', 'value' => '15,102', 'url' => '#'],
-            ['name' => 'OnePlus 15', 'value' => '16,973', 'url' => '#'],
-            ['name' => 'Apple iPhone 17 Pro Max', 'value' => '14,920', 'url' => '#'],
-            ['name' => 'Xiaomi Poco F8 Pro', 'value' => '13,829', 'url' => '#'],
-            ['name' => 'Xiaomi 17 Pro Max', 'value' => '11,405', 'url' => '#'],
-            ['name' => 'Samsung Galaxy A17', 'value' => '10,797', 'url' => '#'],
-            ['name' => 'Samsung Galaxy S25', 'value' => '9,365', 'url' => '#'],
-            ['name' => 'Xiaomi Poco X7 Pro', 'value' => '9,085', 'url' => '#'],
-        ];
-    @endphp
+        {{-- Mobile Search Bar --}}
+        <form action="{{ route('reviews') }}" method="GET" class="flex items-center gap-3 px-3 w-full mb-4">
+            <input type="search" name="q" value="{{ request('q') }}"
+                class="flex-1 border border-[#dcd9d9] py-2 px-3 rounded focus:outline-none focus:ring-1 focus:ring-[#F9A13D]"
+                placeholder="Search reviews...">
+            <button type="submit"
+                class="bg-[#F9A13D] px-6 py-2 rounded text-white font-bold hover:bg-[#e8942b] transition-colors flex-none">
+                Go
+            </button>
+        </form>
 
-    {{-- Top 10 by Daily Interest --}}
-    <x-ranking-table title="Top 10 by Daily Interest" value_column_label="Daily Hits" :items="$topDailyInterest"
-        header_color="#a4c08d" even_row_color="#e8f5e9" />
+        <div class="px-3 space-y-2">
+            @forelse ($reviews_list as $review)
+                <article
+                    class="flex flex-col p-1 bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-[#e0e0e0]">
+                    {{-- Thumbnail --}}
+                    <a href="{{ route('review-detail', $review->slug) }}" class="w-full">
+                        <img src="{{ $review->cover_image_url }}" alt="{{ $review->title }}"
+                            class="w-full h-auto object-cover" />
+                    </a>
+                    {{-- Content --}}
+                    <div class="flex-1 flex flex-col justify-between gap-1">
+                        <div>
+                            <h3 class="text-[17px] md:text-[19px] font-semibold leading-snug text-[#444]">
+                                <a href="{{ route('review-detail', $review->slug) }}" class="hover:text-[#F9A13D]">
+                                    {{ $review->title }}
+                                </a>
+                            </h3>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-4 text-[12px] text-[#9c9c9c]">
+                            <span class="flex items-center gap-1">
+                                <i class="far fa-clock"></i>
+                                <span>{{ $review->published_at->format('d F Y') }}</span>
+                            </span>
 
-    {{-- Top 10 by Fans --}}
-    <x-ranking-table title="Top 10 by fans" value_column_label="Favorites" :items="$topByFans" header_color="#82a2bd"
-        even_row_color="#e4eff6" />
+                            <a href="{{ route('review-detail', $review->slug) }}#comments"
+                                class="flex items-center gap-1 hover:text-[#F9A13D]">
+                                <i class="far fa-comment"></i>
+                                <span>{{ $review->comments_count }}</span>
+                            </a>
+                        </div>
 
+                    </div>
 
-    @php
-        $evNews = [
-            [
-                'title' => 'Electric car sales overtake gasoline and diesel in Europe, Tesla misses momentum',
-                'img' => 'https://st.arenaev.com/news/25/11/electric-car-sales-overtake-gasoline-and-diesel-in-europe/-344x215/arenaev_000.jpg',
-                'url' => 'https://www.arenaev.com/electric_car_sales_overtake_gasoline_and_diesel_in_europe_tesla_misses_momentum-news-5367.php',
-            ],
-            [
-                'title' => 'Tesla launches 30-day free trial of FSD (Supervised) V14 in North America',
-                'img' => 'https://st.arenaev.com/news/25/11/tesla-fsd-v14-free-trial/-344x215/arenaev_000.jpg',
-                'url' => 'https://www.arenaev.com/tesla_launches_30day_free_trial_of_fsd_supervised_v14_in_north_america-news-5365.php',
-            ],
-            [
-                'title' => 'UK electric car drivers to pay tax per mile starting 2028',
-                'img' => 'https://st.arenaev.com/news/25/11/uk-electric-car-drivers-to-pay-tax-per-mile/-344x215/arenaev_000.jpg',
-                'url' => 'https://www.arenaev.com/uk_electric_car_drivers_to_pay_tax_per_mile_starting_2028-news-5364.php',
-            ],
-            [
-                'title' => 'Why solar panels on cars make no sense (at this point)',
-                'img' => 'https://st.arenaev.com/news/23/01/solar-panels-stupid/-344x215/arenaev_001.jpg',
-                'url' => 'https://www.arenaev.com/why_solar_panels_on_cars_are_beyond_stupid_at_this_point-news-1295.php',
-            ],
-        ];
-    @endphp
-    <x-news-list title="Electric vehicles" title_url="https://www.arenaev.com/" :items="$evNews" item_target="_blank" />
+                </article>
+            @empty
+                <div class="col-span-full bg-white p-10 text-center text-gray-500 italic">
+                    No reviews found
+                    @if(request('tag') || request('q'))
+                        matching your criteria.
+                    @else
+                        yet.
+                    @endif
+                </div>
+            @endforelse
+        </div>
 
+        {{-- Mobile Custom Pagination --}}
+        @if ($reviews_list->hasPages())
+            <div class="flex items-center justify-center gap-2 py-6 px-2 bg-[#f6f6f6] border-t border-gray-200 mt-4 rounded-b">
+                {{-- Scroll to Top --}}
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+                    class="p-2 text-gray-400 hover:text-[#F9A13D] transition-colors">
+                    <i class="fa-solid fa-angles-up"></i>
+                </button>
+
+                {{-- First Page --}}
+                <a href="{{ $reviews_list->url(1) }}"
+                    class="p-2 text-gray-400 hover:text-[#F9A13D] transition-colors {{ $reviews_list->onFirstPage() ? 'opacity-30 pointer-events-none' : '' }}">
+                    <i class="fa-solid fa-backward-step"></i>
+                </a>
+
+                {{-- Previous Page --}}
+                <a href="{{ $reviews_list->previousPageUrl() }}"
+                    class="flex items-center justify-center w-9 h-9 rounded-full border border-gray-300 text-gray-500 hover:border-[#F9A13D] hover:text-[#F9A13D] transition-all {{ $reviews_list->onFirstPage() ? 'opacity-30 pointer-events-none' : '' }}">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </a>
+
+                {{-- Current of Total --}}
+                <div class="flex flex-col items-center px-2 min-w-[60px]">
+                    <span class="font-bold text-base leading-tight">{{ $reviews_list->currentPage() }}</span>
+                    <span class="text-[9px] text-gray-400 uppercase tracking-tighter">of {{ $reviews_list->lastPage() }}</span>
+                </div>
+
+                {{-- Next Page --}}
+                <a href="{{ $reviews_list->nextPageUrl() }}"
+                    class="flex items-center justify-center w-9 h-9 rounded-full border border-gray-300 text-gray-500 hover:border-[#F9A13D] hover:text-[#F9A13D] transition-all {{ !$reviews_list->hasMorePages() ? 'opacity-30 pointer-events-none' : '' }}">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+
+                {{-- Last Page --}}
+                <a href="{{ $reviews_list->url($reviews_list->lastPage()) }}"
+                    class="p-2 text-gray-400 hover:text-[#F9A13D] transition-colors {{ !$reviews_list->hasMorePages() ? 'opacity-30 pointer-events-none' : '' }}">
+                    <i class="fa-solid fa-forward-step"></i>
+                </a>
+
+                {{-- Scroll to Bottom --}}
+                <button onclick="window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})"
+                    class="p-2 text-gray-400 hover:text-[#F9A13D] transition-colors">
+                    <i class="fa-solid fa-angles-down"></i>
+                </button>
+            </div>
+        @endif
+    </div>
 @endsection
 
 @section('content')
-    <section class="w-full mb-6 md:h-[310px]">
+    <section class="hidden lg:block w-full mb-6 md:h-[310px]">
         <div class="max-w-[1060px] mx-auto overflow-hidden h-full bg-black text-white">
             <div class="relative bg-cover bg-center h-full"
                 style='background-image: url("{{ asset('user/images/reviews.jpg') }}");'>
@@ -102,10 +150,10 @@
                             <h1 class="text-3xl mb-3 md:text-4xl font-bold tracking-tight drop-shadow-md">
                                 Reviews
                             </h1>
-                            <form method="GET" action="{{ route('news') ?? url()->current() }}"
+                            <form method="GET" action="{{ route('reviews') }}"
                                 class="flex flex-col sm:flex-row gap-2 sm:items-center">
                                 <label class="flex-1 text-[12px] flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                                    <span class="font-semibold whitespace-nowrap">
+                                    <span class="font-semibold whitespace-nowrap text-white">
                                         Search for
                                     </span>
                                     <input type="text" name="q" maxlength="50" value="{{ request('q') }}"
@@ -114,7 +162,7 @@
                                 </label>
 
                                 <button type="submit"
-                                    class="self-start sm:self-auto px-4 py-1.5 text-[12px] font-semibold uppercase rounded bg-[#F9A13D] hover:bg-[#b20000] text-white tracking-[0.15em]">
+                                    class="self-start sm:self-auto px-4 py-1.5 text-[12px] font-semibold uppercase rounded bg-[#F9A13D] hover:bg-[#e8942b] text-white tracking-[0.15em]">
                                     Search
                                 </button>
                             </form>
@@ -126,7 +174,7 @@
         </div>
     </section>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="hidden lg:grid grid-cols-1 md:grid-cols-2 gap-4">
         @forelse ($reviews_list as $review)
             <article
                 class="flex flex-col bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-[#e0e0e0]">
@@ -176,9 +224,8 @@
         @endforelse
     </div>
 
-    {{-- Pagination --}}
-    <div class="mt-6 mb-10 px-2 lg:px-0 flex justify-center">
+    {{-- Desktop Standard Pagination (Hidden on mobile) --}}
+    <div class="mt-6 mb-10 px-2 lg:px-0 hidden lg:block">
         {{ $reviews_list->links() }}
     </div>
-
 @endsection

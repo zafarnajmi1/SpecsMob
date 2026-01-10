@@ -6,25 +6,168 @@
     @include('partials.aside')
 @endsection
 
-@section('content')
+@section('brand_devices_content')
+<section class="lg:hidden">
+    {{-- Brand Header Image --}}
+    <div class="relative w-full h-[316px] bg-cover bg-center"
+        style='background-image: url("{{ $brand->cover_img ? asset('storage/' . $brand->cover_img) : asset('images/default-brand-bg.jpg') }}");'>
+        <div class="absolute inset-0 bg-black/30"></div>
+        <div class="absolute bottom-0 left-0 w-full p-4">
+            <h1 class="text-white text-2xl font-bold drop-shadow-lg">{{ $brand->name }} phones</h1>
+        </div>
+    </div>
 
-    <!-- Brand Header -->
+    {{-- Action Buttons --}}
+    <div class="bg-white border-b border-gray-200 p-3 flex gap-2 flex-wrap">
+        <button id="mobile-compare-btn" class="px-4 py-2 bg-[#b00020] text-white text-sm font-bold rounded hover:bg-[#F9A13D] transition">
+            COMPARE <span id="mobile-compare-count" class="ml-1 hidden">0</span>
+        </button>
+        <a href="{{ route('news', ['tag' => $brand->name]) }}" class="px-4 py-2 bg-gray-200 text-gray-700 text-sm font-bold rounded hover:bg-gray-300 transition">
+            {{ strtoupper($brand->name) }} NEWS
+        </a>
+        <a href="{{ route('phone-finder') }}" class="px-4 py-2 bg-gray-200 text-gray-700 text-sm font-bold rounded hover:bg-gray-300 transition">
+            ADVANCED FILTER
+        </a>
+    </div>
+
+    {{-- Sorting Tabs --}}
+    <div class="bg-white border-b border-gray-300">
+        <div class="flex">
+            <a href="?sort=release" 
+               class="flex-1 text-center py-3 text-sm font-bold {{ request()->get('sort') == 'release' || !request()->has('sort') ? 'text-[#b00020] border-b-2 border-[#b00020]' : 'text-gray-600' }}">
+                TIME OF RELEASE
+            </a>
+            <a href="?sort=popularity" 
+               class="flex-1 text-center py-3 text-sm font-bold {{ request()->get('sort') == 'popularity' ? 'text-[#b00020] border-b-2 border-[#b00020]' : 'text-gray-600' }}">
+                POPULARITY
+            </a>
+        </div>
+    </div>
+
+    {{-- Filter Chips (Horizontal Scroll) --}}
+    <div class="bg-gray-50 border-b border-gray-200 p-3 overflow-x-auto">
+        <div class="flex gap-2 whitespace-nowrap">
+            <a href="?filter=headphone" class="px-3 py-1.5 bg-white border border-gray-300 rounded-full text-xs hover:bg-gray-100">
+                3.5mm jack
+            </a>
+            <a href="?filter=esim" class="px-3 py-1.5 bg-white border border-gray-300 rounded-full text-xs hover:bg-gray-100">
+                eSIM
+            </a>
+            <a href="?filter=wireless" class="px-3 py-1.5 bg-white border border-gray-300 rounded-full text-xs hover:bg-gray-100">
+                Wireless charging
+            </a>
+            <a href="?filter=120hz" class="px-3 py-1.5 bg-white border border-gray-300 rounded-full text-xs hover:bg-gray-100">
+                120Hz+ display
+            </a>
+            <a href="?type=tablet" class="px-3 py-1.5 bg-white border border-gray-300 rounded-full text-xs hover:bg-gray-100">
+                Tablets
+            </a>
+            <a href="?type=watch" class="px-3 py-1.5 bg-white border border-gray-300 rounded-full text-xs hover:bg-gray-100">
+                Watches
+            </a>
+        </div>
+    </div>
+
+    {{-- Devices Grid --}}
+    <div class="bg-white p-3">
+        @if($devices->count() > 0)
+            <div class="flex flex-col gap-1">
+                @foreach($devices as $device)
+                    <a href="{{ route('device-detail', $device->slug) }}" 
+                       class="bg-white border flex border-gray-200 rounded overflow-hidden hover:shadow-md transition">
+                        {{-- Device Image --}}
+                        <div class="h-32 flex items-center justify-center p-3 bg-gray-50">
+                            <img src="{{ $device->thumbnail_url }}" 
+                                 alt="{{ $device->name }}"
+                                 class="max-h-full max-w-full object-contain"
+                                 onerror="this.src='{{ asset('images/default-device.png') }}'">
+                        </div>
+                        
+                        {{-- Device Name --}}
+                        <div class="flex items-center p-2 text-center bg-white hover:bg-[#F9A13D] transition group">
+                            <strong class="text-sm text-gray-800 group-hover:text-white">
+                                {{ $device->name }}
+                            </strong>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+
+             {{-- Mobile Custom Pagination --}}
+        @if ($devices->hasPages())
+            <div class="flex items-center justify-center gap-2 py-6 px-2 bg-[#f6f6f6] border-t border-gray-200 mt-4 rounded-b">
+                {{-- Scroll to Top --}}
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+                    class="p-2 text-gray-400 hover:text-[#F9A13D] transition-colors">
+                    <i class="fa-solid fa-angles-up"></i>
+                </button>
+
+                {{-- First Page --}}
+                <a href="{{ $devices->url(1) }}"
+                    class="p-2 text-gray-400 hover:text-[#F9A13D] transition-colors {{ $devices->onFirstPage() ? 'opacity-30 pointer-events-none' : '' }}">
+                    <i class="fa-solid fa-backward-step"></i>
+                </a>
+
+                {{-- Previous Page --}}
+                <a href="{{ $devices->previousPageUrl() }}"
+                    class="flex items-center justify-center w-9 h-9 rounded-full border border-gray-300 text-gray-500 hover:border-[#F9A13D] hover:text-[#F9A13D] transition-all {{ $devices->onFirstPage() ? 'opacity-30 pointer-events-none' : '' }}">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </a>
+
+                {{-- Current of Total --}}
+                <div class="flex flex-col items-center px-2 min-w-[60px]">
+                    <span class="font-bold text-base leading-tight">{{ $devices->currentPage() }}</span>
+                    <span class="text-[9px] text-gray-400 uppercase tracking-tighter">of {{ $devices->lastPage() }}</span>
+                </div>
+
+                {{-- Next Page --}}
+                <a href="{{ $devices->nextPageUrl() }}"
+                    class="flex items-center justify-center w-9 h-9 rounded-full border border-gray-300 text-gray-500 hover:border-[#F9A13D] hover:text-[#F9A13D] transition-all {{ !$devices->hasMorePages() ? 'opacity-30 pointer-events-none' : '' }}">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+
+                {{-- Last Page --}}
+                <a href="{{ $devices->url($devices->lastPage()) }}"
+                    class="p-2 text-gray-400 hover:text-[#F9A13D] transition-colors {{ !$devices->hasMorePages() ? 'opacity-30 pointer-events-none' : '' }}">
+                    <i class="fa-solid fa-forward-step"></i>
+                </a>
+
+                {{-- Scroll to Bottom --}}
+                <button onclick="window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})"
+                    class="p-2 text-gray-400 hover:text-[#F9A13D] transition-colors">
+                    <i class="fa-solid fa-angles-down"></i>
+                </button>
+            </div>
+        @endif
+        @else
+            <div class="text-center py-12">
+                <i class="fas fa-mobile-alt text-4xl text-gray-300 mb-3"></i>
+                <p class="text-gray-600">No devices found</p>
+            </div>
+        @endif
+    </div>
+</section>
+@endsection
+
+@section('content')
+<section class="hidden lg:block">
+    {{-- Brand Header --}}
     <div class="relative w-full h-72 md:h-[314px] bg-cover bg-center"
         style='background-image: url("{{ $brand->cover_img ? asset('storage/' . $brand->cover_img) : asset('images/default-brand-bg.jpg') }}");'>
-        <!-- Top bar -->
+        {{-- Top bar --}}
         <div
             class="absolute top-0 left-0 border-b-1 border-gray-400 shadow flex justify-between items-center w-full px-4 py-3 md:px-6 z-10">
         </div>
 
-        <!-- Bottom Title & Details -->
+        {{-- Bottom Title & Details --}}
         <div class="absolute bottom-0 left-0 w-full z-10">
 
-            <!-- TITLE -->
+            {{-- TITLE --}}
             <h1 class="text-white text-3xl md:text-4xl font-bold px-4 md:px-6 drop-shadow-xl mb-4">
                 {{ $brand->name }} phones
             </h1>
 
-            <!-- Bottom info bar -->
+            {{-- Bottom info bar --}}
             <div
                 class="flex flex-wrap justify-between items-center border-t-1 border-gray-400 shadow text-sm text-white px-4 md:px-6 h-[2.5rem] bg-[Rgba(0,0,0,0.2)] backdrop-blur-sm">
                 <div class="flex gap-4 h-full">
@@ -58,7 +201,7 @@
         </div>
     </div>
 
-    <!-- Filters Bar -->
+    {{-- Filters Bar --}}
     <div class="bg-gray-100 border-b border-gray-300 py-3 px-4 sticky top-[60px] z-20 shadow-sm">
         <div class="container mx-auto">
             <form action="{{ url()->current() }}" method="GET" id="filter-form"
@@ -126,7 +269,7 @@
         </div>
     </div>
 
-    <!-- Devices Grid -->
+    {{-- Devices Grid --}}
     <div class="bg-white py-6">
         <div class="container mx-auto px-4">
             @if($devices->count() > 0)
@@ -135,7 +278,7 @@
                         <a href="{{ route('device-detail', $device->slug) }}"
                             class="relative bg-white overflow-hidden group cursor-pointer transition-all duration-200 text-center h-[180px] block">
 
-                            <!-- Compare Checkbox -->
+                            {{-- Compare Checkbox --}}
                             <div class="absolute top-2 right-2 z-10 hidden">
                                 <label class="flex items-center cursor-pointer compare-checkbox-label">
                                     <input type="checkbox" class="device-checkbox sr-only peer" data-device-id="{{ $device->id }}"
@@ -147,7 +290,7 @@
                                 </label>
                             </div>
 
-                            <!-- Device Image -->
+                            {{-- Device Image --}}
                             <div class="block h-[120px] flex items-center justify-center p-3">
                                 <img src="{{ $device->thumbnail_url }}" alt="{{ $device->name }}"
                                     title="{{ $device->name }}. {{ $device->description ?? '' }}"
@@ -155,7 +298,7 @@
                                     onerror="this.src='{{ asset('images/default-device.png') }}'">
                             </div>
 
-                            <!-- Device Name -->
+                            {{-- Device Name --}}
                             <div
                                 class="h-[45px] flex items-center justify-center px-2 transition-all duration-200 group-hover:bg-[#F9A13D]">
                                 <strong class="text-[#777] font-bold text-[14px] group-hover:text-white">
@@ -168,7 +311,7 @@
                     @endforeach
                 </div>
 
-                <!-- No Results Message -->
+                {{-- No Results Message --}}
             @else
                 <div class="text-center py-12">
                     <i class="fas fa-mobile-alt text-5xl text-gray-300 mb-4"></i>
@@ -180,7 +323,7 @@
     </div>
 
 
-    <!-- Pagination - Simple Numbers -->
+    {{-- Pagination - Simple Numbers --}}
     @if($devices->hasPages())
         <div class="mt-8 flex justify-center items-center space-x-1">
             {{-- Previous Button --}}
@@ -226,6 +369,7 @@
             @endif
         </div>
     @endif
+</section>
 
 
     @push('scripts')
