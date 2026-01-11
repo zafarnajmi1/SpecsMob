@@ -72,15 +72,15 @@ class ArticleController extends Controller
             'title' => 'required|string|max:255',
             'body' => 'required|string',
             'type' => 'required|in:news,article,featured',
-            'brand_id' => 'nullable|exists:brands,id',
-            'device_id' => 'nullable|exists:devices,id',
+            'brand_id' => 'required|exists:brands,id',
+            'device_id' => 'required|exists:devices,id',
             'is_published' => 'nullable|boolean',
             'is_featured' => 'nullable|boolean',
             'allow_comments' => 'nullable|boolean',
             'published_at' => 'nullable|date',
             'thumbnail_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'tags' => 'nullable|array',
-            'tags.*' => 'nullable|string',
+            'tags' => 'required|array|min:1',
+            'tags.*' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -159,16 +159,16 @@ class ArticleController extends Controller
             'title' => 'required|string|max:255',
             'body' => 'required|string',
             'type' => 'required|in:news,article,featured',
-            'brand_id' => 'nullable|exists:brands,id',
-            'device_id' => 'nullable|exists:devices,id',
+            'brand_id' => 'required|exists:brands,id',
+            'device_id' => 'required|exists:devices,id',
             'is_published' => 'nullable|boolean',
             'is_featured' => 'nullable|boolean',
             'allow_comments' => 'nullable|boolean',
             'published_at' => 'nullable|date',
             'remove_thumbnail' => 'nullable|boolean',
             'thumbnail_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'tags' => 'nullable|array',
-            'tags.*' => 'nullable|string',
+            'tags' => 'required|array|min:1',
+            'tags.*' => 'required|string',
         ]);
 
         if ($validator->fails()) {
