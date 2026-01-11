@@ -70,7 +70,7 @@ class Review extends Model
 
     public function sections()
     {
-        return $this->hasMany(DeviceReviewSection::class)->orderBy('order');
+        return $this->hasMany(DeviceReviewSection::class, 'device_review_id')->orderBy('order');
     }
 
     public function comments()

@@ -134,10 +134,10 @@
                                         </a>
 
                                         <form action="{{ route('admin.reviews.destroy', $review->id) }}" method="POST"
-                                            class="d-inline" onsubmit="return confirm('Archive/Delete this review?')">
+                                            class="d-inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm">
+                                            <button type="submit" class="btn btn-danger btn-sm confirm-delete">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
