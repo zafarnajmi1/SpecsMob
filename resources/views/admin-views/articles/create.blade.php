@@ -4,6 +4,17 @@
 @push('styles')
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+<style>
+    .form-control, .form-select, .select2-container--default .select2-selection--single, .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        color: #000 !important;
+    }
+    .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+        color: #000 !important;
+    }
+    .text-danger {
+        color: #ff0000 !important;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -37,7 +48,7 @@
                             <div class="card-body">
                                 <!-- Title -->
                                 <div class="mb-3">
-                                    <label for="title" class="form-label">Article Title *</label>
+                                    <label for="title" class="form-label">Article Title <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('title') is-invalid @enderror" 
                                            id="title" name="title" value="{{ old('title') }}" required>
                                     @error('title')
@@ -47,9 +58,9 @@
 
                                 <!-- Body Content -->
                                 <div class="mb-3">
-                                    <label for="body" class="form-label">Content *</label>
+                                    <label for="body" class="form-label">Content <span class="text-danger">*</span></label>
                                     <textarea class="form-control @error('body') is-invalid @enderror" 
-                                              id="body" name="body" rows="15">{{ old('body') }}</textarea>
+                                              id="body" name="body" rows="15" required>{{ old('body') }}</textarea>
                                     @error('body')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -87,7 +98,7 @@
                             <div class="card-body">
                                 <!-- Article Type -->
                                 <div class="mb-3">
-                                    <label for="type" class="form-label">Article Type *</label>
+                                    <label for="type" class="form-label">Article Type <span class="text-danger">*</span></label>
                                     <select class="form-select @error('type') is-invalid @enderror" 
                                             id="type" name="type" required>
                                         <option value="">Select Type</option>
@@ -188,7 +199,7 @@
                             <div class="card-body">
                                 <!-- Brand -->
                                <div class="mb-3 brand-device-group">
-    <label for="brand_id" class="form-label">Brand</label>
+    <label for="brand_id" class="form-label">Brand <span class="text-danger">*</span></label>
     <select
         class="form-select brand-select"
         name="brand_id"
@@ -205,7 +216,7 @@
 </div>
 
 <div class="mb-3 brand-device-group">
-    <label for="device_id" class="form-label">Device</label>
+    <label for="device_id" class="form-label">Device <span class="text-danger">*</span></label>
     <select
         class="form-select device-select"
         name="device_id"
@@ -217,8 +228,8 @@
 </div>
                                 <!-- Tags -->
                                 <div class="mb-3">
-                                    <label for="tags" class="form-label">Tags</label>
-                                    <select class="form-select select2" id="tags" name="tags[]" multiple>
+                                    <label for="tags" class="form-label">Tags <span class="text-danger">*</span></label>
+                                    <select class="form-select select2" id="tags" name="tags[]" multiple required>
                                         @foreach($tags as $tag)
                                             <option value="{{ $tag->id }}" {{ in_array($tag->id, old('tags', [])) ? 'selected' : '' }}>
                                                 {{ $tag->name }}
