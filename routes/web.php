@@ -61,6 +61,7 @@ Route::controller(WebController::class)
             'id' => '[0-9]+'
         ])->name('article.comments');
         Route::get('/article', 'contact')->name('articles.show'); //dummy
+        Route::get('/tags/{slug}', 'tag_articles')->name('tags.show');
         Route::get('/compare', 'device_comparison')->name('device-comparison');
         Route::get('/{slug}-compare-{id}', 'device_comparison')->where([
             'slug' => '[A-Za-z0-9\-]+',

@@ -3,6 +3,16 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('admin/assets/vendors/simple-datatables/style.css') }}">
+    <style>
+        .form-control,
+        .form-select {
+            color: #000 !important;
+        }
+
+        .form-control::placeholder {
+            color: #6c757d !important;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -57,7 +67,8 @@
                         <div class="col-md-3">
                             <select class="form-select" id="statusFilter">
                                 <option value="">All Status</option>
-                                <option value="published" {{ request('status') == 'published' ? 'selected' : '' }}>Published</option>
+                                <option value="published" {{ request('status') == 'published' ? 'selected' : '' }}>Published
+                                </option>
                                 <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
                             </select>
                         </div>
@@ -102,10 +113,10 @@
                                         </td>
                                         <td>
                                             <span class="badge 
-                                                    @if($article->type == 'news') bg-info
-                                                    @elseif($article->type == 'article') bg-success
-                                                    @elseif($article->type == 'featured') bg-warning
-                                                    @endif">
+                                                            @if($article->type == 'news') bg-info
+                                                            @elseif($article->type == 'article') bg-success
+                                                            @elseif($article->type == 'featured') bg-warning
+                                                            @endif">
                                                 {{ ucfirst($article->type) }}
                                             </span>
                                         </td>
@@ -202,7 +213,7 @@
                 typeFilter.addEventListener('change', function () {
                     const type = this.value;
                     const url = new URL(window.location.href);
-                    
+
                     if (type) {
                         url.searchParams.set('type', type);
                     } else {
@@ -219,7 +230,7 @@
                 statusFilter.addEventListener('change', function () {
                     const status = this.value;
                     const url = new URL(window.location.href);
-                    
+
                     if (status) {
                         url.searchParams.set('status', status);
                     } else {
@@ -251,39 +262,39 @@
             // Add custom styling for DataTable
             const style = document.createElement('style');
             style.textContent = `
-                    .datatable-wrapper .datatable-container {
-                        font-size: 0.875rem;
-                    }
-                    .datatable-top {
-                        padding: 1rem 0;
-                    }
-                    .datatable-search input {
-                        border: 1px solid #dee2e6;
-                        border-radius: 0.375rem;
-                        padding: 0.375rem 0.75rem;
-                    }
-                    .datatable-selector {
-                        border: 1px solid #dee2e6;
-                        border-radius: 0.375rem;
-                        padding: 0.375rem 2.25rem 0.375rem 0.75rem;
-                    }
-                    .datatable-pagination-list {
-                        flex-wrap: wrap;
-                    }
-                    .datatable-pagination-list-item {
-                        margin: 0.125rem;
-                    }
-                    .datatable-pagination-list-item .datatable-pagination-list-item-link {
-                        border: 1px solid #dee2e6;
-                        border-radius: 0.375rem;
-                        padding: 0.375rem 0.75rem;
-                    }
-                    .datatable-pagination-list-item.active .datatable-pagination-list-item-link {
-                        background-color: #0d6efd;
-                        border-color: #0d6efd;
-                        color: white;
-                    }
-                `;
+                        .datatable-wrapper .datatable-container {
+                            font-size: 0.875rem;
+                        }
+                        .datatable-top {
+                            padding: 1rem 0;
+                        }
+                        .datatable-search input {
+                            border: 1px solid #dee2e6;
+                            border-radius: 0.375rem;
+                            padding: 0.375rem 0.75rem;
+                        }
+                        .datatable-selector {
+                            border: 1px solid #dee2e6;
+                            border-radius: 0.375rem;
+                            padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+                        }
+                        .datatable-pagination-list {
+                            flex-wrap: wrap;
+                        }
+                        .datatable-pagination-list-item {
+                            margin: 0.125rem;
+                        }
+                        .datatable-pagination-list-item .datatable-pagination-list-item-link {
+                            border: 1px solid #dee2e6;
+                            border-radius: 0.375rem;
+                            padding: 0.375rem 0.75rem;
+                        }
+                        .datatable-pagination-list-item.active .datatable-pagination-list-item-link {
+                            background-color: #0d6efd;
+                            border-color: #0d6efd;
+                            color: white;
+                        }
+                    `;
             document.head.appendChild(style);
         });
     </script>

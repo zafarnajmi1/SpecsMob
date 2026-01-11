@@ -127,46 +127,27 @@ class WebController extends Controller
 
     public function home()
     {
-        $featuredReview = Review::published()
+        // Get 3 latest reviews for featured section
+        $latestReviewsTop3 = Review::published()
             ->with(['device.brand', 'author'])
             ->withCount('comments')
             ->latest('published_at')
-            ->first();
-
-        $sideReviews = Review::published()
-            ->with(['device.brand', 'author'])
-            ->withCount('comments')
-            ->where('id', '!=', $featuredReview->id ?? 0)
-            ->latest('published_at')
-            ->take(2)
+            ->take(3)
             ->get();
 
-        // Get featured article (with type 'featured' or fallback to latest)
-        $featuredArticle = Article::published()
-            ->featured() // Use the featured scope
+        $featuredReview = $latestReviewsTop3->first();
+        $sideReviews = $latestReviewsTop3->skip(1);
+
+        // Get 3 latest articles for featured section
+        $latestArticlesTop3 = Article::published()
             ->with(['author'])
             ->withCount('comments')
             ->latest('published_at')
-            ->first();
-
-        // If no featured article, get the latest published article
-        if (!$featuredArticle) {
-            $featuredArticle = Article::published()
-                ->with(['author'])
-                ->withCount('comments')
-                ->latest('published_at')
-                ->first();
-        }
-
-        // Get side articles (exclude the featured one, get latest news)
-        $sideArticles = Article::published()
-            ->news() // Get news type articles
-            ->with(['author'])
-            ->withCount('comments')
-            ->where('id', '!=', $featuredArticle->id ?? 0)
-            ->latest('published_at')
-            ->take(2)
+            ->take(3)
             ->get();
+
+        $featuredArticle = $latestArticlesTop3->first();
+        $sideArticles = $latestArticlesTop3->skip(1);
 
         $brands = Brand::active()->get();
         $mobileBrands = Brand::active()->take(12)->get();
@@ -175,12 +156,14 @@ class WebController extends Controller
             ->with(['device.brand'])
             ->withCount('comments')
             ->latest('published_at')
+            ->skip(3) // Skip those shown in featured
             ->take(10)
             ->get();
 
         $latestArticles = Article::published()
             ->withCount('comments')
             ->latest('published_at')
+            ->skip(3) // Skip those shown in featured
             ->take(10)
             ->get();
 
@@ -266,6 +249,29 @@ class WebController extends Controller
         $tags = Tag::where('type', 'news')->get();
 
         return view('user-views.pages.news', compact('news_articles', 'tags', 'featuredArticles'));
+    }
+
+    public function tag_articles($slug)
+    {
+        $tag = Tag::where('slug', $slug)->firstOrFail();
+
+        $news_articles = Article::published()
+            ->whereHas('tags', function ($q) use ($slug) {
+                $q->where('slug', $slug);
+            })
+            ->withCount('comments')
+            ->latest('published_at')
+            ->paginate(15);
+
+        $featuredArticles = Article::published()
+            ->featured()
+            ->latest('published_at')
+            ->take(6)
+            ->get();
+
+        $tags = Tag::where('is_popular', true)->get();
+
+        return view('user-views.pages.news', compact('news_articles', 'tags', 'featuredArticles', 'tag'));
     }
 
     public function reviews(Request $request)
