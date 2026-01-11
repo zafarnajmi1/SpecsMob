@@ -3,9 +3,13 @@
 @if(!$isReply)
     <div class="flex flex-col gap-4 bg-white px-4 py-3 mb-3">
         <div class="flex flex-col md:flex-row gap-4">
-            <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center text-white text-xl font-bold rounded shadow-sm"
+            <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center text-white text-xl font-bold rounded shadow-sm overflow-hidden"
                 style="background-color: {{ '#' . substr(md5($comment->user->name ?? 'Anon'), 0, 6) }}">
-                {{ strtoupper(substr($comment->user->name ?? 'A', 0, 1)) }}
+                @if($comment->user && $comment->user->image)
+                    <img src="{{ asset('storage/' . $comment->user->image) }}" class="w-full h-full object-cover">
+                @else
+                    {{ strtoupper(substr($comment->user->name ?? 'A', 0, 1)) }}
+                @endif
             </div>
             <div class="flex-1 flex flex-col">
                 <div>
@@ -30,8 +34,8 @@
                 </div>
 
                 <div class="flex justify-end mt-4">
-                    <button onclick="toggleReplyForm({{ $comment->id }})"
-                        class="flex justify-center items-center px-3 py-1 text-[12px] font-bold bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#d50000] hover:text-white transition uppercase tracking-tighter">
+                    <button type="button" onclick="toggleReplyForm(this, {{ $comment->id }})"
+                        class="flex justify-center items-center px-3 py-1 text-[12px] font-bold bg-[#f9f9f9] text-[#555] border border-[#d1d1d1] hover:bg-[#F9A13D] hover:text-white transition uppercase tracking-tighter">
                         <span>REPLY</span>
                     </button>
                 </div>
@@ -39,7 +43,7 @@
                 {{-- Reply Form --}}
                 @auth
                     <div id="reply-form-{{ $comment->id }}"
-                        class="hidden mt-4 bg-[#f8f9fa] p-4 border border-[#e9ecef] rounded transition-all">
+                        class="mt-4 bg-[#f8f9fa] p-4 border border-[#e9ecef] rounded transition-all" style="display: none;">
                         <form
                             action="{{ route('comment.store', ['slug' => $article->slug, 'id' => $article->id, 'type' => 'article']) }}"
                             method="POST">
@@ -48,13 +52,13 @@
                             <strong class="text-xs text-gray-500 uppercase mb-2 block">Replying to
                                 {{ $comment->user->name ?? 'Anonymous' }}</strong>
                             <textarea name="comment" rows="3"
-                                class="w-full p-3 text-sm border border-[#ddd] rounded-md focus:ring-1 focus:ring-[#d50000] focus:border-[#d50000] outline-none transition-all placeholder:italic"
+                                class="w-full p-3 text-sm border border-[#ddd] rounded-md focus:ring-1 focus:ring-[#F9A13D] focus:border-[#F9A13D] outline-none transition-all placeholder:italic"
                                 placeholder="Write your reply..."></textarea>
                             <div class="flex justify-end gap-2 mt-3">
-                                <button type="button" onclick="toggleReplyForm({{ $comment->id }})"
+                                <button type="button" onclick="toggleReplyForm(this, {{ $comment->id }})"
                                     class="px-3 py-1 text-xs font-bold text-gray-500 hover:text-gray-700 transition">CANCEL</button>
                                 <button type="submit"
-                                    class="px-4 py-1 text-xs font-bold bg-[#d50000] text-white rounded hover:bg-red-700 transition shadow-sm">POST
+                                    class="px-4 py-1 text-xs font-bold bg-[#F9A13D] text-white rounded hover:bg-[#e89530] transition shadow-sm">POST
                                     REPLY</button>
                             </div>
                         </form>
@@ -74,9 +78,13 @@
     </div>
 @else
     <div class="flex flex-col md:flex-row gap-4 bg-white px-4 py-3 ml-8 md:ml-16 border-l-4 border-gray-100 my-2">
-        <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center text-white text-lg font-bold"
+        <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center text-white text-lg font-bold overflow-hidden"
             style="background-color: {{ '#' . substr(md5($reply->user->name ?? 'Anonymous'), 0, 6) }}">
-            {{ strtoupper(substr($reply->user->name ?? 'A', 0, 1)) }}
+            @if($reply->user && $reply->user->image)
+                <img src="{{ asset('storage/' . $reply->user->image) }}" class="w-full h-full object-cover">
+            @else
+                {{ strtoupper(substr($reply->user->name ?? 'A', 0, 1)) }}
+            @endif
         </div>
 
         <div class="flex-1 flex flex-col">

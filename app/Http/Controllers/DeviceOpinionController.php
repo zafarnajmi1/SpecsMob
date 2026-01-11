@@ -85,6 +85,6 @@ class DeviceOpinionController extends Controller
         ToastMagic::success('Your opinion posted.');
 
         // 7️⃣ Redirect to user's posts page
-        return redirect()->route('device.opinions', ['slug' => $slug, 'id' => $id]);
+        return back();
     }
 }

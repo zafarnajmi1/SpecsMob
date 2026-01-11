@@ -18,8 +18,12 @@ class UserController extends Controller
      */
     public function account()
     {
-        $posts_count = 0; //dummy
-        $upvotes = 0; //dummy
+        $user = auth()->user();
+        $stats = $this->getUserStats($user->id);
+
+        $posts_count = $stats['posts_count'];
+        $upvotes = $stats['upvotes'];
+
         return view('user-views.account.index', compact('posts_count', 'upvotes'));
     }
 
@@ -62,10 +66,12 @@ class UserController extends Controller
             403
         );
 
-        $posts_count = 0;
-        $upvotes = 0;
+        $user = User::where('username', $username)->firstOrFail();
 
-        return view('user-views.account.user-accountManage', compact('posts_count', 'upvotes'));
+        $stats = $this->getUserStats($user->id);
+        $posts_count = $stats['posts_count'];
+        $upvotes = $stats['upvotes'];
+        return view('user-views.account.user-accountManage', compact('user', 'posts_count', 'upvotes'));
     }
 
     public function updateAvatar(Request $request, $username)
@@ -73,22 +79,26 @@ class UserController extends Controller
         abort_unless(auth()->user()->username === $username, 403);
 
         $request->validate([
-            'avatar_type' => 'required|in:none,gravatar',
-            'gravatar_email' => 'nullable|email',
+            'avatar_file' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $user = User::find(auth()->id());
-        if ($request->avatar_type === 'gravatar') {
-            $user->gravatar_email = $request->gravatar_email;
-            $user->avatar_type = 'gravatar';
-            $user->save();
-        } else {
+        $user = auth()->user();
+
+        if ($request->hasFile('avatar_file')) {
+            // Delete old image if exists
+            if ($user->image && \Storage::disk('public')->exists($user->image)) {
+                \Storage::disk('public')->delete($user->image);
+            }
+
+            $path = $request->file('avatar_file')->store('avatars', 'public');
+            $user->image = $path;
+            $user->avatar_type = 'none'; // Set back to 'none' as 'upload' is not in database ENUM
             $user->gravatar_email = null;
-            $user->avatar_type = 'none';
             $user->save();
+
+            ToastMagic::success('Profile image updated successfully');
         }
 
-        ToastMagic::success('Avatar updated');
         return back();
     }
 
@@ -180,4 +190,15 @@ class UserController extends Controller
         ]);
     }
 
+    private function getUserStats($userId)
+    {
+        $comments = Comment::where('user_id', $userId)
+            ->where('is_approved', true)
+            ->get();
+
+        return [
+            'posts_count' => $comments->count(),
+            'upvotes' => $comments->sum('likes_count'),
+        ];
+    }
 }

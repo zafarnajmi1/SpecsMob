@@ -9,6 +9,12 @@
 @section('content')
     <x-device-header :device="$device" activeTab="detail" />
 
+    <div class="py-6 px-3 overflow-x-auto">
+            <div class="prose prose-lg max-w-full break-words">
+                {!! $device->description !!}
+            </div>
+        </div>
+
     <!-- Specifications Section -->
     <div class="bg-[#D1D5DB91] hidden lg:block">
         @php

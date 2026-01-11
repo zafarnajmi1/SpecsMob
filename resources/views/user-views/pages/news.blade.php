@@ -138,7 +138,7 @@
                                 </label>
 
                                 <button type="submit"
-                                    class="self-start sm:self-auto px-4 py-1.5 text-[12px] font-semibold uppercase rounded bg-[#F9A13D] hover:bg-[#b20000] text-white tracking-[0.15em]">
+                                    class="cursor-pointer self-start sm:self-auto px-4 py-1.5 text-[12px] font-semibold uppercase rounded bg-[#F9A13D] hover:bg-[#f7992d] text-white tracking-[0.15em]">
                                     Search
                                 </button>
                             </form>

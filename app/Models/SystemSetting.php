@@ -33,5 +33,13 @@ class SystemSetting extends Model
         'mail_encryption',
         'mail_from_address',
         'mail_from_name',
+        'contact_page_image',
+        'contact_page_title',
+        'contact_page_content',
+        'tip_us_page_image',
+        'tip_us_page_title',
+        'tip_us_page_content',
+        'contact_form_title',
+        'tip_us_form_title',
     ];
 }
