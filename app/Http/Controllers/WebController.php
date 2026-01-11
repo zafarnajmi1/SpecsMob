@@ -276,10 +276,11 @@ class WebController extends Controller
 
     public function reviews(Request $request)
     {
-
         $tags = Tag::where('type', 'review')->get();
 
-        $query = Review::published()->withCount('comments');
+        $query = Review::published()
+            ->with(['author', 'device.brand'])
+            ->withCount('comments');
 
         // Search functionality
         if ($request->filled('q')) {
@@ -298,14 +299,15 @@ class WebController extends Controller
 
         // Tag filtering
         if ($request->filled('tag')) {
-            $query->whereHas('tags', function ($q) use ($request) {
-                $q->where('name', $request->tag)
-                    ->orWhere('slug', $request->tag);
+            $tagValue = $request->tag;
+            $query->whereHas('tags', function ($q) use ($tagValue) {
+                $q->where('name', $tagValue)
+                    ->orWhere('slug', $tagValue);
             });
         }
 
-        $reviews_list = $query->latest('published_at')
-            ->paginate(10)
+        $reviews_list = $query->latest()
+            ->paginate(12)
             ->withQueryString();
 
         return view('user-views.pages.reviews', compact('tags', 'reviews_list'));

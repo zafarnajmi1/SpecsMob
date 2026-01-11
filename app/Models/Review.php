@@ -33,9 +33,7 @@ class Review extends Model
     // ✅ Scopes for query filtering
     public function scopePublished($query)
     {
-        return $query->where('is_published', true)
-            ->whereNotNull('published_at')
-            ->where('published_at', '<=', now());
+        return $query->where('is_published', true);
     }
 
     // In Review model
