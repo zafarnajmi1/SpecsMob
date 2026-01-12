@@ -9,8 +9,6 @@
 @section('content')
     <x-device-mobile-header :device="$device" activeTab="reviews" />
 
-
-
     <div
         class="flex justify-between items-center border-t border-gray-400 shadow text-white px-4 md:px-6 mt-3 py-2 bg-[#f0f0f0] backdrop-blur-sm">
         <a href="{{ route('device.opinions.post', ['slug' => $device->slug, 'id' => $device->id])}}"

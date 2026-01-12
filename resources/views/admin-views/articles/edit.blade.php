@@ -14,6 +14,10 @@
     .text-danger {
         color: #ff0000 !important;
     }
+    .form-label {
+        color: #000 !important;
+        font-weight: 500;
+    }
 </style>
 @endpush
 

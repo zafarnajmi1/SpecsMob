@@ -32,35 +32,22 @@
         </h1>
 
         <div
-            class="flex flex-col md:flex-row flex-wrap justify-between items-center gap-2 px-4 bg-black/40 backdrop-blur-sm border-t uppercase text-shadow-[1px 1px 1px rgba(0, 0, 0, .8)] border-gray-400 text-white text-sm h-[35px]"
+            class="flex flex-col md:flex-row flex-wrap justify-between items-center bg-black/40 backdrop-blur-sm border-t uppercase text-shadow-[1px 1px 1px rgba(0, 0, 0, .8)] border-gray-400 text-white text-sm h-[35px]"
         >
-            <!-- Rating -->
-            <div class="flex items-center gap-2 h-full">
-                <div class="flex">
-                    @php $fullStars = floor($review->rating); $halfStar =
-                    $review->rating - $fullStars >= 0.5; @endphp @for ($i = 1;
-                    $i <= 5; $i++) @if($i <= $fullStars)
-                    <i class="fa fa-star text-yellow-400"></i>
-                    @elseif($i == $fullStars + 1 && $halfStar)
-                    <i class="fa fa-star-half-alt text-yellow-400"></i>
-                    @else
-                    <i class="fa fa-star text-gray-400"></i>
-                    @endif @endfor
-                </div>
-                <span class="font-semibold">{{ $review->rating ?? 0 }}</span>
-            </div>
+            <!-- Read -->
+             <a href="{{ route('review-detail', ['slug' => $review->slug, 'id' => $review->id]) }}" class="text-white font-black hover:bg-[#F9A13D] border-r border-r-gray-400 px-6 h-full flex justify-center items-center">Read</a>
 
             <!-- Nav Links -->
             <div class="flex gap-4 h-full">
                 <a
-                    href="#"
+                    href="{{ route('device-detail', $review->device->slug) }}"
                     class="flex items-center gap-1 h-full hover:bg-[#F9A13D] transition-colors px-2 transition"
                 >
                     <i class="fa-solid fa-mobile-screen"></i>
-                    {{ $review->name }}
+                    {{ $review->device->name }}
                 </a>
                 <a
-                    href="#"
+                    href="{{ route('review.comments', ['slug' => $review->slug, 'id' => $review->id]) }}"
                     class="flex items-center gap-1 h-full hover:bg-[#F9A13D] transition-colors px-2 transition"
                 >
                     <i class="fa-regular fa-comment"></i> Comments ({{ $review->comments_count
@@ -94,7 +81,7 @@
 <section class="lg:hidden">
     <div class="flex gap-3 pt-3">
         <a
-            href=""
+            href="{{ route('review.comments', ['slug' => $review->slug, 'id' => $review->id]) }}"
             class="uppercase text-[14px] font-bold bg-[#F9A13D] text-white px-3 py-1 rounded-sm shadow"
             >comments ({{ $review->comments_count }})</a
         >

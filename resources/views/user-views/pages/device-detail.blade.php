@@ -62,16 +62,16 @@
     <!-- Footer Info bar -->
     <div
         class="hidden lg:flex flex-wrap justify-end items-center border-t border-gray-400 shadow text-sm text-white px-4 md:px-6 h-[2.5rem] bg-[#F9A13D] backdrop-blur-sm">
-        <div class="flex gap-4 h-full">
+        <div class="flex h-full">
             <a href="{{ route('device.opinions', ['slug' => $device->slug, 'id' => $device->id])}}"
-                class="flex items-center gap-1 hover:bg-white hover:text-[#F9A13D] transition-colors px-3">
+                class="flex items-center gap-1 hover:bg-white hover:text-[#F9A13D] transition-colors px-3 border-r border-gray-200 last:border-r-0">
                 <i class="fa-solid fa-newspaper"></i> OPINIONS
             </a>
-            <button id="compare-tab"
-                class="compare-btn relative cursor-pointer flex items-center gap-1 transition hover:bg-white hover:text-[#F9A13D] px-3">
-                <i class="fa-solid fa-code-compare"></i>
-                <span class="compare-text">COMPARE</span>
-            </button>
+            <a href="{{ route('device.compare', ['slug' => $device->slug, 'id' => $device->id])}}"
+            class="flex items-center justify-center gap-1 py-3 px-3 text-xs font-semibold transition-colors border-r border-gray-200 last:border-r-0 hover:bg-white hover:text-[#F9A13D]">
+            <i class="fa-solid fa-code-compare"></i>
+            <span class="hidden sm:inline">COMPARE</span>
+        </a>
             <a href="{{ route('device.pictures', ['slug' => $device->slug, 'id' => $device->id])}}"
                 class="flex items-center gap-1 hover:bg-white hover:text-[#F9A13D] transition-colors px-3">
                 <i class="fa-solid fa-newspaper"></i> PICTURES
