@@ -44,11 +44,11 @@
                     <div class="mb-4">
                         <label class="block text-sm font-medium mb-1">{{ __('Email Address') }}</label>
                         <input id="email" type="email"
-                            class="w-full border px-3 py-2 rounded @error('email') border-red-500 @enderror" name="email"
+                            class="w-full border px-3 py-2 rounded @error('email') border-[#F9A13D] @enderror" name="email"
                             value="{{ old('email') }}" required autocomplete="email" autofocus>
 
                         @error('email')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            <p class="text-[#F9A13D] text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -56,26 +56,26 @@
                     <div class="mb-4">
                         <label class="block text-sm font-medium mb-1">{{ __('Password') }}</label>
                         <input id="password" type="password"
-                            class="w-full border px-3 py-2 rounded @error('password') border-red-500 @enderror"
+                            class="w-full border px-3 py-2 rounded @error('password') border-[#F9A13D] @enderror"
                             name="password" required autocomplete="current-password">
 
                         @error('password')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            <p class="text-[#F9A13D] text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
                     {{-- Remember Me & Forgot Password --}}
                     <div class="flex items-center justify-between mb-6">
                         <div class="flex items-center">
-                            <input class="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500" type="checkbox"
-                                name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                            <input class="w-4 h-4 text-[#F9A13D] border-gray-300 rounded focus:ring-[#F9A13D]"
+                                type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
                             <label class="ml-2 block text-sm text-gray-900" for="remember">
                                 {{ __('Remember Me') }}
                             </label>
                         </div>
 
                         @if (Route::has('password.request'))
-                            <a class="text-sm text-red-600 hover:text-red-800 hover:underline"
+                            <a class="text-sm text-[#F9A13D] hover:text-[#e8942b] hover:underline"
                                 href="{{ route('password.request') }}">
                                 {{ __('Forgot Your Password?') }}
                             </a>
@@ -85,13 +85,14 @@
                     {{-- Submit --}}
                     <div class="flex items-center gap-4">
                         <button type="submit"
-                            class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded font-semibold transition">
+                            class="bg-[#F9A13D] hover:bg-[#e8942b] text-white px-6 py-2 rounded font-semibold transition">
                             {{ __('Login') }}
                         </button>
 
                         <span class="text-sm text-gray-600">
                             Don't have an account?
-                            <a href="{{ route('register') }}" class="text-red-600 hover:underline font-semibold">Sign up</a>
+                            <a href="{{ route('register') }}" class="text-[#F9A13D] hover:underline font-semibold">Sign
+                                up</a>
                         </span>
                     </div>
 

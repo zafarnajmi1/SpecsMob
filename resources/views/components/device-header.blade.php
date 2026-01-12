@@ -4,12 +4,13 @@
 <div class="hidden lg:block mb-6 bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
     <div class="p-4 md:p-6">
         <!-- Main Content Area -->
-        <div class="flex flex-col lg:flex-row gap-6">
+        <div class="flex flex-col lg:flex-row gap-4">
             <!-- Left: Device Image -->
-            <div class="lg:w-1/4 w-full flex-shrink-0">
-                <div class="bg-gray-50 rounded-xl border border-gray-200 p-4 shadow-sm">
+            <div class="lg:w-1/3 w-full flex-shrink-0 pb-5">
+                <div
+                    class="bg-gray-50 rounded-xl border border-gray-200 shadow-sm h-full flex items-center justify-center">
                     <img src="{{ $device->thumbnail_url }}" alt="{{ $device->name }}"
-                        class="w-full h-auto object-contain">
+                        class="w-full h-[80%]">
                 </div>
             </div>
 
@@ -30,15 +31,19 @@
                     </div>
 
                     @if($device->allow_fans)
-                        <form action="{{ route('device.fan', $device->id) }}" method="POST">
+                        <form action="{{ route('device.fan', $device->id) }}" method="POST" class="flex items-center gap-2">
                             @csrf
-                            <button type="submit" class="group">
-                                @php
-                                    $isFan = auth()->check() && $device->favorites()->where('user_id', auth()->id())->exists();
-                                @endphp
-                                <i
-                                    class="fa-{{ $isFan ? 'solid' : 'regular' }} fa-heart text-3xl {{ $isFan ? 'text-[#F9A13D]' : 'text-gray-300 group-hover:text-[#F9A13D]' }} transition-colors"></i>
-                            </button>
+                            <div class="flex flex-col items-center">
+                                <button type="submit" class="group cursor-pointer">
+                                    @php
+                                        $isFan = auth()->check() && $device->favorites()->where('user_id', auth()->id())->exists();
+                                    @endphp
+                                    <i
+                                        class="fa-{{ $isFan ? 'solid' : 'regular' }} fa-heart text-3xl {{ $isFan ? 'text-[#F9A13D]' : 'text-gray-300 group-hover:text-[#F9A13D]' }} transition-colors"></i>
+                                </button>
+                                <span
+                                    class="text-xs font-bold text-gray-500 mt-1">{{ $device->favorites()->count() }}</span>
+                            </div>
                         </form>
                     @endif
                 </div>
