@@ -53,7 +53,7 @@
 
                     <!-- Nav Links -->
                     <div class="flex gap-4 h-full">
-                        <a href="#"
+                        <a href="{{ route('device-detail', $review->device->slug) }}"
                             class="flex items-center gap-1 h-full hover:bg-[#F9A13D] transition-colors px-2 transition">
                             <i class="fa-solid fa-mobile-screen"></i> {{ $review->device->name }}
                         </a>
@@ -99,11 +99,11 @@
         <!-- Footer Navigation -->
         <div
             class="flex justify-end items-center border-t border-[hsla(0,0%,59%,.7)] px-4 md:px-6 h-[38px] bg-[#ddd] gap-4">
-            <a href="#"
+            <a href="{{ route('device-detail', $review->device->slug) }}"
                 class="flex items-center text-[#555] text-[14px] font-bold gap-1 h-full hover:bg-[#F9A13D] transition-colors px-2 transition hover:text-white">
                 <i class="fa-solid fa-mobile-screen text-[21px] text-white"></i> {{ $review->device->name }}
             </a>
-            <a href="#"
+            <a href=""
                 class="flex items-center text-[#555] text-[14px] font-bold gap-1 h-full hover:bg-[#F9A13D] transition-colors px-2 transition hover:text-white">
                 <i class="fa-regular fa-user text-[21px] text-white"></i> User Reviews
             </a>

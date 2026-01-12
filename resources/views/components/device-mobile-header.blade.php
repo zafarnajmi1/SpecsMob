@@ -11,7 +11,7 @@
         <div class="flex gap-4">
             <!-- Left: Device Image -->
             <div class="w-1/3 flex-shrink-0">
-                <div class="bg-gray-50 rounded-lg border border-gray-200 p-2">
+                <div class="bg-gray-50 rounded-lg border border-gray-200 p-2 h-full flex items-center justify-center">
                     <img src="{{ $device->thumbnail_url }}" alt="{{ $device->name }}"
                         class="w-full h-auto object-contain">
                 </div>
@@ -36,13 +36,17 @@
                     @if($device->allow_fans)
                         <form action="{{ route('device.fan', $device->id) }}" method="POST">
                             @csrf
-                            <button type="submit" class="group">
-                                @php
-                                    $isFan = auth()->check() && $device->favorites()->where('user_id', auth()->id())->exists();
-                                @endphp
-                                <i
-                                    class="fa-{{ $isFan ? 'solid' : 'regular' }} fa-heart text-2xl {{ $isFan ? 'text-[#F9A13D]' : 'text-gray-300 group-hover:text-[#F9A13D]' }} transition-colors"></i>
-                            </button>
+                            <div class="flex flex-col items-center">
+                                <button type="submit" class="group">
+                                    @php
+                                        $isFan = auth()->check() && $device->favorites()->where('user_id', auth()->id())->exists();
+                                    @endphp
+                                    <i
+                                        class="fa-{{ $isFan ? 'solid' : 'regular' }} fa-heart text-2xl {{ $isFan ? 'text-[#F9A13D]' : 'text-gray-300 group-hover:text-[#F9A13D]' }} transition-colors"></i>
+                                </button>
+                                <span
+                                    class="text-[10px] font-bold text-gray-500 mt-0.5">{{ $device->favorites()->count() }}</span>
+                            </div>
                         </form>
                     @endif
                 </div>
