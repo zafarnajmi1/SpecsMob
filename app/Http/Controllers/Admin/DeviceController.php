@@ -279,9 +279,7 @@ class DeviceController extends Controller
                 $variant->model_code = $variantData['model_code'] ?? null;
 
                 $variant->is_primary = ((string) $primaryVariantIndex === (string) $index);
-                $variant->status = array_key_exists('is_active', $variantData)
-                    ? (bool) $variantData['is_active']
-                    : true;
+                $variant->status = !empty($variantData['is_active']);
 
                 $variant->save();
 

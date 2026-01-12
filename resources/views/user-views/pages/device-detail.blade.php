@@ -9,11 +9,28 @@
 @section('content')
     <x-device-header :device="$device" activeTab="detail" />
 
-    <div class="py-6 px-3 overflow-x-auto">
-            <div class="prose prose-lg max-w-full break-words">
-                {!! $device->description !!}
+    <!-- Device Summary Section -->
+    <div class="my-8">
+        <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
+            {{-- Header/Title --}}
+            <div class="bg-gray-50/50 border-b border-gray-100 px-6 py-4 flex items-center gap-3">
+                <div class="w-1.5 h-6 bg-[#F9A13D] rounded-full"></div>
+                <h2 class="text-xl font-black text-gray-900 tracking-tight uppercase">
+                    Device Overview
+                </h2>
             </div>
+            
+            {{-- Content --}}
+            <div class="p-2 md:px-8">
+                <div class="prose prose-lg max-w-full break-words prose-slate prose-headings:text-gray-900 prose-p:text-gray-600 prose-strong:text-gray-900 prose-a:text-[#F9A13D] prose-a:no-underline hover:prose-a:underline">
+                    {!! $device->description !!}
+                </div>
+            </div>
+
+            {{-- Subtle Footer Accent --}}
+            <div class="h-1 w-full bg-gradient-to-r from-transparent via-[#F9A13D]/20 to-transparent"></div>
         </div>
+    </div>
 
     <!-- Specifications Section -->
     <div class="bg-[#D1D5DB91] hidden lg:block">
