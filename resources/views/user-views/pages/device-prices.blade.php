@@ -95,7 +95,7 @@
                                     <tr>
                                         <!-- Store column with auto width -->
                                         <th
-                                            class="px-4 py-3 text-left text-sm font-medium text-gray-700 bg-white border border-gray-300 min-w-[200px]">
+                                            class="px-4 py-3 text-left text-xl font-medium text-gray-700 bg-white border border-gray-300 min-w-[200px]">
                                             Store
                                         </th>
                                         <!-- Variant columns with fixed width -->

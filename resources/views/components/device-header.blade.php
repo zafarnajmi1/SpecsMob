@@ -2,7 +2,7 @@
 
 <!-- Device Header -->
 <div class="hidden lg:block mb-6 bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
-    <div class="p-4 md:p-6">
+    <div class="px-4 py-3 md:px-4 md:py-3">
         <!-- Main Content Area -->
         <div class="flex flex-col lg:flex-row gap-4">
             <!-- Left: Device Image -->
@@ -17,7 +17,7 @@
             <!-- Right: Device Info -->
             <div class="flex-1">
                 <!-- Top Bar: Brand, Date, and Favorite -->
-                <div class="flex items-start justify-between mb-3">
+                <div class="flex items-start justify-between">
                     <div class="flex flex-wrap items-center gap-3">
                         <span
                             class="inline-flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-full text-xs font-semibold uppercase">

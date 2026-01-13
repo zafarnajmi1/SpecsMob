@@ -680,9 +680,19 @@
                 <h5 class="card-title text-primary mb-0">
                     <i class="bi bi-layers me-2"></i>Device Variants & Pricing
                 </h5>
-                <button type="button" class="btn btn-sm btn-outline-primary" id="addVariant">
-                    <i class="bi bi-plus-circle me-1"></i> Add Variant
-                </button>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-outline-success" id="activateAllVariants">
+                            <i class="bi bi-check-circle me-1"></i> Active All
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" id="deactivateAllVariants">
+                            <i class="bi bi-x-circle me-1"></i> Inactive All
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="addVariant">
+                        <i class="bi bi-plus-circle me-1"></i> Add Variant
+                    </button>
+                </div>
             </div>
             <div class="card-body">
                 <div id="variantsContainer">
@@ -1790,7 +1800,7 @@
                     @foreach($device->variants as $variantIndex => $variant)
                         {{ $variantIndex }}: {{ $variant->offers->count() }},
                     @endforeach
-                                                };
+                                                        };
             @else
             let variantCounter = 0;
             let offerCounters = {};
@@ -2001,7 +2011,20 @@
 
             offersContainer.appendChild(offerItem);
         }
-                    });
+                });
+
+        // Bulk toggle variants
+        document.getElementById('activateAllVariants').addEventListener('click', function () {
+            document.querySelectorAll('#variantsContainer input[name*="[is_active]"]').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        });
+
+        document.getElementById('deactivateAllVariants').addEventListener('click', function () {
+            document.querySelectorAll('#variantsContainer input[name*="[is_active]"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        });
     </script>
 
     <!-- Device videos -->
@@ -2086,15 +2109,15 @@
                     // Create iframe embed
                     const embedUrl = `https://www.youtube.com/embed/${videoId}`;
                     previewContainer.innerHTML = `
-                                    <iframe 
-                                        src="${embedUrl}" 
-                                        class="embed-responsive-item" 
-                                        frameborder="0" 
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                        allowfullscreen
-                                        style="position:absolute; width: 100%; height: 100%; border-radius: 0.375rem;">
-                                    </iframe>
-                                `;
+                                        <iframe 
+                                            src="${embedUrl}" 
+                                            class="embed-responsive-item" 
+                                            frameborder="0" 
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                            allowfullscreen
+                                            style="position:absolute; width: 100%; height: 100%; border-radius: 0.375rem;">
+                                        </iframe>
+                                    `;
                 }
             });
 
@@ -2110,15 +2133,15 @@
                         if (videoId) {
                             const embedUrl = `https://www.youtube.com/embed/${videoId}`;
                             previewContainer.innerHTML = `
-                                            <iframe 
-                                                src="${embedUrl}" 
-                                                class="embed-responsive-item" 
-                                                frameborder="0" 
-                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                                allowfullscreen
-                                                style="position:absolute; width: 100%; height: 100%; border-radius: 0.375rem;">
-                                            </iframe>
-                                        `;
+                                                <iframe 
+                                                    src="${embedUrl}" 
+                                                    class="embed-responsive-item" 
+                                                    frameborder="0" 
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                    allowfullscreen
+                                                    style="position:absolute; width: 100%; height: 100%; border-radius: 0.375rem;">
+                                                </iframe>
+                                            `;
                         }
                     }
                 }
@@ -2151,7 +2174,7 @@
                     @foreach($device->imageGroups as $groupIndex => $group)
                         {{ $groupIndex }}: {{ $group->images->count() }},
                     @endforeach
-                                                };
+                                                        };
             @else
             let groupCounter = 1;
             let imageCounters = { 0: 0 };
@@ -2275,26 +2298,26 @@
 
         function createImageUploadHTML(fieldName, baseName) {
             return `
-                                <div class="form-group">
-                                    <div class="upload-area" id="${fieldName}UploadArea" style="display:flex;">
-                                        <div class="upload-placeholder">
-                                            <i class="bi bi-image display-4 text-muted"></i>
-                                            <p class="mt-2 mb-1 text-muted">Click to upload image</p>
-                                            <small class="text-muted">PNG, JPG up to 2MB</small>
+                                    <div class="form-group">
+                                        <div class="upload-area" id="${fieldName}UploadArea" style="display:flex;">
+                                            <div class="upload-placeholder">
+                                                <i class="bi bi-image display-4 text-muted"></i>
+                                                <p class="mt-2 mb-1 text-muted">Click to upload image</p>
+                                                <small class="text-muted">PNG, JPG up to 2MB</small>
+                                            </div>
+                                            <input type="file" class="form-control d-none" id="${fieldName}" name="${baseName}[image]" accept="image/*">
                                         </div>
-                                        <input type="file" class="form-control d-none" id="${fieldName}" name="${baseName}[image]" accept="image/*">
-                                    </div>
 
-                                    <div class="preview-area mt-2" id="${fieldName}PreviewArea" style="display:none;">
-                                        <div class="preview-container position-relative d-inline-block">
-                                            <img id="${fieldName}Preview" src="#" alt="${fieldName} preview" class="img-thumbnail rounded" style="max-width:150px; max-height:150px; object-fit:contain;">
-                                            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" id="remove${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}">
-                                                <i class="bi bi-x-lg"></i>
-                                            </button>
+                                        <div class="preview-area mt-2" id="${fieldName}PreviewArea" style="display:none;">
+                                            <div class="preview-container position-relative d-inline-block">
+                                                <img id="${fieldName}Preview" src="#" alt="${fieldName} preview" class="img-thumbnail rounded" style="max-width:150px; max-height:150px; object-fit:contain;">
+                                                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" id="remove${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}">
+                                                    <i class="bi bi-x-lg"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            `;
+                                `;
         }
 
         function initializeImageUpload(fieldName) {
@@ -2358,15 +2381,15 @@
             const imageItems = container.querySelectorAll('.image-item');
             if (imageItems.length === 0) {
                 container.innerHTML = `
-                                    <div class="text-center py-3 text-muted">
-                                        <i class="bi bi-image display-6"></i>
-                                        <p class="mt-2 mb-0">No images added yet</p>
-                                        <small>Click "Add Image" to upload photos</small>
-                                    </div>
-                                `;
+                                        <div class="text-center py-3 text-muted">
+                                            <i class="bi bi-image display-6"></i>
+                                            <p class="mt-2 mb-0">No images added yet</p>
+                                            <small>Click "Add Image" to upload photos</small>
+                                        </div>
+                                    `;
             }
         }
-                    });
+                        });
 
         // Function to toggle image upload for existing images
         function toggleImageUpload(fieldName) {
