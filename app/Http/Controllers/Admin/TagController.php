@@ -41,12 +41,13 @@ class TagController extends Controller
                     return $query->where('type', $request->type);
                 }),
             ],
+            'slug' => 'required|string|max:255|unique:tags,slug',
             'type' => 'required|in:review,news,article,device,brand',
         ]);
 
         Tag::create([
             'name' => $request->name,
-            'slug' => Str::slug($request->name),
+            'slug' => $request->slug ?: Str::slug($request->name),
             'type' => $request->type,
             'is_popular' => $request->has('is_popular') ? true : false,
         ]);
@@ -85,12 +86,13 @@ class TagController extends Controller
                     return $query->where('type', $request->type);
                 })->ignore($tag->id),
             ],
+            'slug' => 'required|string|max:255|unique:tags,slug,' . $tag->id,
             'type' => 'required|in:review,news,article,device,brand',
         ]);
 
         $tag->update([
             'name' => $request->name,
-            'slug' => Str::slug($request->name),
+            'slug' => $request->slug ?: Str::slug($request->name),
             'type' => $request->type,
             'is_popular' => $request->has('is_popular') ? true : false,
         ]);

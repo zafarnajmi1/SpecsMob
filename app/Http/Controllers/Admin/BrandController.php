@@ -37,6 +37,7 @@ class BrandController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:brands,name',
+            'slug' => 'required|string|max:255|unique:brands,slug',
             'description' => 'nullable|string',
             'status' => 'required|boolean',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // 2MB max
@@ -69,7 +70,7 @@ class BrandController extends Controller
 
             Brand::create([
                 'name' => $request->name,
-                'slug' => Str::slug($request->name),
+                'slug' => $request->slug ?: Str::slug($request->name),
                 'logo' => $logoPath,
                 'cover_img' => $coverImgPath,
                 'description' => $request->description,
@@ -114,6 +115,7 @@ class BrandController extends Controller
         $brand = Brand::findOrFail($id);
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:brands,name,' . $brand->id,
+            'slug' => 'required|string|max:255|unique:brands,slug,' . $brand->id,
             'description' => 'nullable|string',
             'status' => 'required|boolean',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -133,6 +135,7 @@ class BrandController extends Controller
         try {
             $updateData = [
                 'name' => $request->name,
+                'slug' => $request->slug ?: Str::slug($request->name),
                 'description' => $request->description,
                 'status' => $request->status,
             ];

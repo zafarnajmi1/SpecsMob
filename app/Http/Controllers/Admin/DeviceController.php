@@ -50,10 +50,12 @@ class DeviceController extends Controller
             $device->device_type_id = $request->device_type_id;
             $device->name = $request->name;
 
-            // keep slug on update if you want stable URLs
-            $device->slug = $device->exists
-                ? $device->slug
-                : Str::slug($request->name);
+            // keep slug on update if you want stable URLs, but allow manual edit if provided
+            if ($request->filled('slug')) {
+                $device->slug = $request->slug;
+            } elseif (!$device->exists) {
+                $device->slug = Str::slug($request->name);
+            }
 
             $device->description = $request->description;
             $device->announcement_date = $request->announcement_date;
@@ -639,6 +641,7 @@ class DeviceController extends Controller
             'brand_id' => 'required|exists:brands,id',
             'device_type_id' => 'required|exists:device_types,id',
             'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:devices,slug',
             'description' => 'nullable|string',
             'announcement_date' => 'nullable|date',
             'released_at' => 'nullable|date',
@@ -759,6 +762,7 @@ class DeviceController extends Controller
             'brand_id' => 'required|exists:brands,id',
             'device_type_id' => 'required|exists:device_types,id',
             'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:devices,slug,' . $id,
             'description' => 'nullable|string',
             'announcement_date' => 'nullable|date',
             'released_at' => 'nullable|date',
