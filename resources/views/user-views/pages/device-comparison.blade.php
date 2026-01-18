@@ -23,7 +23,7 @@
 
     <div class="bg-[#f6f6f6] border-b border-[#ddd] mb-8">
         <div class="max-w-[1200px] mx-auto px-4 py-10">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div id="desktop-comparison-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                 {{-- Box 1 --}}
                 <div
@@ -147,7 +147,7 @@
                 }
             @endphp
 
-            <div class="bg-[#efebe9] py-1">
+            <div id="desktop-comparison-specs" class="bg-[#efebe9] py-1">
                 @foreach($categories as $category)
                     @if($category->fields->count() > 0)
                         <table class="shadow bg-white w-full mb-2 mt-2 border-collapse">
@@ -212,7 +212,7 @@
     </div>
     <div class="bg-[#f6f6f6] border-b border-[#ddd] mb-8">
         <div class="max-w-[1200px] mx-auto px-4 py-10">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div id="mobile-comparison-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                 {{-- Box 1 --}}
                 <div
@@ -336,7 +336,7 @@
                 }
             @endphp
 
-            <div class="bg-[#efebe9] py-1">
+            <div id="mobile-comparison-specs" class="bg-[#efebe9] py-1">
                 @foreach($categories as $category)
                     @if($category->fields->count() > 0)
                         <div class="mb-4">
@@ -392,21 +392,31 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            initComparisonSearch();
+
+            // Close search results on click outside
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('.relative') || (!e.target.closest('.search-device') && !e.target.closest('.search-results'))) {
+                    document.querySelectorAll('.search-results').forEach(r => r.classList.add('hidden'));
+                }
+            });
+        });
+
+        function initComparisonSearch() {
             const searchInputs = document.querySelectorAll('.search-device');
-            console.log('Found search inputs:', searchInputs.length);
 
             searchInputs.forEach((input, idx) => {
+                // Avoid double-binding if we re-run init
+                if (input.dataset.bound) return;
+                input.dataset.bound = "true";
+
                 let debounceTimer;
                 const index = input.dataset.index;
                 const resultsContainer = input.closest('.relative').querySelector('.search-results');
 
-                console.log(`Input ${idx + 1}:`, { index, hasResultsContainer: !!resultsContainer });
-
                 input.addEventListener('input', function () {
                     clearTimeout(debounceTimer);
                     const query = this.value.trim();
-
-                    console.log(`Input ${index}: query = "${query}" (length: ${query.length})`);
 
                     if (query.length < 1) {
                         resultsContainer.classList.add('hidden');
@@ -418,13 +428,10 @@
                         resultsContainer.classList.remove('hidden');
 
                         try {
-                            console.log('Fetching from:', `{{ route('device.search') }}?q=${encodeURIComponent(query)}`);
                             const response = await fetch(`{{ route('device.search') }}?q=${encodeURIComponent(query)}`);
-
                             if (!response.ok) throw new Error(`Network response was not ok: ${response.status}`);
 
                             const devices = await response.json();
-                            console.log('Search results:', devices);
 
                             if (devices.length === 0) {
                                 resultsContainer.innerHTML = '<div class="p-4 text-sm text-gray-500 italic text-center">No devices found matching "' + query + '"</div>';
@@ -436,39 +443,92 @@
                                 const div = document.createElement('div');
                                 div.className = 'p-3 hover:bg-orange-50 cursor-pointer flex items-center gap-3 border-b border-gray-50 last:border-0 transition-colors group';
                                 div.innerHTML = `
-                                    <div class="w-10 h-12 flex-shrink-0 bg-gray-50 rounded p-1 flex items-center justify-center">
-                                        <img src="${device.thumbnail_url}" class="max-h-full max-w-full object-contain" alt="${device.name}">
-                                    </div>
-                                    <div class="flex-1">
-                                        <div class="text-sm font-semibold group-hover:text-[#F9A13D]">${device.name}</div>
-                                        <div class="text-xs text-gray-400 capitalize">${device.slug.split('-')[0]}</div>
-                                    </div>
-                                `;
-                                div.onclick = () => {
-                                    let newDevices = [
-                                        @if($device1) '{{ $device1->slug }}' @else null @endif,
-                                        @if($device2) '{{ $device2->slug }}' @else null @endif,
-                                        @if($device3) '{{ $device3->slug }}' @else null @endif
-                                    ];
+                                        <div class="w-10 h-12 flex-shrink-0 bg-gray-50 rounded p-1 flex items-center justify-center">
+                                            <img src="${device.thumbnail_url}" class="max-h-full max-w-full object-contain" alt="${device.name}">
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="text-sm font-semibold group-hover:text-[#F9A13D]">${device.name}</div>
+                                            <div class="text-xs text-gray-400 capitalize">${device.slug.split('-')[0]}</div>
+                                        </div>
+                                    `;
 
-                                    console.log('Current devices before update:', newDevices);
-                                    console.log('Selected device:', device.slug);
-                                    console.log('Target index:', parseInt(index) - 1);
+                                div.onclick = async () => {
+                                    // Construct the new URL params based on current state + new selection
+                                    // We need to know the CURRENT slugs in the slots.
+                                    // We can infer them from the DOM or simply use the server-rendered values if possible,
+                                    // but purely client-side logic is safer for the AJAX flow.
 
-                                    const targetIdx = parseInt(index) - 1;
-                                    newDevices[targetIdx] = device.slug;
+                                    // Let's get current slugs from the input logic? 
+                                    // The inputs are placeholders if empty.
+                                    // Better approach: Parse the current URL 'devices' param.
+                                    // Start with state from URL
+                                    const urlParams = new URLSearchParams(window.location.search);
+                                    let devicesParam = urlParams.get('devices');
+                                    let currentDevices = [];
 
-                                    console.log('New devices array:', newDevices);
+                                    if (devicesParam) {
+                                        currentDevices = devicesParam.split(',');
+                                    } else {
+                                        // Fallback to Blade-injected initial state if URL param is missing
+                                        currentDevices = [
+                                            @if($device1) '{{ $device1->slug }}' @else '' @endif,
+                                            @if($device2) '{{ $device2->slug }}' @else '' @endif,
+                                            @if($device3) '{{ $device3->slug }}' @else '' @endif
+                                        ];
+                                    }
 
-                                    // Build devices string from non-null values
-                                    const devicesString = newDevices
-                                        .filter(d => d !== null && d !== undefined)
-                                        .join(',');
-                                    
+                                    // Ensure we have 3 slots
+                                    while (currentDevices.length < 3) currentDevices.push('');
+
+                                    // Update the specific slot (0-indexed)
+                                    const slotIndex = parseInt(index) - 1;
+                                    currentDevices[slotIndex] = device.slug;
+
+                                    // Reconstruct clean string
+                                    // We MUST keep empty slots if they are in the middle (e.g. A,,B)
+                                    // But we can trim trailing commas if we want, or just keep it simple.
+                                    // The backend now handles "A,,B" correctly using array_filter + key matching.
+
+                                    const newDevicesString = currentDevices.join(',');
                                     const baseUrl = "{{ route('device-comparison') }}";
-                                    const url = devicesString ? `${baseUrl}?devices=${devicesString}` : baseUrl;
-                                    console.log('Final URL:', url);
-                                    window.location.href = url;
+                                    const newUrl = `${baseUrl}?devices=${newDevicesString}`;
+
+                                    // Update UI with loading state
+                                    resultsContainer.innerHTML = '<div class="p-4 text-sm text-gray-500"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+
+                                    try {
+                                        // Fetch new HTML
+                                        const pageRes = await fetch(newUrl);
+                                        const html = await pageRes.text();
+
+                                        // Parse HTML
+                                        const parser = new DOMParser();
+                                        const doc = parser.parseFromString(html, 'text/html');
+
+                                        // Update Desktop Containers
+                                        const newDesktopGrid = doc.getElementById('desktop-comparison-grid');
+                                        const newDesktopSpecs = doc.getElementById('desktop-comparison-specs');
+
+                                        if (newDesktopGrid) document.getElementById('desktop-comparison-grid').innerHTML = newDesktopGrid.innerHTML;
+                                        if (newDesktopSpecs) document.getElementById('desktop-comparison-specs').innerHTML = newDesktopSpecs.innerHTML;
+
+                                        // Update Mobile Containers
+                                        const newMobileGrid = doc.getElementById('mobile-comparison-grid');
+                                        const newMobileSpecs = doc.getElementById('mobile-comparison-specs');
+
+                                        if (newMobileGrid) document.getElementById('mobile-comparison-grid').innerHTML = newMobileGrid.innerHTML;
+                                        if (newMobileSpecs) document.getElementById('mobile-comparison-specs').innerHTML = newMobileSpecs.innerHTML;
+
+                                        // Update URL
+                                        window.history.pushState({ path: newUrl }, '', newUrl);
+
+                                        // Re-init listeners for the new inputs
+                                        initComparisonSearch();
+
+                                    } catch (err) {
+                                        console.error('Comparison update failed:', err);
+                                        resultsContainer.innerHTML = '<div class="p-4 text-sm text-red-500">Failed to load device.</div>';
+                                    }
                                 };
                                 resultsContainer.appendChild(div);
                             });
@@ -486,12 +546,6 @@
                     }
                 });
             });
-
-            document.addEventListener('click', function (e) {
-                if (!e.target.closest('.relative') || (!e.target.closest('.search-device') && !e.target.closest('.search-results'))) {
-                    document.querySelectorAll('.search-results').forEach(r => r.classList.add('hidden'));
-                }
-            });
-        });
+        }
     </script>
 @endpush

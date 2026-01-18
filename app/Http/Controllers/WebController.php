@@ -1113,16 +1113,22 @@ class WebController extends Controller
         // If called via /compare?devices=slug1,slug2,slug3
         if ($request->has('devices')) {
             $slugs = explode(',', $request->devices);
-            $devices = Device::whereIn('slug', $slugs)
-                ->where('is_published', true)
-                ->with(['brand', 'specValues.field.category'])
-                ->withCount('comments')
-                ->take(3)
-                ->get();
+            $validSlugs = array_filter($slugs, function ($s) {
+                return !empty(trim($s)); });
 
-            $device1 = $devices->get(0);
-            $device2 = $devices->get(1);
-            $device3 = $devices->get(2);
+            $fetchedDevices = collect();
+            if (!empty($validSlugs)) {
+                $fetchedDevices = Device::whereIn('slug', $validSlugs)
+                    ->where('is_published', true)
+                    ->with(['brand', 'specValues.field.category'])
+                    ->withCount('comments')
+                    ->get()
+                    ->keyBy('slug');
+            }
+
+            $device1 = isset($slugs[0]) ? $fetchedDevices->get($slugs[0]) : null;
+            $device2 = isset($slugs[1]) ? $fetchedDevices->get($slugs[1]) : null;
+            $device3 = isset($slugs[2]) ? $fetchedDevices->get($slugs[2]) : null;
         }
         // If called via /{slug}-compare-{id}
         elseif ($id) {
