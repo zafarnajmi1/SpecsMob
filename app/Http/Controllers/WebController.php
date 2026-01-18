@@ -209,7 +209,6 @@ class WebController extends Controller
     {
 
         $query = Article::published()
-            ->news()
             ->withCount('comments');
 
         // Search functionality
