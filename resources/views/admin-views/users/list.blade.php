@@ -55,10 +55,10 @@
                                     <div class="avatar avatar-md overflow-hidden">
                                         @if($user->image)
                                             <img src="{{ $user->image_url }}" alt="AV"
-                                                style="width: 100%; height: 100%; object-fit: cover;">
+                                                style="width: 40px; height: 40px; object-fit: cover;">
                                         @else
                                             <div class="bg-primary text-white d-flex align-items-center justify-content-center"
-                                                style="width: 100%; height: 100%;">
+                                                style="width: 40px; height: 40px;">
                                                 {{ strtoupper(substr($user->name, 0, 1)) }}
                                             </div>
                                         @endif
