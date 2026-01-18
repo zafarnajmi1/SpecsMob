@@ -719,10 +719,10 @@
 
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="form-label">Variant Label *</label>
+                                        <label class="form-label">Variant Label</label>
                                         <input type="text" class="form-control variant-label"
                                             name="variants[{{ $variantIndex }}][label]" value="{{ $variant->label }}"
-                                            placeholder="e.g., 128GB 8GB RAM" required>
+                                            placeholder="e.g., 128GB 8GB RAM">
                                     </div>
                                     <div class="col-md-3">
                                         <label class="form-label">RAM (GB)</label>
@@ -763,10 +763,9 @@
                                             <div class="offer-item border p-3 mb-3 rounded">
                                                 <div class="row g-3">
                                                     <div class="col-md-3">
-                                                        <label class="form-label">Store *</label>
+                                                        <label class="form-label">Store</label>
                                                         <select class="form-select store-select"
-                                                            name="variants[{{ $variantIndex }}][offers][{{ $offerIndex }}][store_id]"
-                                                            required>
+                                                            name="variants[{{ $variantIndex }}][offers][{{ $offerIndex }}][store_id]">
                                                             <option value="">Select Store</option>
                                                             @foreach($stores as $store)
                                                                 <option value="{{ $store->id }}" {{ $offer->store_id == $store->id ? 'selected' : '' }}>{{ $store->name }}</option>
@@ -774,10 +773,9 @@
                                                         </select>
                                                     </div>
                                                     <div class="col-md-2">
-                                                        <label class="form-label">Country *</label>
+                                                        <label class="form-label">Country</label>
                                                         <select class="form-select country-select"
-                                                            name="variants[{{ $variantIndex }}][offers][{{ $offerIndex }}][country_id]"
-                                                            required>
+                                                            name="variants[{{ $variantIndex }}][offers][{{ $offerIndex }}][country_id]">
                                                             <option value="">Select Country</option>
                                                             @foreach($countries as $country)
                                                                 <option value="{{ $country->id }}" {{ $offer->country_id == $country->id ? 'selected' : '' }}>{{ $country->name }}</option>
@@ -785,10 +783,9 @@
                                                         </select>
                                                     </div>
                                                     <div class="col-md-2">
-                                                        <label class="form-label">Currency *</label>
+                                                        <label class="form-label">Currency</label>
                                                         <select class="form-select currency-select"
-                                                            name="variants[{{ $variantIndex }}][offers][{{ $offerIndex }}][currency_id]"
-                                                            required>
+                                                            name="variants[{{ $variantIndex }}][offers][{{ $offerIndex }}][currency_id]">
                                                             <option value="">Select Currency</option>
                                                             @foreach($currencies as $currency)
                                                                 <option value="{{ $currency->id }}" {{ $offer->currency_id == $currency->id ? 'selected' : '' }}>
@@ -798,10 +795,10 @@
                                                         </select>
                                                     </div>
                                                     <div class="col-md-2">
-                                                        <label class="form-label">Price *</label>
+                                                        <label class="form-label">Price</label>
                                                         <input type="number" step="0.01" class="form-control price-input"
                                                             name="variants[{{ $variantIndex }}][offers][{{ $offerIndex }}][price]"
-                                                            value="{{ $offer->price }}" placeholder="0.00" required>
+                                                            value="{{ $offer->price }}" placeholder="0.00">
                                                     </div>
                                                     <div class="col-md-3">
                                                         <label class="form-label">Product URL</label>
@@ -894,9 +891,9 @@
 
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label">Variant Label *</label>
+                                <label class="form-label">Variant Label</label>
                                 <input type="text" class="form-control variant-label" name="variants[][label]"
-                                    placeholder="e.g., 128GB 8GB RAM" required>
+                                    placeholder="e.g., 128GB 8GB RAM">
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">RAM (GB)</label>
@@ -942,8 +939,8 @@
                     <div class="offer-item border p-3 mb-3 rounded">
                         <div class="row g-3">
                             <div class="col-md-3">
-                                <label class="form-label">Store *</label>
-                                <select class="form-select store-select" name="variants[][offers][][store_id]" required>
+                                <label class="form-label">Store</label>
+                                <select class="form-select store-select" name="variants[][offers][][store_id]">
                                     <option value="">Select Store</option>
                                     @foreach($stores as $store)
                                         <option value="{{ $store->id }}">{{ $store->name }}</option>
@@ -951,9 +948,8 @@
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <label class="form-label">Country *</label>
-                                <select class="form-select country-select" name="variants[][offers][][country_id]"
-                                    required>
+                                <label class="form-label">Country</label>
+                                <select class="form-select country-select" name="variants[][offers][][country_id]">
                                     <option value="">Select Country</option>
                                     @foreach($countries as $country)
                                         <option value="{{ $country->id }}">{{ $country->name }}</option>
@@ -961,9 +957,8 @@
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <label class="form-label">Currency *</label>
-                                <select class="form-select currency-select" name="variants[][offers][][currency_id]"
-                                    required>
+                                <label class="form-label">Currency</label>
+                                <select class="form-select currency-select" name="variants[][offers][][currency_id]">
                                     <option value="">Select Currency</option>
                                     @foreach($currencies as $currency)
                                         <option value="{{ $currency->id }}">{{ $currency->iso_code }}
@@ -972,9 +967,9 @@
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <label class="form-label">Price *</label>
+                                <label class="form-label">Price</label>
                                 <input type="number" step="0.01" class="form-control price-input"
-                                    name="variants[][offers][][price]" placeholder="0.00" required>
+                                    name="variants[][offers][][price]" placeholder="0.00">
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Product URL</label>
@@ -1793,19 +1788,19 @@
     <!-- Device Variants & Pricing -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            @if($isEdit && $device->variants->count() > 0)
-                let variantCounter = {{ $device->variants->count() }};
+            @if($isEdit && $device->allVariants->count() > 0)
+                let variantCounter = {{ $device->allVariants->count() }};
                 // Initialize offer counters for existing variants
                 let offerCounters = {
-                    @foreach($device->variants as $variantIndex => $variant)
+                    @foreach($device->allVariants as $variantIndex => $variant)
                         {{ $variantIndex }}: {{ $variant->offers->count() }},
                     @endforeach
-                                                        };
+                                                                        };
             @else
             let variantCounter = 0;
             let offerCounters = {};
-            // Add first variant automatically for new device
-            addNewVariant();
+            // Add first variant automatically for new device -> Disabled to default to empty
+            // addNewVariant();
         @endif
 
         // Add new variant
@@ -2011,7 +2006,7 @@
 
             offersContainer.appendChild(offerItem);
         }
-                });
+                        });
 
         // Bulk toggle variants
         document.getElementById('activateAllVariants').addEventListener('click', function () {
@@ -2109,15 +2104,15 @@
                     // Create iframe embed
                     const embedUrl = `https://www.youtube.com/embed/${videoId}`;
                     previewContainer.innerHTML = `
-                                        <iframe 
-                                            src="${embedUrl}" 
-                                            class="embed-responsive-item" 
-                                            frameborder="0" 
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                            allowfullscreen
-                                            style="position:absolute; width: 100%; height: 100%; border-radius: 0.375rem;">
-                                        </iframe>
-                                    `;
+                                                <iframe 
+                                                    src="${embedUrl}" 
+                                                    class="embed-responsive-item" 
+                                                    frameborder="0" 
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                    allowfullscreen
+                                                    style="position:absolute; width: 100%; height: 100%; border-radius: 0.375rem;">
+                                                </iframe>
+                                            `;
                 }
             });
 
@@ -2133,15 +2128,15 @@
                         if (videoId) {
                             const embedUrl = `https://www.youtube.com/embed/${videoId}`;
                             previewContainer.innerHTML = `
-                                                <iframe 
-                                                    src="${embedUrl}" 
-                                                    class="embed-responsive-item" 
-                                                    frameborder="0" 
-                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                                    allowfullscreen
-                                                    style="position:absolute; width: 100%; height: 100%; border-radius: 0.375rem;">
-                                                </iframe>
-                                            `;
+                                                        <iframe 
+                                                            src="${embedUrl}" 
+                                                            class="embed-responsive-item" 
+                                                            frameborder="0" 
+                                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                            allowfullscreen
+                                                            style="position:absolute; width: 100%; height: 100%; border-radius: 0.375rem;">
+                                                        </iframe>
+                                                    `;
                         }
                     }
                 }
@@ -2174,7 +2169,7 @@
                     @foreach($device->imageGroups as $groupIndex => $group)
                         {{ $groupIndex }}: {{ $group->images->count() }},
                     @endforeach
-                                                        };
+                                                                        };
             @else
             let groupCounter = 1;
             let imageCounters = { 0: 0 };
@@ -2298,26 +2293,26 @@
 
         function createImageUploadHTML(fieldName, baseName) {
             return `
-                                    <div class="form-group">
-                                        <div class="upload-area" id="${fieldName}UploadArea" style="display:flex;">
-                                            <div class="upload-placeholder">
-                                                <i class="bi bi-image display-4 text-muted"></i>
-                                                <p class="mt-2 mb-1 text-muted">Click to upload image</p>
-                                                <small class="text-muted">PNG, JPG up to 2MB</small>
-                                            </div>
-                                            <input type="file" class="form-control d-none" id="${fieldName}" name="${baseName}[image]" accept="image/*">
-                                        </div>
+                                            <div class="form-group">
+                                                <div class="upload-area" id="${fieldName}UploadArea" style="display:flex;">
+                                                    <div class="upload-placeholder">
+                                                        <i class="bi bi-image display-4 text-muted"></i>
+                                                        <p class="mt-2 mb-1 text-muted">Click to upload image</p>
+                                                        <small class="text-muted">PNG, JPG up to 2MB</small>
+                                                    </div>
+                                                    <input type="file" class="form-control d-none" id="${fieldName}" name="${baseName}[image]" accept="image/*">
+                                                </div>
 
-                                        <div class="preview-area mt-2" id="${fieldName}PreviewArea" style="display:none;">
-                                            <div class="preview-container position-relative d-inline-block">
-                                                <img id="${fieldName}Preview" src="#" alt="${fieldName} preview" class="img-thumbnail rounded" style="max-width:150px; max-height:150px; object-fit:contain;">
-                                                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" id="remove${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}">
-                                                    <i class="bi bi-x-lg"></i>
-                                                </button>
+                                                <div class="preview-area mt-2" id="${fieldName}PreviewArea" style="display:none;">
+                                                    <div class="preview-container position-relative d-inline-block">
+                                                        <img id="${fieldName}Preview" src="#" alt="${fieldName} preview" class="img-thumbnail rounded" style="max-width:150px; max-height:150px; object-fit:contain;">
+                                                        <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" id="remove${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}">
+                                                            <i class="bi bi-x-lg"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                `;
+                                        `;
         }
 
         function initializeImageUpload(fieldName) {
@@ -2381,15 +2376,15 @@
             const imageItems = container.querySelectorAll('.image-item');
             if (imageItems.length === 0) {
                 container.innerHTML = `
-                                        <div class="text-center py-3 text-muted">
-                                            <i class="bi bi-image display-6"></i>
-                                            <p class="mt-2 mb-0">No images added yet</p>
-                                            <small>Click "Add Image" to upload photos</small>
-                                        </div>
-                                    `;
+                                                <div class="text-center py-3 text-muted">
+                                                    <i class="bi bi-image display-6"></i>
+                                                    <p class="mt-2 mb-0">No images added yet</p>
+                                                    <small>Click "Add Image" to upload photos</small>
+                                                </div>
+                                            `;
             }
         }
-                        });
+                                });
 
         // Function to toggle image upload for existing images
         function toggleImageUpload(fieldName) {
