@@ -99,16 +99,20 @@
             <i class="fa-solid fa-comment-dots {{ $activeTab === 'opinions' ? 'text-white' : 'text-blue-500' }}"></i>
             <span class="hidden sm:inline">OPINIONS</span>
         </a>
+        @if($device->offers->isNotEmpty())
         <a href="{{ route('device.prices', ['slug' => $device->slug, 'id' => $device->id])}}"
             class="flex-1 flex items-center justify-center gap-2 py-3 px-2 text-xs font-semibold {{ $activeTab === 'prices' ? 'bg-[#F9A13D] text-white' : 'text-gray-700 hover:bg-[#F9A13D] hover:text-white' }} transition-colors border-r border-gray-200 last:border-r-0">
             <i class="fa-solid fa-dollar-sign {{ $activeTab === 'prices' ? 'text-white' : 'text-gray-400' }}"></i>
             <span class="hidden sm:inline">PRICES</span>
         </a>
+        @endif
+        @if($device->imageGroups->isNotEmpty() && $device->imageGroups->first()->images->isNotEmpty())
         <a href="{{ route('device.pictures', ['slug' => $device->slug, 'id' => $device->id])}}"
             class="flex-1 flex items-center justify-center gap-2 py-3 px-2 text-xs font-semibold {{ $activeTab === 'pictures' ? 'bg-[#F9A13D] text-white' : 'text-gray-700 hover:bg-[#F9A13D] hover:text-white' }} transition-colors border-r border-gray-200 last:border-r-0">
             <i class="fa-solid fa-images {{ $activeTab === 'pictures' ? 'text-white' : 'text-gray-400' }}"></i>
             <span class="hidden sm:inline">PICTURES</span>
         </a>
+        @endif
         <a href="{{ route('device.compare', ['slug' => $device->slug, 'id' => $device->id])}}"
             class="flex-1 flex items-center justify-center gap-2 py-3 px-2 text-xs font-semibold {{ $activeTab === 'compare' ? 'bg-[#F9A13D] text-white' : 'text-gray-700 hover:bg-[#F9A13D] hover:text-white' }} transition-colors border-r border-gray-200 last:border-r-0">
             <i class="fa-solid fa-code-compare {{ $activeTab === 'compare' ? 'text-white' : 'text-gray-400' }}"></i>

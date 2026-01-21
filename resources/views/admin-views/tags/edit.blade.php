@@ -49,6 +49,17 @@
                                         </div>
                                         <div class="col-12">
                                             <div class="form-group">
+                                                <label for="slug">Slug</label>
+                                                <input type="text" id="slug"
+                                                    class="form-control @error('slug') is-invalid @enderror" name="slug"
+                                                    placeholder="Tag Slug" value="{{ old('slug', $tag->slug) }}" required>
+                                                @error('slug')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-group">
                                                 <label for="type">Tag Type</label>
                                                 <select id="type" name="type"
                                                     class="form-control @error('type') is-invalid @enderror" required>
@@ -85,3 +96,38 @@
         </div>
     </section>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const nameInput = document.getElementById('name');
+            const slugInput = document.getElementById('slug');
+            let isAutoSlug = false;
+
+            if (nameInput && slugInput) {
+                nameInput.addEventListener('input', function () {
+                    if (isAutoSlug) {
+                        slugInput.value = slugify(this.value);
+                    }
+                });
+
+                slugInput.addEventListener('input', function () {
+                    isAutoSlug = false;
+                    if (this.value.trim() === '') {
+                        isAutoSlug = true;
+                        slugInput.value = slugify(nameInput.value);
+                    }
+                });
+            }
+
+            function slugify(text) {
+                return text.toString().toLowerCase()
+                    .replace(/\s+/g, '-')
+                    .replace(/[^\w\-]+/g, '')
+                    .replace(/\-\-+/g, '-')
+                    .replace(/^-+/, '')
+                    .replace(/-+$/, '');
+            }
+        });
+    </script>
+@endpush

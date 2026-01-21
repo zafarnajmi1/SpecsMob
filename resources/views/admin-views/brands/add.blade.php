@@ -46,6 +46,20 @@
                                         </div>
                                     </div>
 
+                                    <!-- Slug Field -->
+                                    <div class="col-md-6 col-12">
+                                        <div class="form-group">
+                                            <label for="slug" class="form-label">Slug <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" id="slug" name="slug"
+                                                class="form-control @error('slug') is-invalid @enderror"
+                                                placeholder="Enter brand slug" value="{{ old('slug') }}">
+                                            @error('slug')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+
                                     <!-- Status Field -->
                                     <div class="col-md-6 col-12">
                                         <div class="form-group">
@@ -65,10 +79,10 @@
                                     <!-- Image Upload (Logo and Cover) -->
                                     <div class="col-md-6 col-12">
                                         <x-image-upload fieldName="logo" :existingImage="$brand->logo ?? null" />
-                                       </div>
+                                    </div>
 
                                     <div class="col-md-6 col-12">
-                                          <x-image-upload fieldName="cover_image" :existingImage="$brand->cover_image ?? null" />
+                                        <x-image-upload fieldName="cover_image" :existingImage="$brand->cover_image ?? null" />
                                     </div>
 
 
@@ -103,3 +117,38 @@
         </section>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const nameInput = document.getElementById('name');
+            const slugInput = document.getElementById('slug');
+            let isAutoSlug = true;
+
+            if (nameInput && slugInput) {
+                nameInput.addEventListener('input', function () {
+                    if (isAutoSlug) {
+                        slugInput.value = slugify(this.value);
+                    }
+                });
+
+                slugInput.addEventListener('input', function () {
+                    isAutoSlug = false;
+                    if (this.value.trim() === '') {
+                        isAutoSlug = true;
+                        slugInput.value = slugify(nameInput.value);
+                    }
+                });
+            }
+
+            function slugify(text) {
+                return text.toString().toLowerCase()
+                    .replace(/\s+/g, '-')
+                    .replace(/[^\w\-]+/g, '')
+                    .replace(/\-\-+/g, '-')
+                    .replace(/^-+/, '')
+                    .replace(/-+$/, '');
+            }
+        });
+    </script>
+@endpush

@@ -61,6 +61,16 @@
                                     @enderror
                                 </div>
 
+                                <!-- Slug -->
+                                <div class="mb-3">
+                                    <label for="slug" class="form-label">Slug <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control @error('slug') is-invalid @enderror" 
+                                           id="slug" name="slug" value="{{ old('slug', $article->slug) }}" required>
+                                    @error('slug')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
                                
 
                                 <!-- Body Content -->
@@ -346,6 +356,38 @@
             thumbnailInput.classList.remove('opacity-50');
         }
     }
+
+    // Slug generation
+    document.addEventListener('DOMContentLoaded', function() {
+        const titleInput = document.getElementById('title');
+        const slugInput = document.getElementById('slug');
+        let isAutoSlug = false;
+
+        if (titleInput && slugInput) {
+            titleInput.addEventListener('input', function() {
+                if (isAutoSlug) {
+                    slugInput.value = slugify(this.value);
+                }
+            });
+
+            slugInput.addEventListener('input', function() {
+                isAutoSlug = false;
+                if (this.value.trim() === '') {
+                    isAutoSlug = true;
+                    slugInput.value = slugify(titleInput.value);
+                }
+            });
+        }
+
+        function slugify(text) {
+            return text.toString().toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w\-]+/g, '')
+                .replace(/\-\-+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '');
+        }
+    });
 </script>
 
 

@@ -105,7 +105,7 @@
                     <div class="col-md-8">
                         <div class="mb-3">
                             <label class="form-label">Review Title *</label>
-                            <input type="text" class="form-control" name="review[title]"
+                            <input type="text" class="form-control" name="review[title]" id="review_title"
                                 value="{{ old('review.title', $isEdit ? $review->title : '') }}"
                                 placeholder="e.g., Apple iPhone 17 Pro Max Review" required>
                         </div>
@@ -113,7 +113,7 @@
                     <div class="col-md-4">
                         <div class="mb-3">
                             <label class="form-label">Review Slug *</label>
-                            <input type="text" class="form-control" name="review[slug]"
+                            <input type="text" class="form-control" name="review[slug]" id="review_slug"
                                 value="{{ old('review.slug', $isEdit ? $review->slug : '') }}"
                                 placeholder="e.g., apple-iphone-17-pro-max-review" required>
                         </div>
@@ -215,6 +215,38 @@
                         deviceSelect.innerHTML = '<option value="">Error loading devices</option>';
                     });
             });
+        });
+
+        // Slug generation
+        document.addEventListener('DOMContentLoaded', function () {
+            const titleInput = document.getElementById('review_title');
+            const slugInput = document.getElementById('review_slug');
+            let isAutoSlug = {{ $isEdit ? 'false' : 'true' }};
+
+            if (titleInput && slugInput) {
+                titleInput.addEventListener('input', function () {
+                    if (isAutoSlug) {
+                        slugInput.value = slugify(this.value);
+                    }
+                });
+
+                slugInput.addEventListener('input', function () {
+                    isAutoSlug = false;
+                    if (this.value.trim() === '') {
+                        isAutoSlug = true;
+                        slugInput.value = slugify(titleInput.value);
+                    }
+                });
+            }
+
+            function slugify(text) {
+                return text.toString().toLowerCase()
+                    .replace(/\s+/g, '-')
+                    .replace(/[^\w\-]+/g, '')
+                    .replace(/\-\-+/g, '-')
+                    .replace(/^-+/, '')
+                    .replace(/-+$/, '');
+            }
         });
     </script>
 @endpush

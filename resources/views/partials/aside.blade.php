@@ -23,37 +23,89 @@
 </div> -->
 
 
-{{-- Popular Reviews section --}}
-<div class="w-full bg-white">
-    <h4 class="border-l-[11px] border-[#F9A13D] text-[#F9A13D] uppercase font-bold text-[12px] px-4 py-3 border-b">
-        Popular Reviews
-    </h4>
+@php(
+    $popularReviewsSidebar = Illuminate\Support\Facades\Cache::remember('popular_reviews_sidebar_new', 3600, function () {
+        return App\Models\Review::published()
+            ->orderByDesc('views_count')
+            ->latest()
+            ->limit(3)
+            ->get();
+    })
+)
 
-    @php(
-        $popularReviewsSidebar = Illuminate\Support\Facades\Cache::remember('popular_reviews_sidebar', 3600, function () {
-            return App\Models\Review::published()
-                ->orderByDesc('views_count')
-                ->limit(3)
-                ->get();
-        })
-    )
+@if($popularReviewsSidebar->isNotEmpty())
+    {{-- Popular Reviews section --}}
+    <div class="w-full bg-white mb-5">
+        <h4 class="border-l-[11px] border-[#F9A13D] text-[#F9A13D] uppercase font-bold text-[12px] px-4 py-3 border-b">
+            Popular Reviews
+        </h4>
 
-    <div class="p-3 space-y-3">
-        @foreach ($popularReviewsSidebar as $review)
-            <div class="group relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                <a href="{{ route('review-detail', $review->slug) }}" class="block">
-                    <img src="{{ $review->cover_image_url }}" alt="{{ $review->title }}" 
-                        class="w-full h-[150px] object-cover hover:scale-105 transition-transform duration-300">
-                    <div class="absolute bottom-0 left-0 right-0 bg-black/60 p-2">
-                        <span class="text-white text-[12px] font-bold line-clamp-1 group-hover:text-[#F9A13D] transition-colors">
-                            {{ $review->title }}
-                        </span>
-                    </div>
-                </a>
-            </div>
-        @endforeach
+        <div class="p-3 space-y-3">
+            @foreach ($popularReviewsSidebar as $review)
+                <div class="group relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                    <a href="{{ route('review-detail', $review->slug) }}" class="block h-[150px]">
+                        <img src="{{ $review->cover_image_url }}" alt="{{ $review->title }}"
+                            class="w-full h-full object-contain hover:scale-105 transition-transform duration-300">
+                        <div class="absolute bottom-0 left-0 right-0 bg-black/60 p-2">
+                            <span
+                                class="text-white text-[12px] font-bold line-clamp-1 group-hover:text-[#F9A13D] transition-colors">
+                                {{ $review->title }}
+                            </span>
+                        </div>
+                    </a>
+                </div>
+            @endforeach
+        </div>
     </div>
-</div>
+@endif
+
+@php(
+    $deviceOffers = isset($device)
+        ? $device->activeOffers()->with(['variant', 'store', 'currency'])->get()
+        : collect()
+)
+
+@if($deviceOffers->isNotEmpty())
+    <div class="w-full bg-white mt-5">
+        {{-- Header --}}
+        <h4 class="border-l-[11px] border-[#F9A13D] text-[#F9A13D] uppercase font-bold text-[12px] px-4 py-3">
+            Prices
+        </h4>
+
+        <b class="bg-gray-200 py-2 w-[100%] block text-center">{{$device->name}}</b>
+
+        {{-- Device Price List --}}
+        <div class="overflow-y-auto max-h-[320px] p-3">
+            @foreach($deviceOffers->groupBy('device_variant_id') as $variantId => $offers)
+                @if($variant = $offers->first()->variant)
+                    <div class="p-3">
+                        <b class="text-[#555] text-[14px] font-bold">
+                            {{ $variant->storage_gb }}GB {{ $variant->ram_gb }}GB RAM
+                        </b>
+                        <div class="flex flex-col gap-2 p-4 border-b border-gray-200 border-b-2">
+                            @foreach($offers as $offer)
+                                <a href="{{ $offer->url }}" target="_blank" class="w-[100%] flex justify-between items-center">
+                                    @if($offer->store && $offer->store->logo_url)
+                                        <img src="{{ $offer->store->logo_url }}" alt="{{ $offer->store->name }}"
+                                            class="w-[35%] object-contain">
+                                    @else
+                                        <span class="text-sm font-bold text-gray-500 w-[35%]">{{ $offer->store->name ?? 'Store' }}</span>
+                                    @endif
+                                    <b class="text-[#F9A13D]">
+                                        {{ $offer->currency->symbol ?? '$' }}{{ number_format($offer->price, 2) }}
+                                    </b>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            @endforeach
+        </div>
+        <a href="javascript:void(0)"
+            class="bg-[#d3d3c8] text-white font-bold py-2 text-center hover:bg-[#F9A13D] block">SHOW ALL PRICES</a>
+    </div>
+@endif
+
 {{-- components: Latest Devices Sidebar --}}
 <div class="w-full bg-white mt-5">
 
@@ -70,13 +122,13 @@
                 return App\Models\Device::where('is_published', true)
                     ->whereIn('release_status', ['announced', 'released'])
                     ->orderByRaw("
-                        CASE 
-                            WHEN release_status = 'released' 
-                                 AND released_at IS NOT NULL 
-                            THEN released_at
-                            ELSE announcement_date
-                        END DESC
-                    ")
+                                                                                                CASE 
+                                                                                                    WHEN release_status = 'released' 
+                                                                                                         AND released_at IS NOT NULL 
+                                                                                                    THEN released_at
+                                                                                                    ELSE announcement_date
+                                                                                                END DESC
+                                                                                            ")
                     ->limit(9)
                     ->get();
             })

@@ -70,6 +70,7 @@ class ArticleController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:articles,slug',
             'body' => 'required|string',
             'type' => 'required|in:news,article,featured',
             'brand_id' => 'required|exists:brands,id',
@@ -92,6 +93,7 @@ class ArticleController extends Controller
         try {
             $data = $request->only([
                 'title',
+                'slug',
                 'body',
                 'type',
                 'brand_id',
@@ -99,7 +101,7 @@ class ArticleController extends Controller
                 'published_at'
             ]);
 
-            $data['slug'] = Str::slug($request->title);
+            $data['slug'] = $request->slug ?: Str::slug($request->title);
             $data['author_id'] = auth()->id();
             $data['is_published'] = $request->boolean('is_published');
             $data['is_featured'] = $request->boolean('is_featured');
@@ -157,6 +159,7 @@ class ArticleController extends Controller
 
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:articles,slug,' . $id,
             'body' => 'required|string',
             'type' => 'required|in:news,article,featured',
             'brand_id' => 'required|exists:brands,id',
@@ -181,6 +184,7 @@ class ArticleController extends Controller
         try {
             $data = $request->only([
                 'title',
+                'slug',
                 'body',
                 'type',
                 'brand_id',
@@ -188,7 +192,7 @@ class ArticleController extends Controller
                 'published_at'
             ]);
 
-            $data['slug'] = Str::slug($request->title);
+            $data['slug'] = $request->slug ?: Str::slug($request->title);
             $data['is_published'] = $request->boolean('is_published');
             $data['is_featured'] = $request->boolean('is_featured');
             $data['allow_comments'] = $request->boolean('allow_comments');

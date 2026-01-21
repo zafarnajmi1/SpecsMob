@@ -50,10 +50,12 @@ class DeviceController extends Controller
             $device->device_type_id = $request->device_type_id;
             $device->name = $request->name;
 
-            // keep slug on update if you want stable URLs
-            $device->slug = $device->exists
-                ? $device->slug
-                : Str::slug($request->name);
+            // keep slug on update if you want stable URLs, but allow manual edit if provided
+            if ($request->filled('slug')) {
+                $device->slug = $request->slug;
+            } elseif (!$device->exists) {
+                $device->slug = Str::slug($request->name);
+            }
 
             $device->description = $request->description;
             $device->announcement_date = $request->announcement_date;
@@ -95,9 +97,9 @@ class DeviceController extends Controller
             foreach ($specCategoriesInput as $catIndex => $categoryData) {
                 $categoryName = trim($categoryData['name'] ?? '');
 
-                if ($categoryName === '') {
-                    continue;
-                }
+                // if ($categoryName === '') {
+                //     continue;
+                // }
 
                 $baseSlug = Str::slug($categoryName);
                 $slug = $baseSlug;
@@ -124,21 +126,21 @@ class DeviceController extends Controller
                 $fieldsData = $categoryData['fields'] ?? [];
 
                 foreach ($fieldsData as $fieldIndex => $fieldData) {
-                    $label = trim($fieldData['label'] ?? '');
+                    $label = trim($fieldData['label'] ?? 'null');
                     $type = $fieldData['type'] ?? 'string';
-                    $valueRaw = $fieldData['value'] ?? null;
+                    $valueRaw = $fieldData['value'] ?? 'null';
                     $isFilterable = !empty($fieldData['filterable']);
 
-                    if ($label === '' && ($valueRaw === null || $valueRaw === '')) {
-                        continue;
-                    }
+                    // if ($label === '' && ($valueRaw === null || $valueRaw === '')) {
+                    //     continue;
+                    // }
 
                     $specField = SpecField::where('spec_category_id', $specCategory->id)
                         ->where('label', $label)
                         ->first();
 
                     if (!$specField) {
-                        $baseKey = Str::slug($specCategory->slug . ' ' . $label, '_');
+                        $baseKey = Str::slug($specCategory->slug . ' ' . $label . $fieldIndex, '_');
                         $key = $baseKey;
                         $kCounter = 1;
 
@@ -161,9 +163,9 @@ class DeviceController extends Controller
                         $specField->save();
                     }
 
-                    if ($valueRaw === null || $valueRaw === '') {
-                        continue;
-                    }
+                    // if ($valueRaw === null || $valueRaw === '') {
+                    //     continue;
+                    // }
 
                     $valueString = null;
                     $valueNumber = null;
@@ -639,6 +641,7 @@ class DeviceController extends Controller
             'brand_id' => 'required|exists:brands,id',
             'device_type_id' => 'required|exists:device_types,id',
             'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:devices,slug',
             'description' => 'nullable|string',
             'announcement_date' => 'nullable|date',
             'released_at' => 'nullable|date',
@@ -646,22 +649,22 @@ class DeviceController extends Controller
             'dimensions' => 'nullable|string|max:255',
             'thumbnail' => 'nullable|image|max:2048',
             // Device variants + offer price
-            'variants' => 'required|array|min:1',
-            'variants.*.label' => 'required|string|max:255',
+            'variants' => 'sometimes|nullable|array',
+            'variants.*.label' => 'sometimes|required_with:variants|string|max:255',
             'variants.*.ram_gb' => 'nullable|integer|min:0',
             'variants.*.storage_gb' => 'nullable|integer|min:0',
             'variants.*.model_code' => 'nullable|string|max:100',
             'variants.*.is_active' => 'nullable|boolean',
             'variants.*.offers' => 'nullable|array',
-            'variants.*.offers.*.store_id' => 'required|exists:stores,id',
-            'variants.*.offers.*.country_id' => 'required|exists:countries,id',
-            'variants.*.offers.*.currency_id' => 'required|exists:currencies,id',
-            'variants.*.offers.*.price' => 'required|numeric|min:0',
+            'variants.*.offers.*.store_id' => 'sometimes|required_with:variants|exists:stores,id',
+            'variants.*.offers.*.country_id' => 'sometimes|required_with:variants|exists:countries,id',
+            'variants.*.offers.*.currency_id' => 'sometimes|required_with:variants|exists:currencies,id',
+            'variants.*.offers.*.price' => 'sometimes|required_with:variants|numeric|min:0',
             'variants.*.offers.*.url' => 'nullable|url',
             'variants.*.offers.*.status' => 'nullable|boolean',
             'variants.*.offers.*.in_stock' => 'nullable|boolean',
             'variants.*.offers.*.is_featured' => 'nullable|boolean',
-            'primary_variant' => 'required|integer',
+            'primary_variant' => 'sometimes|nullable|integer',
             // Device Images
             'image_groups' => 'nullable|array',
             'image_groups.*.title' => 'required|string|max:255',
@@ -759,6 +762,7 @@ class DeviceController extends Controller
             'brand_id' => 'required|exists:brands,id',
             'device_type_id' => 'required|exists:device_types,id',
             'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:devices,slug,' . $id,
             'description' => 'nullable|string',
             'announcement_date' => 'nullable|date',
             'released_at' => 'nullable|date',
@@ -766,22 +770,22 @@ class DeviceController extends Controller
             'dimensions' => 'nullable|string|max:255',
             'thumbnail' => 'nullable|image|max:2048',
             // Device variants + offer price
-            'variants' => 'required|array|min:1',
-            'variants.*.label' => 'required|string|max:255',
+            'variants' => 'sometimes|nullable|array',
+            'variants.*.label' => 'sometimes|required_with:variants|string|max:255',
             'variants.*.ram_gb' => 'nullable|integer|min:0',
             'variants.*.storage_gb' => 'nullable|integer|min:0',
             'variants.*.model_code' => 'nullable|string|max:100',
             'variants.*.is_active' => 'nullable|boolean',
             'variants.*.offers' => 'nullable|array',
-            'variants.*.offers.*.store_id' => 'required|exists:stores,id',
-            'variants.*.offers.*.country_id' => 'required|exists:countries,id',
-            'variants.*.offers.*.currency_id' => 'required|exists:currencies,id',
-            'variants.*.offers.*.price' => 'required|numeric|min:0',
+            'variants.*.offers.*.store_id' => 'sometimes|required_with:variants|exists:stores,id',
+            'variants.*.offers.*.country_id' => 'sometimes|required_with:variants|exists:countries,id',
+            'variants.*.offers.*.currency_id' => 'sometimes|required_with:variants|exists:currencies,id',
+            'variants.*.offers.*.price' => 'sometimes|required_with:variants|numeric|min:0',
             'variants.*.offers.*.url' => 'nullable|url',
             'variants.*.offers.*.status' => 'nullable|boolean',
             'variants.*.offers.*.in_stock' => 'nullable|boolean',
             'variants.*.offers.*.is_featured' => 'nullable|boolean',
-            'primary_variant' => 'required|integer',
+            'primary_variant' => 'sometimes|nullable|integer',
             // Device Images
             'image_groups' => 'nullable|array',
             'image_groups.*.title' => 'required|string|max:255',

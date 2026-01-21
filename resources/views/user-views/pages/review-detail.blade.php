@@ -57,7 +57,7 @@
                             class="flex items-center gap-1 h-full hover:bg-[#F9A13D] transition-colors px-2 transition">
                             <i class="fa-solid fa-mobile-screen"></i> {{ $review->device->name }}
                         </a>
-                        <a href=""
+                        <a href="{{ route('device.opinions', ['slug' => $review->device->slug, 'id' => $review->device->id])}}"
                             class="flex items-center gap-1 h-full hover:bg-[#F9A13D] transition-colors px-2 transition">
                             <i class="fa-regular fa-user"></i> User Reviews
                         </a>
@@ -80,6 +80,10 @@
                 class="flex items-center gap-1 text-white bg-blue-400 px-3 py-1 rounded hover:bg-blue-500 transition">
                 <i class="fa-brands fa-twitter"></i> Tweet
             </a>
+            <button onclick="copyToClipboard('{{ request()->fullUrl() }}')"
+                class="flex items-center gap-1 text-white bg-gray-600 px-3 py-1 rounded hover:bg-gray-700 transition">
+                <i class="fa-solid fa-link"></i> Copy Link
+            </button>
         </div>
 
         <!-- Review Meta -->
@@ -191,4 +195,16 @@
 @endsection
 
 @push('scripts')
+<script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(
+                function () {
+                    alert("Link copied to clipboard!");
+                },
+                function (err) {
+                    console.error("Could not copy text: ", err);
+                }
+            );
+        }
+    </script>
 @endpush
