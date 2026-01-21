@@ -31,7 +31,7 @@
                 {{-- Image --}}
                 <img src="{{ $featuredReview->cover_image_url ? asset($featuredReview->cover_image_url) : asset('images/default-review.jpg') }}"
                     alt="{{ $featuredReview->title }}"
-                 class="w-full h-full object-cover"/>
+                 class="w-full h-full object-contain"/>
             <h2 class="review-title absolute bottom-3 left-2 text-[22px] md:text-[28px] font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] bg-transparent px-2">
                         {{ $featuredReview->title }}
                     </h2>
@@ -106,7 +106,7 @@
         @foreach($sideArticles as $index => $article)
             <div class="side-review relative overflow-hidden flex-1 h-[150px] md:h-auto cursor-pointer group">
                 <a href="{{ route('article-detail', ['slug' => $article->slug, 'type' => $article->type]) }}"
-                    class="block h-full">
+                    class="block">
                     {{-- Metadata --}}
                     <div class="absolute top-2 left-2 z-10">
                         <span
@@ -122,7 +122,7 @@
                     </div>
                 <img src="{{ $article->thumbnail_url }}" 
                      alt="{{ $article->title }}" 
-                     class="w-full h-full object-cover"/>
+                     class="w-full h-full object-contain"/>
                 <h3 class="review-title absolute bottom-3 left-2 text-[16px] md:text-[18px] font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] bg-transparent px-2">
                             {{ $article->title }}
                         </h3>

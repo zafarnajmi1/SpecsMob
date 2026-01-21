@@ -813,8 +813,8 @@ class WebController extends Controller
             ->with(['brand', 'deviceType'])
             ->firstOrFail();
 
-        // Load specifications
-        $device->load(['specValues.field.category']);
+        // Load specifications and active offers for price calculation
+        $device->load(['specValues.field.category', 'activeOffers.currency', 'activeOffers.store']);
 
         // Increment hit statistic
         $stats = $device->stats()->firstOrCreate(['device_id' => $device->id]);
@@ -868,8 +868,41 @@ class WebController extends Controller
             ->take(6)
             ->get();
 
+        // Similar Priced Devices Logic
+        $similar_priced_devices = collect();
+        $cheapestOffer = $device->activeOffers->sortBy('price')->first();
+
+        if ($cheapestOffer) {
+            $targetPrice = $cheapestOffer->price;
+            $currencyId = $cheapestOffer->currency_id;
+
+            // +/- 20% price range
+            $minPrice = $targetPrice * 0.8;
+            $maxPrice = $targetPrice * 1.2;
+
+            $similar_priced_devices = Device::where('id', '!=', $device->id)
+                ->where('is_published', true)
+                ->whereHas('activeOffers', function ($q) use ($minPrice, $maxPrice, $currencyId) {
+                    $q->where('currency_id', $currencyId)
+                        ->whereBetween('price', [$minPrice, $maxPrice]);
+                })
+                ->with([
+                    'activeOffers' => function ($q) use ($currencyId) {
+                        $q->where('currency_id', $currencyId)->orderBy('price');
+                    }
+                ])
+                ->take(6)
+                ->get()
+                ->sortBy(function ($d) use ($targetPrice) {
+                    // Sort by closeness to target price
+                    $p = $d->activeOffers->first()->price ?? 0;
+                    return abs($p - $targetPrice);
+                });
+        }
+
         return view('user-views.pages.device-detail', compact(
             'device',
+            'similar_priced_devices',
             'opinions',
             'recommendedArticles',
             'latestDevices',
@@ -1114,7 +1147,8 @@ class WebController extends Controller
         if ($request->has('devices')) {
             $slugs = explode(',', $request->devices);
             $validSlugs = array_filter($slugs, function ($s) {
-                return !empty(trim($s)); });
+                return !empty(trim($s));
+            });
 
             $fetchedDevices = collect();
             if (!empty($validSlugs)) {

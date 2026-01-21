@@ -97,9 +97,9 @@ class DeviceController extends Controller
             foreach ($specCategoriesInput as $catIndex => $categoryData) {
                 $categoryName = trim($categoryData['name'] ?? '');
 
-                // if ($categoryName === '') {
-                //     continue;
-                // }
+                if ($categoryName === '') {
+                    continue;
+                }
 
                 $baseSlug = Str::slug($categoryName);
                 $slug = $baseSlug;
@@ -126,21 +126,21 @@ class DeviceController extends Controller
                 $fieldsData = $categoryData['fields'] ?? [];
 
                 foreach ($fieldsData as $fieldIndex => $fieldData) {
-                    $label = trim($fieldData['label'] ?? 'null');
+                    $label = trim($fieldData['label'] ?? '');
                     $type = $fieldData['type'] ?? 'string';
-                    $valueRaw = $fieldData['value'] ?? 'null';
+                    $valueRaw = $fieldData['value'] ?? null;
                     $isFilterable = !empty($fieldData['filterable']);
 
-                    // if ($label === '' && ($valueRaw === null || $valueRaw === '')) {
-                    //     continue;
-                    // }
+                    if ($label === '' && ($valueRaw === null || $valueRaw === '')) {
+                        continue;
+                    }
 
                     $specField = SpecField::where('spec_category_id', $specCategory->id)
                         ->where('label', $label)
                         ->first();
 
                     if (!$specField) {
-                        $baseKey = Str::slug($specCategory->slug . ' ' . $label . $fieldIndex, '_');
+                        $baseKey = Str::slug($specCategory->slug . ' ' . $label, '_');
                         $key = $baseKey;
                         $kCounter = 1;
 
@@ -163,9 +163,9 @@ class DeviceController extends Controller
                         $specField->save();
                     }
 
-                    // if ($valueRaw === null || $valueRaw === '') {
-                    //     continue;
-                    // }
+                    if ($valueRaw === null || $valueRaw === '') {
+                        continue;
+                    }
 
                     $valueString = null;
                     $valueNumber = null;

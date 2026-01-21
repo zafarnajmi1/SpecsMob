@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('image')->nullable()->after('email');        // profile image
+        $table->string('image')->nullable()->after('email');        // profile image
         $table->string('address')->nullable()->after('image');      // user location (e.g. J7Z)
        $table->string('country')->nullable()->after('image');   // optional full country
         $table->text('bio')->nullable()->after('country');          // optional description
