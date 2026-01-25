@@ -87,7 +87,7 @@
             <i class="fa-solid fa-mobile {{ $activeTab === 'detail' ? 'text-white' : 'text-gray-400' }}"></i>
             <span class="hidden sm:inline">Specifications</span>
         </a>
-        @if($device->reviews && $device->reviews->first())
+        @if($device->reviews && $device->reviews->first() && $device->reviews->first()->isPublished())
             <a href="{{ route('review-detail', $device->reviews->first()->slug) }}"
                 class="flex-1 flex items-center justify-center gap-2 py-3 px-2 text-xs font-semibold {{ $activeTab === 'reviews' ? 'bg-[#F9A13D] text-white' : 'text-gray-700 hover:bg-[#F9A13D] hover:text-white' }} transition-colors border-r border-gray-200 last:border-r-0">
                 <i class="fa-solid fa-star {{ $activeTab === 'reviews' ? 'text-white' : 'text-yellow-500' }}"></i>

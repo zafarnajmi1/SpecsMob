@@ -80,9 +80,9 @@
 
     <!-- Footer Info bar -->
     <div
-        class="hidden lg:flex flex-wrap justify-end items-center border-t border-gray-400 shadow text-sm text-white px-4 md:px-6 h-[2.5rem] bg-[#F9A13D] backdrop-blur-sm mb-5">
+        class="hidden lg:flex flex-wrap justify-end items-center border-t border-gray-400 shadow text-sm text-white px-4 md:px-6 h-[2.5rem] bg-[#F9A13D] backdrop-blur-sm my-5">
         <div class="flex h-full">
-            @if($device->reviews && $device->reviews->first())
+            @if($device->reviews && $device->reviews->first() && $device->reviews->first()->isPublished())
                 <a href="{{ route('review-detail', $device->reviews->first()->slug) }}"
                     class="flex items-center gap-1 hover:bg-white hover:text-[#F9A13D] transition-colors px-3 border-r border-gray-200 last:border-r-0">
                     <i class="fa-solid fa-star"></i> REVIEWS

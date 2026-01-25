@@ -86,7 +86,7 @@
             <span class="uppercase">Specs</span>
         </a>
 
-        @if($device->reviews && $device->reviews->first())
+        @if($device->reviews && $device->reviews->first() && $device->reviews->first()->isPublished())
             <a href="{{ route('review-detail', $device->reviews->first()->slug) }}"
                 class="flex-1 flex items-center justify-center gap-1 py-3 px-1 text-[10px] font-semibold {{ $activeTab === 'reviews' ? 'bg-[#F9A13D] text-white' : 'text-gray-700 hover:bg-gray-50' }} transition-colors border-r border-gray-200">
                 <i class="fa-solid fa-star text-sm {{ $activeTab === 'reviews' ? 'text-white' : 'text-yellow-500' }}"></i>
