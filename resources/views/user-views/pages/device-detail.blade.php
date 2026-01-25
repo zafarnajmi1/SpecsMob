@@ -80,9 +80,9 @@
 
     <!-- Footer Info bar -->
     <div
-        class="hidden lg:flex flex-wrap justify-end items-center border-t border-gray-400 shadow text-sm text-white px-4 md:px-6 h-[2.5rem] bg-[#F9A13D] backdrop-blur-sm">
+        class="hidden lg:flex flex-wrap justify-end items-center border-t border-gray-400 shadow text-sm text-white px-4 md:px-6 h-[2.5rem] bg-[#F9A13D] backdrop-blur-sm my-5">
         <div class="flex h-full">
-            @if($device->reviews && $device->reviews->first())
+            @if($device->reviews && $device->reviews->first() && $device->reviews->first()->isPublished())
                 <a href="{{ route('review-detail', $device->reviews->first()->slug) }}"
                     class="flex items-center gap-1 hover:bg-white hover:text-[#F9A13D] transition-colors px-3 border-r border-gray-200 last:border-r-0">
                     <i class="fa-solid fa-star"></i> REVIEWS
@@ -115,134 +115,79 @@
 
     <!-- Pricing section -->
     <!-- Pricing Tables -->
+    <!-- Pricing Tables -->
     <div class="hidden lg:block space-y-8 px-2">
-        @php
-            // Group offers by country
-            $offersByCountry = $device->offers->groupBy('country.name');
-
-            // Get ALL variants for the device (not just per country)
-            $allVariants = $device->variants()
-                ->where('device_variants.status', true)
-                ->orderBy('storage_gb')
-                ->orderBy('ram_gb')
-                ->get();
-        @endphp
-
-        @if($offersByCountry->isEmpty() || $allVariants->isEmpty())
-            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 my-6 rounded">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm text-yellow-700">
-                            No pricing information available for {{ $device->name }} at the moment. Please check back later.
-                        </p>
-                    </div>
+        @if($device->offers->isNotEmpty())
+            @php
+                $allVariants = $device->variants()
+                    ->where('device_variants.status', true)
+                    ->orderBy('storage_gb')
+                    ->orderBy('ram_gb')
+                    ->get();
+                $offersByVariant = $device->offers->groupBy('device_variant_id');
+            @endphp
+            
+            <div class="bg-white border text-[13px] border-gray-300 rounded shadow-sm overflow-hidden mb-8">
+                <div class="bg-[#f0f0f0] px-4 py-2 border-b border-gray-300 flex items-center justify-between">
+                    <h3 class="font-bold text-[#b42e47] uppercase text-[15px] flex items-center gap-2">
+                        Pricing
+                        <div class="group relative inline-block ml-1">
+                            <i class="fa-solid fa-circle-info text-gray-400 hover:text-gray-600 cursor-help"></i>
+                            <div class="absolute left-0 bottom-full mb-2 w-64 p-3 bg-white border border-gray-200 shadow-xl rounded text-xs text-gray-600 hidden group-hover:block z-20 font-normal normal-case">
+                                These are the best offers from our affiliate partners. We may get a commission from qualifying sales.
+                                <div class="absolute -bottom-1 left-2 w-2 h-2 bg-white border-b border-r border-gray-200 transform rotate-45"></div>
+                            </div>
+                        </div>
+                    </h3>
                 </div>
-            </div>
-        @else
-            @foreach($offersByCountry as $countryName => $countryOffers)
-                @php
-                    // Group offers by store for this country
-                    $offersByStore = $countryOffers->groupBy('store.name');
 
-                    // Create a map of variant_id => offers for quick lookup
-                    $variantOffersMap = [];
-                    foreach ($offersByStore as $storeName => $storeOffers) {
-                        foreach ($storeOffers as $offer) {
-                            $variantOffersMap[$storeName][$offer->device_variant_id] = $offer;
-                        }
-                    }
-                @endphp
-
-                <div class="bg-white overflow-hidden mb-10">
-                    <div class="text-[24px] block font-bold text-[#555] border-b-2 border-[#555] p-0">
-                        {{ $countryName }}
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full border-collapse">
-                            <thead>
-                                <tr>
-                                    <!-- Store column with auto width -->
-                                    <th
-                                        class="px-4 py-3 text-left text-xl font-medium text-gray-700 bg-white border border-gray-300 min-w-[200px]">
-                                        Store
-                                    </th>
-                                    <!-- Variant columns with fixed width -->
-                                    @foreach($allVariants as $index => $variant)
-                                        <th
-                                            class="px-4 py-3 text-center text-[14px] font-medium text-black border border-gray-300 min-w-[116px] {{ $index % 2 != 0 ? 'bg-white' : 'bg-[#fafafa]' }}">
-                                            @if($variant->storage_gb && $variant->ram_gb)
-                                                {{ $variant->storage_gb }}GB {{ $variant->ram_gb }}GB RAM
-                                            @else
-                                                {{ $variant->label }}
-                                            @endif
-                                        </th>
-                                    @endforeach
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($offersByStore as $storeName => $storeOffers)
-                                    @php
-                                        $store = $storeOffers->first()->store;
-                                    @endphp
-                                    <tr class="hover:bg-gray-50 transition-colors duration-150">
-                                        <!-- Store cell with auto width -->
-                                        <td
-                                            class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 bg-white border border-gray-300">
-                                            <div class="flex items-center">
-                                                @if($store->logo_url)
-                                                    <img src="{{ $store->logo_url }}" alt="{{ $storeName }}"
-                                                        class="h-8 w-auto max-w-[180px] object-contain">
+                <table class="w-full text-left border-collapse">
+                    <tbody>
+                        @foreach($allVariants as $variant)
+                            @php
+                                $variantOffers = $offersByVariant->get($variant->id);
+                            @endphp
+                            
+                            @if($variantOffers && $variantOffers->isNotEmpty())
+                                @php
+                                    // Get unique offers by store (lowest price per store)
+                                    $uniqueStoreOffers = $variantOffers->sortBy('price')->unique('store_id')->take(3); 
+                                @endphp
+                                <tr class="border-b border-gray-200 last:border-0 hover:bg-gray-50 transition-colors">
+                                    <td class="px-4 py-3 font-semibold text-gray-700 w-[180px] bg-gray-50/50">
+                                        @if($variant->storage_gb){{ $variant->storage_gb }}GB @endif
+                                        @if($variant->ram_gb){{ $variant->ram_gb }}GB RAM @endif
+                                        @if(!$variant->storage_gb && !$variant->ram_gb) {{ $variant->label ?? 'Base Model' }} @endif
+                                    </td>
+                                    
+                                    @foreach($uniqueStoreOffers as $offer)
+                                        <td class="px-4 py-2">
+                                            <a href="{{ $offer->url }}" target="_blank" rel="nofollow noopener" class="flex items-center gap-3 hover:opacity-80 transition group">
+                                                <span class="font-bold text-[#b42e47] text-[15px] group-hover:underline decoration-[#b42e47]">
+                                                    {{ $offer->currency->symbol ?? '$' }}&#8201;{{ number_format($offer->price, 2) }}
+                                                </span>
+                                                @if($offer->store->logo_url)
+                                                    <img src="{{ $offer->store->logo_url }}" alt="{{ $offer->store->name }}" class="h-5 w-auto object-contain p-0.5 bg-white rounded border border-gray-100">
                                                 @else
-                                                    <span class="font-medium text-gray-800">{{ $storeName }}</span>
+                                                    <span class="text-xs text-gray-500 font-medium px-2 py-1 bg-gray-100 rounded">{{ $offer->store->name }}</span>
                                                 @endif
-                                            </div>
+                                            </a>
                                         </td>
-                                        <!-- Price cells with fixed width -->
-                                        @foreach($allVariants as $index => $variant)
-                                            @php
-                                                $colBgClass = $index % 2 != 0 ? 'bg-white' : 'bg-[#fafafa]';
-                                                $variantOffer = $variantOffersMap[$storeName][$variant->id] ?? null;
-                                            @endphp
-                                            <td
-                                                class="px-4 py-3 whitespace-nowrap text-sm text-center border border-gray-300 {{ $colBgClass }} min-w-[116px]">
-                                                @if($variantOffer)
-                                                    <div class="flex flex-col items-center justify-center h-full">
-                                                        <a href="{{ $variantOffer->url ?: '#' }}" target="_blank"
-                                                            class="text-[#F9A13D] font-bold text-[17px] hover:underline transition-colors leading-tight"
-                                                            @if($variantOffer->url) rel="nofollow noopener" @endif>
-                                                            {{ $variantOffer->currency->symbol ?? '' }}{{ number_format($variantOffer->price, 2)
-                                                            }}
-                                                        </a>
-                                                        @if(!$variantOffer->in_stock)
-                                                            <span class="text-xs text-[#F9A13D] mt-1 font-medium">Out of stock</span>
-                                                        @endif
-                                                    </div>
-                                                @else
-                                                    <span class="text-gray-400 text-lg">—</span>
-                                                @endif
-                                            </td>
-                                        @endforeach
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            @endforeach
+                                    @endforeach
+                                    {{-- Clean empty cells for layout consistency if needed, though simple td loop is usually fine for this layout --}}
+                                </tr>
+                            @endif
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         @endif
     </div>
 
 
     <!-- {{-- Devices Grid --}} -->
     <!-- Similarly Priced Devices Module -->
+    @if($device->offers->isNotEmpty() && isset($similar_priced_devices) && $similar_priced_devices->count() > 0)
     <div class="bg-white mt-8 mb-8">
         <div class="border-b-2 border-gray-300 pb-2 mb-6">
             <h4 class="text-[#F9A13D] font-bold text-xl uppercase flex items-center justify-between">
@@ -306,14 +251,9 @@
                     </div>
                 @endforeach
             </div>
-        @else
-            <div
-                class="flex flex-col items-center justify-center py-10 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                <i class="fas fa-search-dollar text-4xl mb-3 text-gray-300"></i>
-                <p class="text-gray-500 font-medium">No similarly priced devices found at the moment.</p>
-            </div>
         @endif
     </div>
+    @endif
 
 
 

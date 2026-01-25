@@ -60,7 +60,7 @@
 
                     <img src="{{ $review->cover_image_url ? asset($review->cover_image_url) : asset('images/default-review.jpg') }}"
                         alt="{{ $review->title }}"
-                     class="w-full h-full object-contain"/>
+                     class="w-full h-full object-cover"/>
                 <h3 class="review-title absolute bottom-3 left-2 text-[16px] md:text-[18px] font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] bg-transparent px-2">
                             {{ $review->title }}
                         </h3>

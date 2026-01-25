@@ -120,11 +120,23 @@
     <div class="bg-white py-6">
         <div class="container mx-auto px-4">
             @php
+                // Collect all field IDs present in any of the active devices to filter displayed specs
+                $d1FieldIds = $device1 ? $device1->specValues->pluck('spec_field_id') : collect();
+                $d2FieldIds = $device2 ? $device2->specValues->pluck('spec_field_id') : collect();
+                $d3FieldIds = $device3 ? $device3->specValues->pluck('spec_field_id') : collect();
+
+                $activeFieldIds = $d1FieldIds->concat($d2FieldIds)->concat($d3FieldIds)->unique()->values();
+
                 $categories = \App\Models\SpecCategory::with([
-                    'fields' => function ($q) {
-                        $q->orderBy('order');
+                    'fields' => function ($q) use ($activeFieldIds) {
+                        $q->whereIn('id', $activeFieldIds)->orderBy('order');
                     }
-                ])->orderBy('order')->get();
+                ])
+                    ->whereHas('fields', function ($q) use ($activeFieldIds) {
+                        $q->whereIn('id', $activeFieldIds);
+                    })
+                    ->orderBy('order')
+                    ->get();
 
                 // Pre-map specs for quick lookup
                 $d1Specs = $device1 ? $device1->specValues->groupBy('spec_field_id') : collect();
@@ -309,11 +321,23 @@
     <div class="bg-white py-6">
         <div class="container mx-auto px-4">
             @php
+                // Collect all field IDs present in any of the active devices to filter displayed specs
+                $d1FieldIds = $device1 ? $device1->specValues->pluck('spec_field_id') : collect();
+                $d2FieldIds = $device2 ? $device2->specValues->pluck('spec_field_id') : collect();
+                $d3FieldIds = $device3 ? $device3->specValues->pluck('spec_field_id') : collect();
+
+                $activeFieldIds = $d1FieldIds->concat($d2FieldIds)->concat($d3FieldIds)->unique()->values();
+
                 $categories = \App\Models\SpecCategory::with([
-                    'fields' => function ($q) {
-                        $q->orderBy('order');
+                    'fields' => function ($q) use ($activeFieldIds) {
+                        $q->whereIn('id', $activeFieldIds)->orderBy('order');
                     }
-                ])->orderBy('order')->get();
+                ])
+                    ->whereHas('fields', function ($q) use ($activeFieldIds) {
+                        $q->whereIn('id', $activeFieldIds);
+                    })
+                    ->orderBy('order')
+                    ->get();
 
                 // Pre-map specs for quick lookup
                 $d1Specs = $device1 ? $device1->specValues->groupBy('spec_field_id') : collect();
@@ -443,14 +467,14 @@
                                 const div = document.createElement('div');
                                 div.className = 'p-3 hover:bg-orange-50 cursor-pointer flex items-center gap-3 border-b border-gray-50 last:border-0 transition-colors group';
                                 div.innerHTML = `
-                                        <div class="w-10 h-12 flex-shrink-0 bg-gray-50 rounded p-1 flex items-center justify-center">
-                                            <img src="${device.thumbnail_url}" class="max-h-full max-w-full object-contain" alt="${device.name}">
-                                        </div>
-                                        <div class="flex-1">
-                                            <div class="text-sm font-semibold group-hover:text-[#F9A13D]">${device.name}</div>
-                                            <div class="text-xs text-gray-400 capitalize">${device.slug.split('-')[0]}</div>
-                                        </div>
-                                    `;
+                                                <div class="w-10 h-12 flex-shrink-0 bg-gray-50 rounded p-1 flex items-center justify-center">
+                                                    <img src="${device.thumbnail_url}" class="max-h-full max-w-full object-contain" alt="${device.name}">
+                                                </div>
+                                                <div class="flex-1">
+                                                    <div class="text-sm font-semibold group-hover:text-[#F9A13D]">${device.name}</div>
+                                                    <div class="text-xs text-gray-400 capitalize">${device.slug.split('-')[0]}</div>
+                                                </div>
+                                            `;
 
                                 div.onclick = async () => {
                                     // Construct the new URL params based on current state + new selection
@@ -471,10 +495,10 @@
                                     } else {
                                         // Fallback to Blade-injected initial state if URL param is missing
                                         currentDevices = [
-                                            @if($device1) '{{ $device1->slug }}' @else '' @endif,
-                                            @if($device2) '{{ $device2->slug }}' @else '' @endif,
-                                            @if($device3) '{{ $device3->slug }}' @else '' @endif
-                                        ];
+                                            @if($device1) '{{ $device1->slug }}' @else'' @endif,
+                                            @if($device2) '{{ $device2->slug }}' @else'' @endif,
+                                            @if($device3) '{{ $device3->slug }}' @else'' @endif
+                                                ];
                                     }
 
                                     // Ensure we have 3 slots
