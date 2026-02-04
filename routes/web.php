@@ -21,6 +21,7 @@ Route::controller(WebController::class)
         Route::get('news', 'news')->name('news');
         Route::get('/reviews', 'reviews')->name('reviews');
         Route::get('/videos', 'videos')->name('videos');
+        Route::get('/rumor-mill', 'rumorMill')->name('rumor-mill');
         Route::get('/featured', 'featured')->name('featured');
         Route::get('/phone-finder', 'phoneFinder')->name('phone-finder');
         Route::get('/phone-finder-results', 'phoneFinderResults')->name('phone-finder-results');
