@@ -1289,4 +1289,8 @@ class WebController extends Controller
         // ->withQueryString();
         return view('user-views.pages.phone-finder-results', compact('devices'));
     }
+
+    public function rumorMill(){
+        return view('user-views.pages.rumor_mill');
+    }
 }

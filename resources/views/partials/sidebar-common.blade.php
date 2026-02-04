@@ -35,7 +35,7 @@
             <span>All Brands</span>
         </a>
 
-        <a href="#"
+        <a href="{{route('rumor-mill')}}"
             class="text-white text-[11px] font-bold uppercase flex items-center justify-center gap-2 py-3 px-2 hover:bg-white hover:text-[#F9A13D] hover:border hover:border-[#F9A13D] duration-100">
             <i class="fas fa-volume-up"></i>
             <span>Rumor Mill</span>
