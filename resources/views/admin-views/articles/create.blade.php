@@ -117,8 +117,8 @@
                                             id="type" name="type" required>
                                         <option value="">Select Type</option>
                                         <option value="news" {{ old('type') == 'news' ? 'selected' : '' }}>News</option>
-                                        <option value="article" {{ old('type') == 'article' ? 'selected' : '' }}>Blog Post</option>
-                                        <option value="featured" {{ old('type') == 'featured' ? 'selected' : '' }}>Featured Content</option>
+                                        <!-- <option value="article" {{ old('type') == 'article' ? 'selected' : '' }}>Blog Post</option>
+                                        <option value="featured" {{ old('type') == 'featured' ? 'selected' : '' }}>Featured Content</option> -->
                                     </select>
                                     @error('type')
                                         <div class="invalid-feedback">{{ $message }}</div>
