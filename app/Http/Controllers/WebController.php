@@ -1290,7 +1290,43 @@ class WebController extends Controller
         return view('user-views.pages.phone-finder-results', compact('devices'));
     }
 
-    public function rumorMill(){
-        return view('user-views.pages.rumor_mill');
+    public function rumorMill(Request $request)
+    {
+        $query = Device::where('is_published', true)
+            ->where('release_status', 'rumored');
+
+        // Search Filter
+        if ($request->filled('q')) {
+            $query->where('name', 'like', '%' . $request->q . '%');
+        }
+
+        // Type Filter
+        if ($request->filled('type')) {
+            $query->where('device_type_id', $request->type);
+        }
+
+        // Year Filter
+        if ($request->filled('year')) {
+            $query->whereYear('released_at', $request->year);
+        }
+
+        // Sorting
+        $sort = $request->get('sort', 'popularity');
+        if ($sort === 'popularity') {
+            $query->orderBy('released_at', 'desc')->orderBy('id', 'desc');
+        } else {
+            $query->latest('created_at');
+        }
+
+        $devices = $query->paginate(11)->withQueryString();
+
+        $deviceTypes = \App\Models\DeviceType::all();
+        $years = \App\Models\Device::whereNotNull('released_at')
+            ->selectRaw('YEAR(released_at) as year')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+
+        return view('user-views.pages.rumor_mill', compact('devices', 'deviceTypes', 'years'));
     }
 }

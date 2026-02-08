@@ -2,6 +2,7 @@
     // 1. Resolve Global Settings (Cache these in production ideally)
     $globalSeo = \App\Models\SeoSetting::first();
     $globalSchema = \App\Models\SeoSchemaSetting::first();
+    $sitemapSettings = \App\Models\SeoSitemapSetting::first();
 
     // 2. Resolve Current Object/SEO
     // Priority: Explicit $seo -> $article -> $device -> $page_seo (if exists)
@@ -18,6 +19,10 @@
             $currentSeo = $device->seo;
             $currentObject = $device;
             $fallbackImage = $device->thumbnail_url;
+        } elseif (isset($brand) && $brand instanceof \App\Models\Brand) {
+            $currentSeo = $brand->seo;
+            $currentObject = $brand;
+            $fallbackImage = $brand->logo ? asset('storage/' . $brand->logo) : null;
         } elseif (isset($review) && $review instanceof \App\Models\Review) {
             // If Review model exists and has SEO
             // $currentSeo = $review->seo; 
@@ -35,6 +40,8 @@
             $pageTitle = $currentObject->title;
         } elseif ($currentObject instanceof \App\Models\Device) {
             $pageTitle = $currentObject->name . ' - Full phone specifications';
+        } elseif ($currentObject instanceof \App\Models\Brand) {
+            $pageTitle = $currentObject->name . ' - All phones';
         }
     }
     // Final fallback to Global Default
@@ -55,6 +62,8 @@
         } elseif ($currentObject instanceof \App\Models\Device) {
             // GSMArena style description
             $pageDesc = $currentObject->name . " smartphone. Announced " . ($currentObject->announcement_date ? $currentObject->announcement_date->format('Y, F') : '') . ". Features " . ($currentObject->main_camera_short ? $currentObject->main_camera_short . " camera, " : "") . ($currentObject->battery_short ? $currentObject->battery_short . " battery, " : "") . ($currentObject->storage_short ? $currentObject->storage_short . " storage, " : "") . ($currentObject->ram_short ? $currentObject->ram_short . " RAM, " : "") . ($currentObject->chipset_short ?? '') . " chipset.";
+        } elseif ($currentObject instanceof \App\Models\Brand) {
+            $pageDesc = "List of all mobile phones by " . $currentObject->name . ".";
         }
     }
     $finalDesc = $pageDesc ?: ($globalSeo?->default_meta_description ?? '');
@@ -65,7 +74,30 @@
 
 
     // -- Canonical URL --
-    $finalCanonical = $currentSeo?->canonical_url ?: url()->current();
+    if ($currentSeo && $currentSeo->canonical_url) {
+        $finalCanonical = $currentSeo->canonical_url;
+    } else {
+        $baseUrl = $globalSeo?->canonical_base_url;
+        if ($baseUrl) {
+            $finalCanonical = rtrim($baseUrl, '/') . '/' . ltrim(request()->path(), '/');
+        } else {
+            $finalCanonical = url()->current();
+        }
+    }
+
+    // -- Hreflang --
+    $hreflangs = [];
+    $currentPath = ltrim(request()->path(), '/');
+
+    if ($sitemapSettings?->hreflang_en) {
+        $hreflangs['en'] = rtrim($sitemapSettings->hreflang_en, '/') . '/' . $currentPath;
+    }
+    if ($sitemapSettings?->hreflang_en_pk) {
+        $hreflangs['en-pk'] = rtrim($sitemapSettings->hreflang_en_pk, '/') . '/' . $currentPath;
+    }
+    if ($sitemapSettings?->hreflang_en_in) {
+        $hreflangs['en-in'] = rtrim($sitemapSettings->hreflang_en_in, '/') . '/' . $currentPath;
+    }
 
 
     // -- Image --
@@ -93,6 +125,9 @@
 @endif
 <meta name="robots" content="{{ $robots }}">
 <link rel="canonical" href="{{ $finalCanonical }}">
+@foreach($hreflangs as $lang => $url)
+    <link rel="alternate" hreflang="{{ $lang }}" href="{{ $url }}" />
+@endforeach
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
@@ -119,8 +154,8 @@
 <!-- Schema.org JSON-LD -->
 @if(isset($currentSeo->json_ld) && $currentSeo->json_ld)
     <script type="application/ld+json">
-            {!! $currentSeo->json_ld !!}
-        </script>
+                    {!! $currentSeo->json_ld !!}
+                </script>
 @elseif($currentObject instanceof \App\Models\Article && isset($globalSchema->article_schema_template))
     @php
         $schema = $globalSchema->article_schema_template;
@@ -137,8 +172,8 @@
         );
     @endphp
     <script type="application/ld+json">
-            {!! $schema !!}
-        </script>
+                    {!! $schema !!}
+                </script>
 @elseif($currentObject instanceof \App\Models\Device && isset($globalSchema->product_schema_template))
     @php
         $schema = $globalSchema->product_schema_template;
@@ -153,14 +188,14 @@
             $schema
         );
     @endphp
-    <script type="application/ld+json">
-            {!! $schema !!}
-        </script>
+        <script type="application/ld+json">
+                    {!! $schema !!}
+                </script>
 @endif
 
 <!-- Global Organization Schema -->
 @if(isset($globalSchema->organization_schema))
     <script type="application/ld+json">
-            {!! $globalSchema->organization_schema !!}
-        </script>
+                {!! $globalSchema->organization_schema !!}
+            </script>
 @endif

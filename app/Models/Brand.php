@@ -6,8 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Brand extends Model
 {
+    use \App\Traits\Seoable;
     protected $fillable = ['name', 'slug', 'logo', 'description', 'status', 'cover_img'];
-    
+
     protected $casts = [
         'status' => 'boolean'
     ];

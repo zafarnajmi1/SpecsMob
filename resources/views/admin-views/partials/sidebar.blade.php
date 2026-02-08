@@ -53,7 +53,7 @@
                             @endcan
 
                             {{-- Article Types --}}
-                            <li class="submenu-item {{ request()->query('type') == 'news' ? 'active' : '' }}">
+                            <!-- <li class="submenu-item {{ request()->query('type') == 'news' ? 'active' : '' }}">
                                 <a href="{{ route('admin.articles.index', ['type' => 'news']) }}">News Articles</a>
                             </li>
                             <li class="submenu-item {{ request()->query('type') == 'article' ? 'active' : '' }}">
@@ -61,7 +61,7 @@
                             </li>
                             <li class="submenu-item {{ request()->query('type') == 'featured' ? 'active' : '' }}">
                                 <a href="{{ route('admin.articles.index', ['type' => 'featured']) }}">Featured Content</a>
-                            </li>
+                            </li> -->
 
                             {{-- Tags --}}
                             @can('tag_manage')

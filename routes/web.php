@@ -14,6 +14,9 @@ Auth::routes();
 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+Route::get('/robots.txt', [\App\Http\Controllers\SeoFrontController::class, 'robots']);
+Route::get('/sitemap.xml', [\App\Http\Controllers\SeoFrontController::class, 'sitemap']);
+
 Route::controller(WebController::class)
     ->group(function () {
 
