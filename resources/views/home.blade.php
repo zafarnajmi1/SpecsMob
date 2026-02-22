@@ -33,6 +33,7 @@
             </div>
 
         </div>
+        
     @endif
 
     @if ($featuredReviews->isNotEmpty())
