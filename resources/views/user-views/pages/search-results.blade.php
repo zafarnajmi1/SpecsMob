@@ -47,7 +47,7 @@
                                 <div class="py-3 border-t border-[#f8f8f8] transition-all duration-300 group-hover:bg-[#F9A13D]">
                                     <strong class="text-[#555] font-bold text-[14px] group-hover:text-white px-2 line-clamp-1">
                                         {{ $device->name }}
-                                    </strong>
+                                    </strong> 
                                 </div>
                             </a>
                         @endforeach
