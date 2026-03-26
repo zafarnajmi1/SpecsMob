@@ -75,7 +75,7 @@ class DeviceController extends Controller
             $device->allow_fans = $request->boolean('allow_fans');
 
             if ($request->hasFile('thumbnail')) {
-                $path = $request->file('thumbnail')->store('devices/thumbnails', 'public');
+                $path = $request->file('thumbnail')->store('devices/thumbnails', 's3');
                 $device->thumbnail_url = $path;
             }
 
@@ -490,7 +490,7 @@ class DeviceController extends Controller
 
                     // New file uploaded
                     if (isset($imgData['image']) && $imgData['image'] instanceof UploadedFile) {
-                        $path = $imgData['image']->store("devices/{$device->id}/images", 'public');
+                        $path = $imgData['image']->store("devices/{$device->id}/images", 's3');
 
                         // If updating existing image
                         if ($imageId && isset($existingImages[$imageId])) {
@@ -590,7 +590,7 @@ class DeviceController extends Controller
                 if ($request->hasFile('review.cover_image')) {
                     $coverPath = $request
                         ->file('review.cover_image')
-                        ->store('reviews', 'public');
+                        ->store('reviews', 's3');
                     $review->cover_image_url = $coverPath;
                 }
 
@@ -838,8 +838,8 @@ class DeviceController extends Controller
     {
         $device = Device::findOrFail($id);
         try {
-            if ($device->thumbnail_url && Storage::disk('public')->exists($device->thumbnail_url)) {
-                Storage::disk('public')->delete($device->thumbnail_url);
+            if ($device->thumbnail_url && Storage::disk('s3')->exists($device->thumbnail_url)) {
+                Storage::disk('s3')->delete($device->thumbnail_url);
             }
 
             $device->delete();

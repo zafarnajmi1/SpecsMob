@@ -838,8 +838,8 @@ class DeviceController extends Controller
     {
         $device = Device::findOrFail($id);
         try {
-            if ($device->thumbnail_url && Storage::disk('public')->exists($device->thumbnail_url)) {
-                Storage::disk('public')->delete($device->thumbnail_url);
+            if ($device->thumbnail_url && Storage::disk('s3')->exists($device->thumbnail_url)) {
+                Storage::disk('s3')->delete($device->thumbnail_url);
             }
 
             $device->delete();

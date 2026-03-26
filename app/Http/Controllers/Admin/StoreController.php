@@ -94,8 +94,8 @@ class StoreController extends Controller
 
                 // Delete old logo
                 $path = $store->logo_path;
-                if ($path && Storage::disk('public')->exists($path)) {
-                    Storage::disk('public')->delete($path);
+                if ($path && Storage::disk('s3')->exists($path)) {
+                    Storage::disk('s3')->delete($path);
                 }
             }
 
@@ -123,8 +123,8 @@ class StoreController extends Controller
 
             // Delete logo file if exists
             $path = $store->logo_path;
-            if ($path && Storage::disk('public')->exists($path)) {
-                Storage::disk('public')->delete($path);
+            if ($path && Storage::disk('s3')->exists($path)) {
+                Storage::disk('s3')->delete($path);
             }
 
             $store->delete();

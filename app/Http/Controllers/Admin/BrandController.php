@@ -60,12 +60,12 @@ class BrandController extends Controller
             $logoPath = null;
             if ($request->hasFile('logo')) {
                 $logoFile = $request->file('logo');
-                $logoPath = $logoFile->store('brands/logos', 'public');
+                $logoPath = $logoFile->store('brands/logos', 's3');
             }
             $coverImgPath = null;
             if ($request->hasFile('cover_image')) {
                 $coverImgFile = $request->file('cover_image');
-                $coverImgPath = $coverImgFile->store('brands/covers', 'public');
+                $coverImgPath = $coverImgFile->store('brands/covers', 's3');
             }
 
             Brand::create([
@@ -80,9 +80,9 @@ class BrandController extends Controller
             ToastMagic::success('Brand created successfully!');
             return redirect()->route('admin.brands.index');
         } catch (\Exception $e) {
-            if (isset($logoPath) && Storage::disk('public')->exists($logoPath)) {
-                Storage::disk('public')->delete($logoPath);
-                Storage::disk('public')->delete($coverImgPath);
+            if (isset($logoPath) && Storage::disk('s3')->exists($logoPath)) {
+                Storage::disk('s3')->delete($logoPath);
+                Storage::disk('s3')->delete($coverImgPath);
             }
 
             ToastMagic::error($e->getMessage());
@@ -143,22 +143,22 @@ class BrandController extends Controller
             // handle new logo
             if ($request->hasFile('logo')) {
                 $logoFile = $request->file('logo');
-                $logoPath = $logoFile->store('brands/logos', 'public');
+                $logoPath = $logoFile->store('brands/logos', 's3');
                 $updateData['logo'] = $logoPath;
 
                 // Delete old logo
-                if ($brand->logo && Storage::disk('public')->exists($brand->logo)) {
-                    Storage::disk('public')->delete($brand->logo);
+                if ($brand->logo && Storage::disk('s3')->exists($brand->logo)) {
+                    Storage::disk('s3')->delete($brand->logo);
                 }
             }
             if ($request->hasFile('cover_image')) {
                 $logoFile = $request->file('cover_image');
-                $logoPath = $logoFile->store('brands/covers', 'public');
+                $logoPath = $logoFile->store('brands/covers', 's3');
                 $updateData['cover_img'] = $logoPath;
 
                 // Delete old cover
-                if ($brand->cover_img && Storage::disk('public')->exists($brand->cover_img)) {
-                    Storage::disk('public')->delete($brand->cover_img);
+                if ($brand->cover_img && Storage::disk('s3')->exists($brand->cover_img)) {
+                    Storage::disk('s3')->delete($brand->cover_img);
                 }
             }
 
@@ -185,11 +185,11 @@ class BrandController extends Controller
             //     ->with('error', 'Cannot delete brand. It has associated devices.');
             // }
 
-            if ($brand->logo && Storage::disk('public')->exists($brand->logo)) {
-                Storage::disk('public')->delete($brand->logo);
+            if ($brand->logo && Storage::disk('s3')->exists($brand->logo)) {
+                Storage::disk('s3')->delete($brand->logo);
             }
-            if ($brand->cover_img && Storage::disk('public')->exists($brand->cover_img)) {
-                Storage::disk('public')->delete($brand->cover_img);
+            if ($brand->cover_img && Storage::disk('s3')->exists($brand->cover_img)) {
+                Storage::disk('s3')->delete($brand->cover_img);
             }
 
             $brand->delete();

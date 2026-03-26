@@ -222,8 +222,8 @@ class VideoController extends Controller
             DB::beginTransaction();
 
             // Delete thumbnail if exists
-            if ($video->thumbnail_url && Storage::disk('public')->exists($video->thumbnail_url)) {
-                Storage::disk('public')->delete($video->thumbnail_url);
+            if ($video->thumbnail_url && Storage::disk('s3')->exists($video->thumbnail_url)) {
+                Storage::disk('s3')->delete($video->thumbnail_url);
             }
 
             // Delete video items
