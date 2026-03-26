@@ -62,7 +62,7 @@
                     <i class="fas fa-mobile-alt text-5xl text-gray-200 mb-4 block"></i>
                     <p class="text-gray-400 italic">No devices matched your search.</p>
                 </div>
-            @endif
+            @endif    
         </section>
 
         {{-- Section 2: Matched Reviews --}}
