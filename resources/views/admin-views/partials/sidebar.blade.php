@@ -414,7 +414,7 @@
                                 style="width: 32px; height: 32px; border-radius: 50%;">
                                 @php
                                     $sidebarImage = auth()->user()->image;
-                                    $isSidebarImageExists = $sidebarImage && (str_starts_with($sidebarImage, 'http') || Storage::disk('public')->exists($sidebarImage));
+                                    $isSidebarImageExists = $sidebarImage && (str_starts_with($sidebarImage, 'http') || Storage::disk('s3')->exists($sidebarImage));
                                 @endphp
                                 @if($isSidebarImageExists)
                                     <img src="{{ auth()->user()->image_url }}" alt="User"

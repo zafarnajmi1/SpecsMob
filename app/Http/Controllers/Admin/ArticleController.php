@@ -113,7 +113,7 @@ class ArticleController extends Controller
             }
 
             if ($request->hasFile('thumbnail_url')) {
-                $path = $request->file('thumbnail_url')->store('articles/thumbnails', 'public');
+                $path = $request->file('thumbnail_url')->store('articles/thumbnails', 's3');
                 $data['thumbnail_url'] = $path;
             }
 
@@ -204,8 +204,8 @@ class ArticleController extends Controller
 
             // Handle thumbnail removal
             if ($request->boolean('remove_thumbnail')) {
-                if ($article->thumbnail_url && Storage::disk('public')->exists($article->thumbnail_url)) {
-                    Storage::disk('public')->delete($article->thumbnail_url);
+                if ($article->thumbnail_url && Storage::disk('s3')->exists($article->thumbnail_url)) {
+                    Storage::disk('s3')->delete($article->thumbnail_url);
                 }
                 $data['thumbnail_url'] = null;
             }
@@ -213,8 +213,8 @@ class ArticleController extends Controller
             // Update thumbnail if new file uploaded
             if ($request->hasFile('thumbnail_url')) {
                 // Delete old thumbnail if exists
-                if ($article->thumbnail_url && Storage::disk('public')->exists($article->thumbnail_url)) {
-                    Storage::disk('public')->delete($article->thumbnail_url);
+                if ($article->thumbnail_url && Storage::disk('s3')->exists($article->thumbnail_url)) {
+                    Storage::disk('s3')->delete($article->thumbnail_url);
                 }
 
                 $path = $request->file('thumbnail_url')->store('articles/thumbnails', 'public');
@@ -249,8 +249,8 @@ class ArticleController extends Controller
 
         try {
             // Delete thumbnail if exists
-            if ($article->thumbnail_url && Storage::disk('public')->exists($article->thumbnail_url)) {
-                Storage::disk('public')->delete($article->thumbnail_url);
+            if ($article->thumbnail_url && Storage::disk('s3')->exists($article->thumbnail_url)) {
+                Storage::disk('s3')->delete($article->thumbnail_url);
             }
 
             // Remove tags

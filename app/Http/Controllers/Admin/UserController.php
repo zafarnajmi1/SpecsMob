@@ -80,7 +80,7 @@ class UserController extends Controller
 
         if ($request->hasFile('image')) {
             if ($user->image) {
-                Storage::disk('public')->delete($user->image);
+                Storage::disk('s3')->delete($user->image);
             }
             $path = $request->file('image')->store('users', 'public');
             $user->image = $path;
@@ -102,7 +102,7 @@ class UserController extends Controller
         }
 
         if ($user->image) {
-            Storage::disk('public')->delete($user->image);
+            Storage::disk('s3')->delete($user->image);
         }
 
         $user->delete();
@@ -136,7 +136,7 @@ class UserController extends Controller
 
         if ($request->hasFile('image')) {
             if ($user->image) {
-                Storage::disk('public')->delete($user->image);
+                Storage::disk('s3')->delete($user->image);
             }
             $path = $request->file('image')->store('users', 'public');
             $user->image = $path;

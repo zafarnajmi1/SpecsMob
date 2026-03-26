@@ -86,8 +86,8 @@ class UserController extends Controller
 
         if ($request->hasFile('avatar_file')) {
             // Delete old image if exists
-            if ($user->image && \Storage::disk('public')->exists($user->image)) {
-                \Storage::disk('public')->delete($user->image);
+            if ($user->image && \Storage::disk('s3')->exists($user->image)) {
+                \Storage::disk('s3')->delete($user->image);
             }
 
             $path = $request->file('avatar_file')->store('avatars', 'public');

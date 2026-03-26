@@ -48,8 +48,8 @@ class HomeReviewSliderController extends Controller
             ToastMagic::success('Slider added successfully!');
             return redirect()->route('admin.homereview-slider.index');
         } catch (\Exception $e) {
-            if (isset($imagePath) && Storage::disk('public')->exists($imagePath)) {
-                Storage::disk('public')->delete($imagePath);
+            if (isset($imagePath) && Storage::disk('s3')->exists($imagePath)) {
+                Storage::disk('s3')->delete($imagePath);
             }
             ToastMagic::error($e->getMessage());
             return redirect()->back()->withInput();
@@ -85,8 +85,8 @@ class HomeReviewSliderController extends Controller
                 $imagePath = $request->file('image')->store('homereview-sliders', 'public');
                 $data['image'] = $imagePath;
 
-                if ($slider->image && Storage::disk('public')->exists($slider->image)) {
-                    Storage::disk('public')->delete($slider->image);
+                if ($slider->image && Storage::disk('s3')->exists($slider->image)) {
+                    Storage::disk('s3')->delete($slider->image);
                 }
             }
 
@@ -104,8 +104,8 @@ class HomeReviewSliderController extends Controller
     {
         try {
             $slider = HomeReviewSlider::findOrFail($id);
-            if ($slider->image && Storage::disk('public')->exists($slider->image)) {
-                Storage::disk('public')->delete($slider->image);
+            if ($slider->image && Storage::disk('s3')->exists($slider->image)) {
+                Storage::disk('s3')->delete($slider->image);
             }
             $slider->delete();
             ToastMagic::success('Slider deleted successfully!');

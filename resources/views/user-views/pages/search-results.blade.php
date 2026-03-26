@@ -47,7 +47,7 @@
                                 <div class="py-3 border-t border-[#f8f8f8] transition-all duration-300 group-hover:bg-[#F9A13D]">
                                     <strong class="text-[#555] font-bold text-[14px] group-hover:text-white px-2 line-clamp-1">
                                         {{ $device->name }}
-                                    </strong>
+                                    </strong> 
                                 </div>
                             </a>
                         @endforeach
@@ -62,7 +62,7 @@
                     <i class="fas fa-mobile-alt text-5xl text-gray-200 mb-4 block"></i>
                     <p class="text-gray-400 italic">No devices matched your search.</p>
                 </div>
-            @endif
+            @endif    
         </section>
 
         {{-- Section 2: Matched Reviews --}}

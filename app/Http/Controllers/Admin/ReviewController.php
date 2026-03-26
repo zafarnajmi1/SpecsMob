@@ -89,12 +89,12 @@ class ReviewController extends Controller
                 // Delete old image if exists during update
                 $oldImage = $review->getRawOriginal('cover_image_url');
                 if ($oldImage) {
-                    Storage::disk('public')->delete($oldImage);
+                    Storage::disk('s3')->delete($oldImage);
                 }
 
                 $coverPath = $request
                     ->file('cover_image')
-                    ->store('reviews', 'public');
+                    ->store('reviews', 's3');
 
                 $review->cover_image_url = $coverPath;
             }
@@ -243,7 +243,7 @@ class ReviewController extends Controller
 
             // Delete cover image
             if ($review->getRawOriginal('cover_image_url')) {
-                Storage::disk('public')->delete($review->getRawOriginal('cover_image_url'));
+                Storage::disk('s3')->delete($review->getRawOriginal('cover_image_url'));
             }
 
             // Cleanup relations

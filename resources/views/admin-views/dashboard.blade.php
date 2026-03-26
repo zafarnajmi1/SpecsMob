@@ -161,7 +161,7 @@
                                                             <div class="avatar avatar-md bg-primary text-white d-flex align-items-center justify-content-center overflow-hidden flex-shrink-0" style="width: 40px; height: 40px; border-radius: 50%;">
                                                                 @php
                                                                     $commentUserImage = $comment->user->image ?? null;
-                                                                    $isCommentImageExists = $commentUserImage && (str_starts_with($commentUserImage, 'http') || Storage::disk('public')->exists($commentUserImage));
+                                                                    $isCommentImageExists = $commentUserImage && (str_starts_with($commentUserImage, 'http') || Storage::disk('s3')->exists($commentUserImage));
                                                                 @endphp
                                                                 @if($isCommentImageExists)
                                                                     <img src="{{ $comment->user->image_url }}" alt="AV" style="width: 100%; height: 100%; object-fit: cover;">
@@ -201,7 +201,7 @@
                             <div class="avatar avatar-xl bg-info text-white d-flex align-items-center justify-content-center overflow-hidden flex-shrink-0" style="width: 70px; height: 70px; border-radius: 50%;">
                                 @php
                                     $adminImage = auth()->user()->image;
-                                    $isAdminImageExists = $adminImage && (str_starts_with($adminImage, 'http') || Storage::disk('public')->exists($adminImage));
+                                    $isAdminImageExists = $adminImage && (str_starts_with($adminImage, 'http') || Storage::disk('s3')->exists($adminImage));
                                 @endphp
                                 @if($isAdminImageExists)
                                     <img src="{{ auth()->user()->image_url }}" alt="Face 1" style="width: 100%; height: 100%; object-fit: cover;">
@@ -226,7 +226,7 @@
                                 <div class="avatar avatar-lg bg-info text-white d-flex align-items-center justify-content-center overflow-hidden flex-shrink-0" style="min-width: 50px; height: 50px; border-radius: 50%;">
                                     @php
                                         $userImage = $rUser->image;
-                                        $isUserImageExists = $userImage && (str_starts_with($userImage, 'http') || Storage::disk('public')->exists($userImage));
+                                        $isUserImageExists = $userImage && (str_starts_with($userImage, 'http') || Storage::disk('s3')->exists($userImage));
                                     @endphp
                                     @if($isUserImageExists)
                                         <img src="{{ $rUser->image_url }}" alt="AV" style="width: 100%; height: 100%; object-fit: cover;">
