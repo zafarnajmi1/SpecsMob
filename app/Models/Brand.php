@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Brand extends Model
 {
@@ -12,6 +13,28 @@ class Brand extends Model
     protected $casts = [
         'status' => 'boolean'
     ];
+
+    public function getLogoUrlAttribute()
+    {
+        if ($this->logo) {
+            if (str_starts_with($this->logo, 'http')) {
+                return $this->logo;
+            }
+            return \Storage::disk('s3')->url($this->logo);
+        }
+        return asset('images/default-brand.png'); // Placeholder
+    }
+
+    public function getCoverUrlAttribute()
+    {
+        if ($this->cover_img) {
+            if (str_starts_with($this->cover_img, 'http')) {
+                return $this->cover_img;
+            }
+            return \Storage::disk('s3')->url($this->cover_img);
+        }
+        return null;
+    }
 
     // ✅ Add scope for active brands
     public function scopeActive($query)

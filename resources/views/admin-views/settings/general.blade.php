@@ -76,7 +76,7 @@
                                     <label class="form-label">Site Logo</label>
                                     <div class="mb-3">
                                         @if($settings->site_logo)
-                                            <img src="{{ asset('storage/' . $settings->site_logo) }}" alt="Logo"
+                                            <img src="{{ $settings->site_logo_url }}" alt="Logo"
                                                 class="img-fluid rounded border p-2 mb-2" style="max-height: 80px;">
                                         @endif
                                         <input type="file" name="site_logo" class="form-control">
@@ -88,7 +88,7 @@
                                     <label class="form-label">Favicon</label>
                                     <div class="mb-3">
                                         @if($settings->site_favicon)
-                                            <img src="{{ asset('storage/' . $settings->site_favicon) }}" alt="Favicon"
+                                            <img src="{{ $settings->site_favicon_url }}" alt="Favicon"
                                                 class="rounded border p-2 mb-2" style="width: 32px; height: 32px;">
                                         @endif
                                         <input type="file" name="site_favicon" class="form-control">

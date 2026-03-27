@@ -44,7 +44,7 @@ class StoreController extends Controller
             $logoPath = null;
             if ($request->hasFile('logo')) {
                 $logoFile = $request->file('logo');
-                $logoPath = $logoFile->store('pricing_setup/stores', 'public');
+                $logoPath = $logoFile->store('pricing_setup/stores', 's3');
             }
 
             Store::create([
@@ -89,7 +89,7 @@ class StoreController extends Controller
             // Handle new logo
             if ($request->hasFile('logo')) {
                 $logoFile = $request->file('logo');
-                $logoPath = $logoFile->store('pricing_setup/stores', 'public');
+                $logoPath = $logoFile->store('pricing_setup/stores', 's3');
                 $updateData['logo_url'] = $logoPath;
 
                 // Delete old logo

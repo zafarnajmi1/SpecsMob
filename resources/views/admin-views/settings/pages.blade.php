@@ -59,7 +59,7 @@
                                     <label class="form-label">Header Image</label>
                                     <div class="mb-3">
                                         @if($settings->contact_page_image)
-                                            <img src="{{ asset('storage/' . $settings->contact_page_image) }}"
+                                            <img src="{{ $settings->contact_page_image_url }}"
                                                 alt="Contact Header" class="img-fluid rounded border p-2 mb-2"
                                                 style="max-height: 150px;">
                                         @endif
@@ -101,7 +101,7 @@
                                     <label class="form-label">Header Image</label>
                                     <div class="mb-3">
                                         @if($settings->tip_us_page_image)
-                                            <img src="{{ asset('storage/' . $settings->tip_us_page_image) }}"
+                                            <img src="{{ $settings->tip_us_page_image_url }}"
                                                 alt="Tip Us Header" class="img-fluid rounded border p-2 mb-2"
                                                 style="max-height: 150px;">
                                         @endif
