@@ -12,7 +12,7 @@
 
     <!-- Favicon -->
     @if(setting('site_favicon'))
-        <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . setting('site_favicon')) }}">
+        <link rel="icon" type="image/x-icon" href="{{ setting('site_favicon_url') }}">
     @endif
 
     {!! ToastMagic::styles() !!}
@@ -50,7 +50,7 @@
 
                         <a href="/" class="text-white text-3xl w-[130px] font-black tracking-tight">
                             @if(setting('site_logo'))
-                                <img src="{{ asset('storage/' . setting('site_logo')) }}" style="width:100%; height:auto;"
+                                <img src="{{ setting('site_logo_url') }}" style="width:100%; height:auto;"
                                     alt="{{ setting('site_name', 'Logo') }}">
                             @else
                                 <span style="font-weight: bold;">{{ setting('site_name', 'Admin') }}</span>
@@ -252,7 +252,7 @@ if (setting('linkedin_url'))
 
                         <a href="/" class="text-white text-3xl w-[130px] font-black tracking-tight">
                             @if(setting('site_logo'))
-                                <img src="{{ asset('storage/' . setting('site_logo')) }}" style="width:100%; height:auto;"
+                                <img src="{{ setting('site_logo_url') }}" style="width:100%; height:auto;"
                                     alt="{{ setting('site_name', 'Logo') }}">
                             @else
                                 <span style="font-weight: bold;">{{ setting('site_name', 'Admin') }}</span>
@@ -500,7 +500,7 @@ if (setting('youtube_url'))
                     @php($homeReviewSliders = \App\Models\HomeReviewSlider::latest()->get())
                     @foreach ($homeReviewSliders as $slider)
                         <a href="{{ $slider->review_link }}" target="_blank" class="flex-none w-[320px] h-[100px] block">
-                            <img src="{{ Storage::url($slider->image) }}" class="w-full h-full object-cover"
+                            <img src="{{ $slider->image_url }}" class="w-full h-full object-cover"
                                 alt="Review Slide">
                         </a>
                     @endforeach

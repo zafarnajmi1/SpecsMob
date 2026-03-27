@@ -217,7 +217,7 @@ class ArticleController extends Controller
                     Storage::disk('s3')->delete($article->thumbnail_url);
                 }
 
-                $path = $request->file('thumbnail_url')->store('articles/thumbnails', 'public');
+                $path = $request->file('thumbnail_url')->store('articles/thumbnails', 's3');
                 $data['thumbnail_url'] = $path;
             }
 

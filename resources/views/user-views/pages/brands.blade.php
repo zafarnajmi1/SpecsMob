@@ -53,7 +53,7 @@
                     <div
                         class="w-full h-16 mb-3 flex items-center justify-center rounded-xl bg-gray-50 overflow-hidden group-hover:bg-blue-50 transition-colors">
                         @if($brand->logo)
-                            <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}"
+                            <img src="{{ $brand->logo_url }}" alt="{{ $brand->name }}"
                                 class="w-12 h-12 object-contain">
                         @else
                             <div

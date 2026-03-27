@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -47,7 +48,7 @@ class User extends Authenticatable
             if (str_starts_with($this->image, 'http')) {
                 return $this->image;
             }
-            return asset('storage/' . $this->image);
+            return \Storage::disk('s3')->url($this->image);
         }
         return asset('images/default-avatar.png');
     }

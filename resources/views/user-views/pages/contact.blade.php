@@ -12,7 +12,7 @@
     <div class="overflow-hidden w-full mb-6 md:h-[310px]">
         @php
             $headerImg = setting('contact_page_image')
-                ? asset('storage/' . setting('contact_page_image'))
+                ? setting('contact_page_image_url')
                 : 'https://fdn.gsmarena.com/imgroot/static/headers/contact-hlr.jpg';
         @endphp
         <div class="relative bg-cover bg-center h-full" style="background-image: url('{{ $headerImg }}');">
