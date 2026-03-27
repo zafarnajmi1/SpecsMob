@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Spatie\Permission\Models\Role;
@@ -43,7 +44,7 @@ class UserController extends Controller
         $user->status = 'active';
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('users', 'public');
+            $path = $request->file('image')->store('users', 's3');
             $user->image = $path;
         }
 
@@ -82,7 +83,7 @@ class UserController extends Controller
             if ($user->image) {
                 Storage::disk('s3')->delete($user->image);
             }
-            $path = $request->file('image')->store('users', 'public');
+            $path = $request->file('image')->store('users', 's3');
             $user->image = $path;
         }
 
@@ -119,6 +120,7 @@ class UserController extends Controller
 
     public function profileUpdate(Request $request)
     {
+        \Log::info('Profile update request data:', $request->all());
         $user = auth()->user();
 
         $request->validate([
@@ -138,11 +140,14 @@ class UserController extends Controller
             if ($user->image) {
                 Storage::disk('s3')->delete($user->image);
             }
-            $path = $request->file('image')->store('users', 'public');
+            $path = $request->file('image')->store('users', 's3');
+            \Log::info('Image path stored: ' . $path);
             $user->image = $path;
         }
 
+        \Log::info('Saving user image: ' . $user->image);
         $user->save();
+        \Log::info('After saving user image: ' . $user->image);
 
         ToastMagic::success('Profile updated successfully');
         return back();

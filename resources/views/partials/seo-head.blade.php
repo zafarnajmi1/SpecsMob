@@ -22,7 +22,7 @@
         } elseif (isset($brand) && $brand instanceof \App\Models\Brand) {
             $currentSeo = $brand->seo;
             $currentObject = $brand;
-            $fallbackImage = $brand->logo ? asset('storage/' . $brand->logo) : null;
+            $fallbackImage = $brand->logo_url;
         } elseif (isset($review) && $review instanceof \App\Models\Review) {
             // If Review model exists and has SEO
             // $currentSeo = $review->seo; 

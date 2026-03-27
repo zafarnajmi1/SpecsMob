@@ -37,7 +37,7 @@ class HomeReviewSliderController extends Controller
         try {
             $imagePath = null;
             if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('homereview-sliders', 'public');
+                $imagePath = $request->file('image')->store('homereview-sliders', 's3');
             }
 
             HomeReviewSlider::create([
@@ -82,7 +82,7 @@ class HomeReviewSliderController extends Controller
             ];
 
             if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('homereview-sliders', 'public');
+                $imagePath = $request->file('image')->store('homereview-sliders', 's3');
                 $data['image'] = $imagePath;
 
                 if ($slider->image && Storage::disk('s3')->exists($slider->image)) {

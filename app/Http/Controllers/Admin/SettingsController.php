@@ -51,28 +51,28 @@ class SettingsController extends Controller
             if ($settings->site_logo) {
                 Storage::disk('s3')->delete($settings->site_logo);
             }
-            $data['site_logo'] = $request->file('site_logo')->store('settings', 'public');
+            $data['site_logo'] = $request->file('site_logo')->store('settings', 's3');
         }
 
         if ($request->hasFile('site_favicon')) {
             if ($settings->site_favicon) {
                 Storage::disk('s3')->delete($settings->site_favicon);
             }
-            $data['site_favicon'] = $request->file('site_favicon')->store('settings', 'public');
+            $data['site_favicon'] = $request->file('site_favicon')->store('settings', 's3');
         }
 
         if ($request->hasFile('contact_page_image')) {
             if ($settings->contact_page_image) {
                 Storage::disk('s3')->delete($settings->contact_page_image);
             }
-            $data['contact_page_image'] = $request->file('contact_page_image')->store('settings', 'public');
+            $data['contact_page_image'] = $request->file('contact_page_image')->store('settings', 's3');
         }
 
         if ($request->hasFile('tip_us_page_image')) {
             if ($settings->tip_us_page_image) {
                 Storage::disk('s3')->delete($settings->tip_us_page_image);
             }
-            $data['tip_us_page_image'] = $request->file('tip_us_page_image')->store('settings', 'public');
+            $data['tip_us_page_image'] = $request->file('tip_us_page_image')->store('settings', 's3');
         }
 
         $settings->update($data);
