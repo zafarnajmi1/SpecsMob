@@ -10,7 +10,7 @@
 <section class="lg:hidden">
     {{-- Brand Header Image --}}
     <div class="relative w-full h-[316px] bg-cover bg-center"
-        style='background-image: url("{{ $brand->cover_img ? asset('storage/' . $brand->cover_img) : asset('images/default-brand-bg.jpg') }}");'>
+        style='background-image: url("{{ $brand->cover_url ?: asset('images/default-brand-bg.jpg') }}");'>
         <div class="absolute inset-0 bg-black/30"></div>
         <div class="absolute bottom-0 left-0 w-full p-4">
             <h1 class="text-white text-2xl font-bold drop-shadow-lg">{{ $brand->name }} phones</h1>
@@ -167,7 +167,7 @@
 <section class="hidden lg:block">
     {{-- Brand Header --}}
     <div class="relative w-full h-72 md:h-[314px] bg-cover bg-center"
-        style='background-image: url("{{ $brand->cover_img ? asset('storage/' . $brand->cover_img) : asset('images/default-brand-bg.jpg') }}");'>
+        style='background-image: url("{{ $brand->cover_url ?: asset('images/default-brand-bg.jpg') }}");'>
         {{-- Top bar --}}
         <div
             class="absolute top-0 left-0 border-b-1 border-gray-400 shadow flex justify-between items-center w-full px-4 py-3 md:px-6 z-10">

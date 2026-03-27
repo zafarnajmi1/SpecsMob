@@ -59,7 +59,7 @@
                     <div
                         class="flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full border-2 border-white shadow-sm overflow-hidden flex-shrink-0">
                         @if(Auth::user()->image)
-                            <img src="{{ asset('storage/' . Auth::user()->image) }}" class="w-full h-full object-cover">
+                            <img src="{{ Auth::user()->image_url }}" class="w-full h-full object-cover">
                         @else
                             <div
                                 class="w-full h-full flex items-center justify-center bg-[#F9A13D] text-white text-3xl font-bold uppercase">

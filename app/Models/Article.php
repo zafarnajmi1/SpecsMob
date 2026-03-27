@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\Seoable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Str;
 
 
@@ -43,14 +44,14 @@ class Article extends Model
     ];
 
     // FIXED ACCESSOR - Remove storage/ prefix since it's already in thumbnail_url
+    // MODIFIED ACCESSOR - Use S3 (Cloudflare R2) URL
     public function getThumbnailUrlAttribute($value)
     {
         if ($value) {
-            // Check if value already has storage/ prefix
-            if (str_starts_with($value, 'storage/')) {
-                return asset($value);
+            if (str_starts_with($value, 'http')) {
+                return $value;
             }
-            return asset('storage/' . $value);
+            return \Storage::disk('s3')->url($value);
         }
         return asset('images/default-article.jpg');
     }
