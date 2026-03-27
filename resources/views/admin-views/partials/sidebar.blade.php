@@ -5,7 +5,7 @@
                 <div class="logo">
                     <a href="{{ route('admin.dashboard') }}">
                         @if(setting('site_logo'))
-                            <img src="{{ asset('storage/' . setting('site_logo')) }}" style="width:70%; height:auto;"
+                            <img src="{{ setting('site_logo_url') }}" style="width:70%; height:auto;"
                                 alt="{{ setting('site_name', 'Logo') }}">
                         @else
                             <span style="font-weight: bold;">{{ setting('site_name', 'Admin') }}</span>
@@ -412,11 +412,7 @@
                         <div class="d-flex align-items-center">
                             <div class="avatar avatar-sm bg-primary text-white d-flex align-items-center justify-content-center overflow-hidden flex-shrink-0"
                                 style="width: 32px; height: 32px; border-radius: 50%;">
-                                @php
-                                    $sidebarImage = auth()->user()->image;
-                                    $isSidebarImageExists = $sidebarImage && (str_starts_with($sidebarImage, 'http') || Storage::disk('s3')->exists($sidebarImage));
-                                @endphp
-                                @if($isSidebarImageExists)
+                                @if(auth()->user()->image)
                                     <img src="{{ auth()->user()->image_url }}" alt="User"
                                         style="width: 100%; height: 100%; object-fit: cover;">
                                 @else
