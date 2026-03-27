@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\Seoable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Device extends Model
 {
@@ -50,7 +51,10 @@ class Device extends Model
     public function getThumbnailUrlAttribute($value)
     {
         if ($value) {
-            return asset('storage/' . $value);
+            if (str_starts_with($value, 'http')) {
+                return $value;
+            }
+            return \Storage::disk('s3')->url($value);
         }
 
         return asset('user/images/default-preview.png');

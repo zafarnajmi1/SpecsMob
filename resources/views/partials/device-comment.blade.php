@@ -6,7 +6,7 @@
             <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center text-white text-xl font-bold rounded shadow-sm overflow-hidden"
                 style="background-color: {{ '#' . substr(md5($comment->user->name ?? 'Anon'), 0, 6) }}">
                 @if($comment->user && $comment->user->image)
-                    <img src="{{ asset('storage/' . $comment->user->image) }}" class="w-full h-full object-cover">
+                    <img src="{{ $comment->user->image_url }}" class="w-full h-full object-cover">
                 @else
                     {{ strtoupper(substr($comment->user->name ?? 'A', 0, 1)) }}
                 @endif
@@ -80,7 +80,7 @@
         <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center text-white text-lg font-bold overflow-hidden"
             style="background-color: {{ '#' . substr(md5($reply->user->name ?? 'Anonymous'), 0, 6) }}">
             @if($reply->user && $reply->user->image)
-                <img src="{{ asset('storage/' . $reply->user->image) }}" class="w-full h-full object-cover">
+                <img src="{{ $reply->user->image_url }}" class="w-full h-full object-cover">
             @else
                 {{ strtoupper(substr($reply->user->name ?? 'A', 0, 1)) }}
             @endif
