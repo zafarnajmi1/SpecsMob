@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class SystemSetting extends Model
 {
@@ -42,4 +43,24 @@ class SystemSetting extends Model
         'contact_form_title',
         'tip_us_form_title',
     ];
+
+    public function getSiteLogoUrlAttribute()
+    {
+        return $this->site_logo ? \Storage::disk('s3')->url($this->site_logo) : null;
+    }
+
+    public function getSiteFaviconUrlAttribute()
+    {
+        return $this->site_favicon ? \Storage::disk('s3')->url($this->site_favicon) : null;
+    }
+
+    public function getContactPageImageUrlAttribute()
+    {
+        return $this->contact_page_image ? \Storage::disk('s3')->url($this->contact_page_image) : null;
+    }
+
+    public function getTipUsPageImageUrlAttribute()
+    {
+        return $this->tip_us_page_image ? \Storage::disk('s3')->url($this->tip_us_page_image) : null;
+    }
 }

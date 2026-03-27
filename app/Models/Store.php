@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Store extends Model
 {
@@ -22,7 +23,13 @@ class Store extends Model
      */
     public function getLogoUrlAttribute($value)
     {
-        return $value ? asset('storage/' . $value) : null;
+        if ($value) {
+            if (str_starts_with($value, 'http')) {
+                return $value;
+            }
+            return \Storage::disk('s3')->url($value);
+        }
+        return null;
     }
 
     public function getLogoPathAttribute()

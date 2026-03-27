@@ -58,7 +58,7 @@ class VideoController extends Controller
                 $video->published_at = $isPublished ? ($video->published_at ?: now()) : null;
 
                 if ($thumbnailFile instanceof UploadedFile) {
-                    $video->thumbnail_url = $thumbnailFile->store('videos/thumbnails', 'public');
+                    $video->thumbnail_url = $thumbnailFile->store('videos/thumbnails', 's3');
                 }
 
                 $video->save();

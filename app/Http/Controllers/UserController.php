@@ -10,6 +10,7 @@ use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Http\Request;
 use Str;
 use Validator;
+use Storage;
 
 class UserController extends Controller
 {
@@ -86,11 +87,11 @@ class UserController extends Controller
 
         if ($request->hasFile('avatar_file')) {
             // Delete old image if exists
-            if ($user->image && \Storage::disk('s3')->exists($user->image)) {
-                \Storage::disk('s3')->delete($user->image);
+            if ($user->image && Storage::disk('s3')->exists($user->image)) {
+                Storage::disk('s3')->delete($user->image);
             }
 
-            $path = $request->file('avatar_file')->store('avatars', 'public');
+            $path = $request->file('avatar_file')->store('avatars', 's3');
             $user->image = $path;
             $user->avatar_type = 'none'; // Set back to 'none' as 'upload' is not in database ENUM
             $user->gravatar_email = null;
